@@ -1,2 +1,9 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<h2>MENU</h2>
+<div>
+    <ul>
+        <li><a href="/persons">Persons</a></li>
+        <li><a href="/publishers">Publishers</a></li>
+        <li><a href="/series">Series</a></li>
+        <li><a href="/works">Works</a></li>
+    </ul>
+</div>

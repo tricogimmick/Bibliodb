@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    line-height: 1.5em;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.input-field {
+    margin: 0 0 0.2rem 0;
+    display: flex;
+    align-items: flex-start;
+    > label {
+        display: inline-block;
+        width: 10rem;
+    }
+    > input {
+        margin: 0;
+        padding: 0.2rem 0.2rem;
+        min-width: 15rem;
+    }
+    > input[type=url] {
+        width: 35rem;
+    }
+    > select {
+        margin: 0;
+        padding: 0.2rem 0.2rem;
+        min-width: 15.5rem;
+    }
+    > textarea {
+        width: 35rem;
+    }
+}
