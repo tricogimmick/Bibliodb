@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		};
 	} catch (e) {
 		console.log(e);
-		error(500, 'Database Error');
+		error(500, { message: 'Database Error' });
 	} finally {
 		db.close();
 	}

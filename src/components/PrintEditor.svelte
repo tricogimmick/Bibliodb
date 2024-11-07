@@ -1,18 +1,22 @@
 <script lang="ts">
-    import type { WorkType } from "../types/work";
+    import type { PrintType } from "../types/print";
+    import type { PublisherType } from "../types/publisher";
+    import type { SeriesType } from "../types/series";
     import type { PersonType } from "../types/person";
     import type { RelatedPeronsType } from "../types/relatedPersons";
+    import type { PostDataType } from "../routes/api/prints/+server";
     import type { ResultType } from "../types/result";
-    import type { PostDataType } from "../routes/api/works/+server";
 
     type PropsType = {
-        work: WorkType,
+        print: PrintType,
         relatedPersons: RelatedPeronsType[],
         persons: PersonType[],
-        callback: ((result: ResultType<WorkType>) => void) | null
+        publishers: PublisherType[],
+        series: SeriesType[],
+        callback: ((result: ResultType<PrintType>) => void) | null
     };
 
-    type RelatedPerssonEntryType = {
+    type RelatedPersonEntryType = {
         orderNo: number;
         role: string;
         personId: number | null;
@@ -20,19 +24,20 @@
         description: string;
     };
 
-    let { work, relatedPersons, persons, callback } : PropsType = $props();
+    let { print, relatedPersons, persons, publishers, series, callback } : PropsType = $props();
 
-    let title = $state(work.title);
-    let originalTitle = $state(work.originalTitle);
-    let contentType = $state(work.contentType);
-    let description = $state(work.description);
-    let url = $state(work.url);
-    let note = $state(work.note);
-    let publicationYear = $state(work.publicationYear);
-    let seqNo = $state(work.seqNo);
-    let buttonCaption = $derived(work.id == null || work.id == 0 ? "登　録" : "更　新")
+    let title = $state(print.title);
+    let originalTitle = $state(print.originalTitle);
+    let printType = $state(print.printType);
+    let publisherName = $state(publishers.find(x => x.id === print.publisherId)?.name ?? "");
+    let publicationDate = $state(print.publicationDate);
+    let seriesName = $state(series.find(x => x.id === print.seriesId)?.nameIndex ?? "");
+    let description = $state(print.description);
+    let ndl = $state(print.ndl);
+    let ownedType = $state(print.ownedType);
+    let buttonCaption = $derived(print.id == null || print.id == 0 ? "登　録" : "更　新")
 
-    const _relatedPersons: RelatedPerssonEntryType[] = relatedPersons.map(x => ({
+    const _relatedPersons: RelatedPersonEntryType[] = relatedPersons.map(x => ({
         orderNo: x.orderNo as number,
         role: x.role,
         personId: x.personId,
@@ -42,9 +47,9 @@
     let relatedPersonEntries = $state(_relatedPersons);
 
      // 登録
-     const appendWork = async (postData: PostDataType) => {
+     const appendPrint = async (postData: PostDataType) => {
         console.log(postData);
-        const response = await fetch('/api/works', {
+        const response = await fetch('/api/prints', {
             method: 'POST',
             body: JSON.stringify(postData),
             headers: {
@@ -52,16 +57,16 @@
             }
         });
         if (response.ok) {
-            return await response.json() as WorkType;
+            return await response.json() as PrintType;
         } else {
             throw new Error(`Fetch Error:(${response.status})`)
         }
     }
 
     // 更新
-    const updateWork = async (putData: PostDataType) => {
+    const updatePrint = async (putData: PostDataType) => {
         console.log(putData);
-        const response = await fetch('/api/works', {
+        const response = await fetch('/api/prints', {
             method: 'PUT',
             body: JSON.stringify(putData),
             headers: {
@@ -69,29 +74,27 @@
             }
         });
         if (response.ok) {
-            return await response.json() as WorkType;
+            return await response.json() as PrintType;
         } else {
             throw new Error(`Fetch Error:(${response.status})`)
         }
     }
 
-    // FOMRがサブミットされた
-    const onSubmit = async (e: Event)  => {
-        console.log("onSubmit()");
+    const onSubmit = async (e: Event) => {
         e.stopImmediatePropagation();
         e.preventDefault();
-
         try {
             const postData: PostDataType = {
-                id: work.id,
+                id: print.id,
                 title,
                 originalTitle,
-                contentType,
+                printType,
+                publisherId: publishers.find(x => x.name === publisherName)?.id ?? null,
+                publicationDate,
+                seriesId: series.find(x => x.nameIndex === seriesName)?.id ?? null,
                 description,
-                url,
-                note,
-                publicationYear,
-                seqNo,
+                ndl,
+                ownedType,
                 relatedPersons: relatedPersonEntries.map(a => ({
                     orderNo: a.orderNo,
                     personId: persons.find(p => p.nameIndex === a.personName)?.id ?? 0,
@@ -99,7 +102,7 @@
                     description: a.description
                 }))
             };
-            const result : WorkType = work.id != null ? await updateWork(postData) : await appendWork(postData);
+            const result : PrintType = print.id != null ? await updatePrint(postData) : await appendPrint(postData);
             console.log(result);
             callback?.({
                 ok: true,
@@ -111,7 +114,17 @@
                 data: e
             });
         }
-    };
+    }
+
+    const onChangeSeriesName = (e: Event) => {
+        console.log(e.target);    
+        const field = e.target as HTMLInputElement;
+        if (field.value != null && field.value != "" && series.find(x => x.nameIndex === field.value) == null) {
+            field.setCustomValidity("シリーズが存在しません")
+        } else {
+            field.setCustomValidity("")
+        }
+    }
 
     const onClickAuthorAdd = (e: Event) => {
         e.stopImmediatePropagation();
@@ -170,12 +183,27 @@
         }
     }
 
+    const onChangePublisherName = (e: Event) => {
+        console.log(e.target);    
+        const field = e.target as HTMLInputElement;
+        if (publishers.find(x => x.name === field.value) == null) {
+            field.setCustomValidity("出版社が存在しません")
+        } else {
+            field.setCustomValidity("")
+        }
+    }
+
 </script>
 
 <div>
-    <datalist id="persons">
-        {#each persons as p (p.id)}
-        <option value={p.nameIndex}></option>
+    <datalist id="publishers">
+        {#each publishers as p (p.id)}
+        <option value={p.name}></option>
+        {/each}
+    </datalist>
+    <datalist id="series">
+        {#each series as s (s.id)}
+        <option value={s.nameIndex}></option>
         {/each}
     </datalist>
     <form onsubmit={onSubmit}>
@@ -188,14 +216,16 @@
             <input name="originalTitle" type="text" bind:value={originalTitle} />
         </div>
         <div class="input-field">
-            <label for="contentType">種別</label>
-            <select name="contentType" bind:value={contentType}>
-                <option value="小説">小説</option>
-                <option value="エッセイ">エッセイ</option>
-                <option value="評論">評論</option>
-                <option value="対談・座談">対談・座談</option>
+            <label for="printType">出版種別</label>
+            <select name="printType" bind:value={printType}>
+                <option value="書籍">書籍</option>
+                <option value="雑誌">雑誌</option>
             </select>
         </div>
+        <div class="input-field">
+            <label for="seriesName">シリーズ</label>
+            <input name="seriesName" type="text" bind:value={seriesName} list="series" onchange={onChangeSeriesName} />
+        </div>              
         {#each relatedPersonEntries as author, i (author.orderNo)}
         <div class="input-field">
             {#if i == 0}
@@ -221,25 +251,29 @@
         </div>              
         {/each}
         <div class="input-field">
-            <label for="publishYear">発表年</label>
-            <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/>
-        </div>
+            <label for="publisherName">出版社</label>
+            <input name="publisherName" type="text" bind:value={publisherName} list="publishers" required onchange={onChangePublisherName}/>
+        </div>              
+        <div class="input-field">
+            <label for="publicationDate">発行日</label>
+            <input name="publicationDate" type="date" bind:value={publicationDate}  />
+        </div>              
         <div class="input-field">
             <label for="description">解説</label>
             <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>
         </div>      
         <div class="input-field">
-            <label for="url">URL</label>
-            <input name="url" bind:value={url} type="url" />
+            <label for="ndl">NDL Link</label>
+            <input name="ndl" type="url" bind:value={ndl}  />
         </div>      
         <div class="input-field">
-            <label for="seqNo">連番</label>
-            <input name="seqNo" type="number" bind:value={seqNo} max="99999999" />
+            <label for="ownedType">所有種別</label>
+            <select name="ownedType" bind:value={ownedType}>
+                <option value="">&nbsp;</option>
+                <option value="所有">所有</option>
+                <option value="PDF">PDF</option>
+            </select>
         </div>
-        <div class="input-field">
-            <label for="note">補記</label>
-            <textarea name="note" bind:value={note} rows="5" cols="80" ></textarea>
-        </div>      
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />
         </div>

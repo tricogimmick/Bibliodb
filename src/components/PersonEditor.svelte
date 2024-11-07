@@ -23,7 +23,11 @@
                 'content-type': 'application/json'
             }
         });
-        return await response.json();
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error(`Fetch Error (${response.status})`)
+        }
     }
 
     // 更新
@@ -35,7 +39,11 @@
                 'content-type': 'application/json'
             }
         });
-        return await response.json() as PersonType;
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error(`Fetch Error (${response.status})`)
+        }
     }
 
 

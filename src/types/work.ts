@@ -5,5 +5,7 @@ export type WorkType = {
     contentType: string;
     description: string;
     url: string;
-    note: string
+    note: string;
+    publicationYear: number | null;
+    seqNo: number | null;
 };

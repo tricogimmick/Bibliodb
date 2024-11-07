@@ -8,8 +8,6 @@ CREATE TABLE prints (
     , originalTitle TEXT
     -- 印刷種別(book, magazine...)
     , printType TEXT NOT NULL
-    -- 作品種別(小説,エッセイ...)
-    , contentType TEXT NOT NULL
     -- 出版社(FK - publishers)
     , publisherId INTEGER
     -- 発行日
@@ -18,4 +16,8 @@ CREATE TABLE prints (
     , seriesId INTEGER
     -- 説明
     , description TEXT
+    -- NDL Link
+    , ndl TEXT
+    -- 所有種別
+    , ownedType TEXT
 )

@@ -6,7 +6,7 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
-type AuthorType = {
+type RelatedPersonDetailType = {
     orderNo: number;
     personId: number;
     personName: string;
@@ -21,8 +21,10 @@ type WorkDetailType = {
     contentType: string;
     description: string;
     url: string;
-    note: string
-    authors: AuthorType[]
+    note: string;
+    publicationYear: number | null;
+    seqNo: number | null;
+    relatedPersons: RelatedPersonDetailType[]
 }
 
 // 作品を取得する
@@ -33,11 +35,11 @@ const getWork = (id: number, db: pkg.Database) => {
                 if (err) {
                     ng(err);
                 } else {
-                    db.all<AuthorType>(
+                    db.all<RelatedPersonDetailType>(
                         "SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description " +
-                        "FROM works_persons as r " +
+                        "FROM related_persons as r " +
                         "JOIN persons as p ON p.id = r.personId " +
-                        "WHERE r.workId = ?", [row.id], (err2, rows) => {
+                        "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", [row.id], (err2, rows) => {
                             if (err2) {
                                 ng(err);
                             } else {
@@ -49,7 +51,9 @@ const getWork = (id: number, db: pkg.Database) => {
                                     description: row.description,
                                     url: row.url,
                                     note: row.note,
-                                    authors: rows
+                                    publicationYear: row.publicationYear,
+                                    seqNo: row.seqNo,
+                                    relatedPersons: rows
                                 };
                                 ok(work);
                             }
@@ -69,7 +73,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		};
     } catch (e) {
 		console.log(e);
-		error(500, 'Database Error');
+		error(500, { message: 'Database Error' });
 	} finally {
         db.close();
     }

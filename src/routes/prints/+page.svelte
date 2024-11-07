@@ -4,22 +4,22 @@
     import { goto } from "$app/navigation";
 
     let { data }: { data: PageData } = $props();
-    const allWorks = Array.isArray(data.works) ? data.works : [];
-    let works = $state(allWorks)
+    const allPrints = Array.isArray(data.prints) ? data.prints : [];
+    let prints = $state(allPrints)
     let searchKey = $state("");
 
-    const onClickAppendWork = (e: Event) => goto("/works/append");
+    const onClickAppendPrint = (e: Event) => goto("/prints/append");
 
     const onInput = (e: Event) => {
         if (searchKey == "") {
-            works = allWorks;
+            prints = allPrints;
         } else {
-            works = allWorks.filter(x => x.title.includes(searchKey));
+            prints = allPrints.filter(x => x.title.includes(searchKey));
         }
     }
 </script>
 
-<h2>Works</h2>
+<h2>Prints</h2>
 <div class="condition-container">
     <div class="input-field">
         <label for="search-key">題名 : </label>
@@ -27,12 +27,12 @@
     </div>
 </div>
 <div class="series-container">
-    {#each works as w (w.id)}
-        <span><a href="/works/{w.id}">{w.title}（{w.relatedPersons.map(x => x.name).join(",")}）</a></span>
+    {#each prints as p (p.id)}
+        <span><a href="/prints/{p.id}">{p.title}（{p.relatedPersons.map(x => x.name).join(",")}）</a></span>
     {/each}
 </div>
 <div class="button-container">
-    <button onclick={onClickAppendWork}>追　加</button>
+    <button onclick={onClickAppendPrint}>追　加</button>
 </div>
 <div class="footer">
     <a href="/">Back to Root</a>

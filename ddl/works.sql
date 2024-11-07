@@ -14,4 +14,8 @@ CREATE TABLE works (
     , url TEXT
     -- 付記
     , note TEXT
+    -- 発表年
+    , publishYear INTEGER
+    -- 連番
+    , seqNo INTEGER
 )

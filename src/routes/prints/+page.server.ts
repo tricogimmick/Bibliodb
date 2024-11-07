@@ -11,7 +11,7 @@ type QueryResultType = {
 	relatedPersonName: string;
 }
 
-type WorkListType = {
+type PrintListType = {
 	id: number | null;
     title: string;
 	relatedPersons: {
@@ -19,34 +19,34 @@ type WorkListType = {
 	}[]
 };
 
-const getWorks = () => {
+const getPrints = () => {
 	const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
-	return new Promise<WorkListType[]|Error>((ok, ng) => {
+	return new Promise<PrintListType[]|Error>((ok, ng) => {
 		let err = null;
 		db.serialize(() => {
 			db.all<QueryResultType>(
-				"SELECT w.id, w.title, p.name as relatedPersonName FROM works as w " +
-			    "LEFT JOIN related_persons as r ON r.relatedType = 'WORK' AND r.relatedId = w.id " + 
-			    "LEFT JOIN persons as p ON p.id = r.personId ORDER BY w.id, r.orderNo",
+				"SELECT p.id, p.title, a.name as relatedPersonName FROM prints as p " +
+			    "LEFT JOIN related_persons as r ON r.relatedType = 'PRINT' AND r.relatedId = p.id " + 
+			    "LEFT JOIN persons as a ON a.id = r.personId ORDER BY p.id, r.orderNo",
 				(err, rows) => {
 					if (err) {
 						ng()
 					} else {
-						const works: WorkListType[] = [];
+						const prints: PrintListType[] = [];
 						rows.forEach(r => {
-							const work = works.find(x => x.id === r.id);
-							if (work) {
-								work.relatedPersons.push({ name: r.relatedPersonName });
+							const print = prints.find(x => x.id === r.id);
+							if (print) {
+								print.relatedPersons.push({ name: r.relatedPersonName });
 							} else {
-								works.push({
+								prints.push({
 									id: r.id,
 									title: r.title,
 									relatedPersons: [ { name: r.relatedPersonName }]
 								})
 							}
 						})
-						ok(works);
+						ok(prints);
 					}
 				});
 		});
@@ -56,7 +56,7 @@ const getWorks = () => {
 export const load: PageServerLoad = async ({ params }) => {
 	try {
 		return {
-			works: await getWorks()
+			prints: await getPrints()
 		};
 	} catch (e) {
 		console.log(e);

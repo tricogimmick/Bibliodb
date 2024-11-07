@@ -2,11 +2,11 @@
     import type { PageData } from './$types';
     import type { PersonType } from '../../../types/person';
     import type { WorkType } from '../../../types/work';
+    import type { RelatedPeronsType } from '../../../types/relatedPersons';
     import type { ResultType } from '../../../types/result';
 
     import { goto } from "$app/navigation";
     import WorkEditor from '../../../components/WorkEditor.svelte';
-	import type { WorksPeronsType } from '../../../types/worksPersons';
 
     let { data }: { data: PageData } = $props();
 
@@ -17,11 +17,14 @@
         contentType: "小説",
         description: "",
         url: "",
-        note: ""
+        note: "",
+        publicationYear: null,
+        seqNo: null
     };
-    const worksPersons: WorksPeronsType[] = [
+    const relatedPersons: RelatedPeronsType[] = [
         {
-            workId: null,
+            relatedType: "WORK",
+            relatedId: null,
             orderNo: 1,
             personId: null,
             role: "作者",
@@ -31,6 +34,8 @@
     const persons = data.persons as PersonType[];
 
     const onSubmit = (result: ResultType<WorkType>) => {
+        console.log("onSubmit");
+        console.log(result);
         if (result.ok) {
             goto("/works");
         } else {
@@ -40,7 +45,7 @@
 </script>
 
 <h2>Work - Append</h2>
-<WorkEditor {work} {persons} {worksPersons} callback={onSubmit}></WorkEditor>
+<WorkEditor {work} {persons} {relatedPersons} callback={onSubmit}></WorkEditor>
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>
