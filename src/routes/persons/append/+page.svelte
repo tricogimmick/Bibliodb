@@ -7,7 +7,7 @@
 
     let person: PersonType = {
         id: null,
-        nameIndex: "",
+        index: "",
         name: "",
         kana: "",
         born: "",
@@ -26,7 +26,7 @@
 </script>
 
 <h2>Person - Append</h2>
-<PersonEditor {...person} callback={onSubmit}></PersonEditor>
+<PersonEditor {person} callback={onSubmit}></PersonEditor>
 <div class="footer">
     <a href="/persons">Back to Persons</a>
 </div>

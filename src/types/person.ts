@@ -1,6 +1,6 @@
 export type PersonType = {
     id: number|null;
-    nameIndex: string;
+    index: string;
     name: string;
     kana: string;
     born: string;

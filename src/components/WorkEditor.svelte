@@ -36,16 +36,15 @@
         orderNo: x.orderNo as number,
         role: x.role,
         personId: x.personId,
-        personName: persons.find(p => p.id == x.personId)?.nameIndex ?? "",
+        personName: persons.find(p => p.id == x.personId)?.index ?? "",
         description: x.description
     }));
     let relatedPersonEntries = $state(_relatedPersons);
 
-     // 登録
-     const appendWork = async (postData: PostDataType) => {
-        console.log(postData);
+     // 更新用APIの呼出
+     const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
         const response = await fetch('/api/works', {
-            method: 'POST',
+            method: method,
             body: JSON.stringify(postData),
             headers: {
                 'content-type': 'application/json'
@@ -57,24 +56,6 @@
             throw new Error(`Fetch Error:(${response.status})`)
         }
     }
-
-    // 更新
-    const updateWork = async (putData: PostDataType) => {
-        console.log(putData);
-        const response = await fetch('/api/works', {
-            method: 'PUT',
-            body: JSON.stringify(putData),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json() as WorkType;
-        } else {
-            throw new Error(`Fetch Error:(${response.status})`)
-        }
-    }
-
     // FOMRがサブミットされた
     const onSubmit = async (e: Event)  => {
         console.log("onSubmit()");
@@ -94,26 +75,21 @@
                 seqNo,
                 relatedPersons: relatedPersonEntries.map(a => ({
                     orderNo: a.orderNo,
-                    personId: persons.find(p => p.nameIndex === a.personName)?.id ?? 0,
+                    personId: persons.find(p => p.index === a.personName)?.id ?? 0,
                     role: a.role,
                     description: a.description
                 }))
             };
-            const result : WorkType = work.id != null ? await updateWork(postData) : await appendWork(postData);
+            const result = await callApi(postData, work.id != null ? "PUT" : "POST");
             console.log(result);
-            callback?.({
-                ok: true,
-                data: result
-            });
+            callback?.({ ok: true, data: result });
         } catch (e: any) {
-            callback?.({
-                ok: false,
-                data: e
-            });
+            callback?.({ ok: false, data: e });
         }
     };
 
-    const onClickAuthorAdd = (e: Event) => {
+    // 関係者追加ボタンがクリックされた
+    const onClickRelatedPersonAdd = (e: Event) => {
         e.stopImmediatePropagation();
         e.preventDefault();
         const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
@@ -145,7 +121,8 @@
         }
     };
 
-    const onClickAuthorDelete = (e: Event) => {
+    // 関係者削除ボタンがクリックされた
+    const onClickRelatedPersonDelete = (e: Event) => {
         e.stopImmediatePropagation();
         e.preventDefault();
         const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
@@ -160,10 +137,9 @@
     }
 
     // 著作者名が変更された
-    const onChangePersonName = (e: Event) => {
-        console.log(e.target);    
+    const onChangeRelatedPersonName = (e: Event) => {
         const field = e.target as HTMLInputElement;
-        if (persons.find(x => x.nameIndex === field.value) == null) {
+        if (persons.find(x => x.index === field.value) == null) {
             field.setCustomValidity("著作者が存在しません")
         } else {
             field.setCustomValidity("")
@@ -175,7 +151,7 @@
 <div>
     <datalist id="persons">
         {#each persons as p (p.id)}
-        <option value={p.nameIndex}></option>
+        <option value={p.index}></option>
         {/each}
     </datalist>
     <form onsubmit={onSubmit}>
@@ -214,9 +190,9 @@
                     <option value="原作者">原作者</option>
                     <option value="作画">作画</option>
                 </select>
-                <input name="authorName" type="text" bind:value={author.personName} required list="persons" onchange={onChangePersonName} />
-                <button onclick={onClickAuthorAdd}>追加</button>               
-                <button onclick={onClickAuthorDelete}>削除</button>               
+                <input name="authorName" type="text" bind:value={author.personName} required list="persons" onchange={onChangeRelatedPersonName} />
+                <button onclick={onClickRelatedPersonAdd}>追加</button>               
+                <button onclick={onClickRelatedPersonDelete}>削除</button>               
             </div>
         </div>              
         {/each}

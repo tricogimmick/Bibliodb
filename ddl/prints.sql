@@ -10,6 +10,8 @@ CREATE TABLE prints (
     , printType TEXT NOT NULL
     -- 出版社(FK - publishers)
     , publisherId INTEGER
+    -- ブランド
+    , brandId INTEGER
     -- 発行日
     , publicationDate TEXT
     -- シリーズ

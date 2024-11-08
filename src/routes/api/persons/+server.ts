@@ -8,15 +8,15 @@ import type { PersonType  } from '../../../types/person';
 const {Database} = pkg;
 
 const appendPerson = (db: pkg.Database, person: PersonType) => new Promise<PersonType|Error>((ok, ng) => {
-    db.run("INSERT INTO persons (nameIndex, name, kana, born, died, description) VALUES (?, ?, ?, ?, ?, ?)",
-        [ person.nameIndex, person.name, person.kana, person.born, person.died, person.description ],
+    db.run("INSERT INTO persons ([index], name, kana, born, died, description) VALUES (?, ?, ?, ?, ?, ?)",
+        [ person.index, person.name, person.kana, person.born, person.died, person.description ],
         function(error) {
             if (error) {
                 ng(error);
             } else {
                 ok({
                     id: this.lastID,
-                    nameIndex: person.nameIndex,
+                    index: person.index,
                     name: person.name,
                     kana: person.kana,
                     born: person.born,
@@ -29,8 +29,8 @@ const appendPerson = (db: pkg.Database, person: PersonType) => new Promise<Perso
 });
 
 const updatePerson = (db: pkg.Database, person: PersonType) => new Promise<PersonType|Error>((ok, ng) => {
-    db.run("UPDATE persons SET nameIndex = ?, name = ?, kana = ?, born = ?, died = ?, description = ? WHERE id = ?",
-        [ person.nameIndex, person.name, person.kana, person.born, person.died, person.description, person.id ],
+    db.run("UPDATE persons SET [index] = ?, name = ?, kana = ?, born = ?, died = ?, description = ? WHERE id = ?",
+        [ person.index, person.name, person.kana, person.born, person.died, person.description, person.id ],
         function(error) {
             if (error) {
                 ng(error);
@@ -43,7 +43,6 @@ const updatePerson = (db: pkg.Database, person: PersonType) => new Promise<Perso
 
 export const POST: RequestHandler = async ({ request }) => {
 	const person : PersonType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
@@ -58,7 +57,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const person : PersonType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {

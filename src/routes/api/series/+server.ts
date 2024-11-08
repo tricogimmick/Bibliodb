@@ -7,15 +7,15 @@ import pkg from 'sqlite3';
 const {Database} = pkg;
 
 const appendSeries = (db: pkg.Database, series: SeriesType) => new Promise<SeriesType|Error>((ok, ng) => {
-    db.run("INSERT INTO series (nameIndex, title, originalTitle, seriesType, publisherId, description) VALUES (?, ?, ?, ?, ?, ?)",
-        [ series.nameIndex, series.title, series.originalTitle, series.seriesType, series.publisherId, series.description ],
+    db.run("INSERT INTO series ([index], title, originalTitle, seriesType, publisherId, description) VALUES (?, ?, ?, ?, ?, ?)",
+        [ series.index, series.title, series.originalTitle, series.seriesType, series.publisherId, series.description ],
         function(error) {
             if (error) {
                 ng(error);
             } else {
                 ok({
                     id: this.lastID,
-                    nameIndex: series.nameIndex,
+                    index: series.index,
                     title: series.title,
                     originalTitle: series.originalTitle,
                     seriesType: series.seriesType,
@@ -28,8 +28,8 @@ const appendSeries = (db: pkg.Database, series: SeriesType) => new Promise<Serie
 });
 
 const updateSeries = (db: pkg.Database, series: SeriesType) => new Promise<SeriesType|Error>((ok, ng) => {
-    db.run("UPDATE series SET nameIndex = ?, title = ?, originalTitle = ?, seriesType = ?, publisherId = ?, description = ? WHERE id = ?",
-        [ series.nameIndex, series.title, series.originalTitle, series.seriesType, series.publisherId, series.description, series.id ],
+    db.run("UPDATE series SET [index] = ?, title = ?, originalTitle = ?, seriesType = ?, publisherId = ?, description = ? WHERE id = ?",
+        [ series.index, series.title, series.originalTitle, series.seriesType, series.publisherId, series.description, series.id ],
         function(error) {
             if (error) {
                 ng(error);
@@ -42,7 +42,6 @@ const updateSeries = (db: pkg.Database, series: SeriesType) => new Promise<Serie
 
 export const POST: RequestHandler = async ({ request }) => {
 	const series : SeriesType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
@@ -57,7 +56,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const series : SeriesType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {

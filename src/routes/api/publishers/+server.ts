@@ -1,10 +1,9 @@
-import { json } from '@sveltejs/kit';
-import pkg from 'sqlite3';
-import { env } from '$env/dynamic/private';
-
 import type { RequestHandler } from './$types';
 import type { PublisherType } from '../../../types/publisher';
 
+import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+import pkg from 'sqlite3';
 const {Database} = pkg;
 
 const appendPublisher = (db: pkg.Database, publisher: PublisherType) => new Promise<PublisherType|Error>((ok, ng) => {
@@ -39,7 +38,6 @@ const updatePublisher = (db: pkg.Database, publisher: PublisherType) => new Prom
 
 export const POST: RequestHandler = async ({ request }) => {
 	const person : PublisherType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
@@ -54,7 +52,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const person : PublisherType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {

@@ -18,9 +18,8 @@
     }
 </script>
 
-
 <h2>Person - Edit</h2>
-<PublisherEditor {...publisher} callback={onSubmit}></PublisherEditor>
+<PublisherEditor {publisher} callback={onSubmit}></PublisherEditor>
 <div class="footer">
     <a href="/publishers">Back to Publishers</a>
 </div>

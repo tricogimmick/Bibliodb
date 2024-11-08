@@ -2,40 +2,27 @@
     import type { PublisherType } from '../types/publisher';
     import type { ResultType } from '../types/result';
  
-    type PropsType = PublisherType & {
-        callback: (result: ResultType<PublisherType>) => void | null
+    type PropsType = {
+        publisher: PublisherType;
+        callback: (result: ResultType<PublisherType>) => void | null;
     }
 
-    let { id, name, description, callback }: PropsType = $props();
-    let buttonCaption = $derived(id == null || id == 0 ? "登　録" : "更　新");
+    let {  publisher, callback }: PropsType = $props();
+    let name = $state(publisher.name);
+    let description = $state(publisher.description);
+    let buttonCaption = $derived(publisher.id == null || publisher.id == 0 ? "登　録" : "更　新");
  
-    // 登録
-    const appendPublisher = async (publisher: PublisherType) => {
+    // 更新用APIの呼出
+    const callApi = async (publisher: PublisherType, method: "POST" | "PUT") => {
         const response = await fetch('/api/publishers', {
-            method: 'POST',
+            method: method,
             body: JSON.stringify(publisher),
             headers: {
                 'content-type': 'application/json'
             }
         });
         if (response.ok) {
-            return await response.json();
-        } else {
-            throw new Error(`Fetch Error (${response.status})`)
-        }
-    }
-
-    // 更新
-    const updatePublisher = async (publisher: PublisherType) => {
-        const response = await fetch('/api/publishers', {
-            method: 'PUT',
-            body: JSON.stringify(publisher),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json();
+            return await response.json() as PublisherType;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
@@ -46,19 +33,11 @@
         console.log("onSubmit()");
         e.stopImmediatePropagation();
         e.preventDefault();
-
         try {
-            const publisher: PublisherType = { id, name, description };
-            const result : PublisherType = id != null ? await updatePublisher(publisher) : await appendPublisher(publisher);
-            callback?.({
-                ok: true,
-                data: result
-            });
+            const result = await callApi({ id: publisher.id, name, description }, publisher.id != null ? "PUT" : "POST");
+            callback?.({ ok: true, data: result });
         } catch (e: any) {
-            callback?.({
-                ok: false,
-                data: null
-            });
+            callback?.({ ok: false, data: null });
         }
     }
 </script>

@@ -12,6 +12,7 @@ export type PostDataType = {
     originalTitle: string;
     printType: string;
     publisherId: number | null;
+    brandId: number | null;
     publicationDate: string;
     seriesId: number | null;
     description: string;   
@@ -25,12 +26,11 @@ export type PostDataType = {
     }[]
 };
 
-
 const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<PrintType|Error>((ok, ng) => {
     db.serialize(() => {
-        db.run("INSERT INTO prints (title , originalTitle, printType, publisherId , publicationDate, seriesId, description, ndl , ownedType) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [ postData.title , postData.originalTitle, postData.printType, postData.publisherId , postData.publicationDate, 
+        db.run("INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, seriesId, description, ndl , ownedType) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [ postData.title , postData.originalTitle, postData.printType, postData.publisherId, postData.brandId, postData.publicationDate, 
               postData.seriesId, postData.description, postData.ndl , postData.ownedType ],
             function(error) {
                 if (error) {
@@ -55,6 +55,7 @@ const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<Pr
                             originalTitle: postData.originalTitle,
                             printType: postData.printType,
                             publisherId: postData.publisherId,
+                            brandId: postData.brandId,
                             publicationDate: postData.publicationDate,
                             seriesId: postData.seriesId,
                             description: postData.description,
@@ -70,9 +71,9 @@ const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<Pr
 
 const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<PrintType|Error>((ok, ng) => {
     db.serialize(() => {
-        db.run("UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, publicationDate = ?, " +
+        db.run("UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, " +
                "seriesId = ?, description = ?, ndl = ?, ownedType = ? WHERE id = ?",
-            [ putData.title , putData.originalTitle, putData.printType, putData.publisherId , putData.publicationDate, 
+            [ putData.title , putData.originalTitle, putData.printType, putData.publisherId, putData.brandId, putData.publicationDate, 
                 putData.seriesId, putData.description, putData.ndl , putData.ownedType, putData.id ],
             function(error) {
                 if (error) {
@@ -100,6 +101,7 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
                                     originalTitle: putData.originalTitle,
                                     printType: putData.printType,
                                     publisherId: putData.publisherId,
+                                    brandId: putData.brandId,
                                     publicationDate: putData.publicationDate,
                                     seriesId: putData.seriesId,
                                     description: putData.description,
@@ -128,7 +130,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const putData : PostDataType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {

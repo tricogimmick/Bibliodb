@@ -4,6 +4,7 @@ export type PrintType = {
     originalTitle: string;
     printType: string;
     publisherId: number | null;
+    brandId: number | null;
     publicationDate: string;
     seriesId: number | null;
     description: string;   

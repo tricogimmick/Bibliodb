@@ -2,69 +2,51 @@
     import type { PersonType } from '../types/person';
     import type { ResultType } from '../types/result';
  
-    type PropsType = PersonType & {
+    type PropsType = {
+        person: PersonType;
         callback: (result: ResultType<PersonType>) => void | null;
     }
 
-    let { id, nameIndex, name, kana, born, died, description, callback }: PropsType = $props();
-    let buttonCaption = $derived(id == null || id == 0 ? "登　録" : "更　新");
+    let { person, callback }: PropsType = $props();
+    let index = $state(person.index);
+    let name = $state(person.name);
+    let kana = $state(person.kana);
+    let born = $state(person.born);
+    let died = $state(person.died);
+    let description = $state(person.description);
+    let buttonCaption = $derived(person.id == null || person.id == 0 ? "登　録" : "更　新");
  
     // INDEXが変更された
-    const onChangeNameIndex = (e: Event) => {
-        name = nameIndex;
+    const onChangeIndex = (e: Event) => {
+        name = index;
     }
 
-    // 登録
-    const appendPerson = async (person: PersonType) => {
+    // 更新用APIの呼出
+    const callApi = async (person: PersonType, method: "POST" | "PUT") => {
         const response = await fetch('/api/persons', {
-            method: 'POST',
+            method: method,
             body: JSON.stringify(person),
             headers: {
                 'content-type': 'application/json'
             }
         });
         if (response.ok) {
-            return await response.json();
+            return await response.json() as PersonType;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
     }
-
-    // 更新
-    const updatePerson = async (person: PersonType) => {
-        const response = await fetch('/api/persons', {
-            method: 'PUT',
-            body: JSON.stringify(person),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json();
-        } else {
-            throw new Error(`Fetch Error (${response.status})`)
-        }
-    }
-
 
     // FOMRがサブミットされた
     const onSubmit = async (e: Event)  => {
         console.log("onSubmit()");
         e.stopImmediatePropagation();
         e.preventDefault();
-
         try {
-            const person: PersonType = { id, nameIndex, name, kana, born, died, description };
-            const result : PersonType = id != null ? await updatePerson(person) : await appendPerson(person);
-            callback?.({
-                ok: true,
-                data: result
-            });
+            const result = await callApi({ id: person.id, index, name, kana, born, died, description }, person.id != null ? "PUT" : "POST");
+            callback?.({ ok: true, data: result });
         } catch (e: any) {
-            callback?.({
-                ok: false,
-                data: null
-            });
+            callback?.({ ok: false, data: null });
         }
     }
 </script>
@@ -72,8 +54,8 @@
 <div>
     <form onsubmit={onSubmit}>
         <div class="input-field">
-            <label for="nameIndex">INDEX</label>
-            <input name="nameIndex" type="text" bind:value={nameIndex} onchange={onChangeNameIndex} required />
+            <label for="index">INDEX</label>
+            <input name="index" type="text" bind:value={index} onchange={onChangeIndex} required />
         </div>
         <div class="input-field">
             <label for="name">氏名</label>

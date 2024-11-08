@@ -11,7 +11,7 @@
 
     const series: SeriesType = {
         id: null,
-        nameIndex: "",
+        index: "",
         title: "",
         originalTitle: "",
         seriesType: "叢書",

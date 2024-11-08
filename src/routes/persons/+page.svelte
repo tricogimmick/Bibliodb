@@ -1,9 +1,6 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-
     import type { PageData } from './$types';
-    import type { PersonType  } from '../../types/person';
-
+    import { goto } from "$app/navigation";
 
     let { data }: { data: PageData } = $props();
     const allPersons = Array.isArray(data.persons) ? data.persons : [];
@@ -16,7 +13,7 @@
         if (searchKey == "") {
             persons = allPersons;
         } else {
-            persons = allPersons.filter(x => x.kana.includes(searchKey) || x.nameIndex.includes(searchKey));
+            persons = allPersons.filter(x => x.kana.includes(searchKey) || x.index.includes(searchKey));
         }
     }
 </script>
@@ -30,7 +27,7 @@
 </div>
 <div class="persons-container">
     {#each persons as person (person.id)}
-        <span><a href="/persons/{person.id}">{person.nameIndex}</a></span>
+        <span><a href="/persons/{person.id}">{person.index}</a></span>
     {/each}
 </div>
 <div class="button-container">

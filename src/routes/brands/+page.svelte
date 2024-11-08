@@ -1,9 +1,6 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-
     import type { PageData } from './$types';
-    import type { BrandType } from "../../types/brand";
-
+    import { goto } from "$app/navigation";
 
     let { data }: { data: PageData } = $props();
     const allBrands = Array.isArray(data.brands) ? data.brands : [];

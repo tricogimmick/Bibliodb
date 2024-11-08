@@ -13,7 +13,7 @@
     $inspect(publishers);
 
     let title = $state(series.title);
-    let nameIndex = $state(series.nameIndex);
+    let index = $state(series.index);
     let originalTitle = $state(series.originalTitle);
     let seriesType = $state(series.seriesType);
     let publisherName = $state(publishers?.find(x => x.id === series.publisherId)?.name ?? "");
@@ -21,8 +21,8 @@
     let buttonCaption = $derived(series.id == null || series.id == 0 ? "登　録" : "更　新")
 
     // INDEXが変更された
-    const onChangeNameIndex = (e: Event) => {
-        title = nameIndex;
+    const onChangeIndex = (e: Event) => {
+        title = index;
     }
 
     // 出版社が変更された
@@ -36,33 +36,17 @@
         }
     }
 
-     // 登録
-     const appendSeries = async (postData: SeriesType) => {
+     // 更新用APIの呼出
+     const callApi = async (postData: SeriesType, method: "POST" | "PUT") => {
         const response = await fetch('/api/series', {
-            method: 'POST',
+            method: method,
             body: JSON.stringify(postData),
             headers: {
                 'content-type': 'application/json'
             }
         });
         if (response.ok) {
-            return await response.json();
-        } else {
-            throw new Error(`Fetch Error (${response.status})`)
-        }
-    }
-
-    // 更新
-    const updateSeries = async (putData: SeriesType) => {
-        const response = await fetch('/api/series', {
-            method: 'PUT',
-            body: JSON.stringify(putData),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json();
+            return await response.json() as SeriesType;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
@@ -73,32 +57,22 @@
         console.log("onSubmit()");
         e.stopImmediatePropagation();
         e.preventDefault();
-
-        const publisherId = publishers.find(x => x.name === publisherName)?.id ?? null;
-
         try {
             const postData: SeriesType = {
                 id: series.id,
-                nameIndex,
+                index: index,
                 title,
                 originalTitle,
                 seriesType,
-                publisherId,
+                publisherId: publishers.find(x => x.name === publisherName)?.id ?? null,
                 description 
             };
-            const result : SeriesType = series.id != null ? await updateSeries(postData) : await appendSeries(postData);
-            callback?.({
-                ok: true,
-                data: result
-            });
+            const result = await callApi(postData, series.id != null ? "PUT" : "POST");
+            callback?.({ ok: true, data: result });
         } catch (e: any) {
-            callback?.({
-                ok: false,
-                data: null
-            });
+            callback?.({ ok: false, data: null });
         }
     }
-   
 </script>
 
 <div>
@@ -109,8 +83,8 @@
     </datalist>
     <form onsubmit={onSubmit}>
         <div class="input-field">
-            <label for="nameIndex">INDEX</label>
-            <input name="nameIndex" type="text" bind:value={nameIndex} onchange={onChangeNameIndex} required />
+            <label for="index">INDEX</label>
+            <input name="index" type="text" bind:value={index} onchange={onChangeIndex} required />
         </div>
         <div class="input-field">
             <label for="title">題名</label>

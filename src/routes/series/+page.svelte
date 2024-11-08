@@ -28,7 +28,7 @@
 </div>
 <div class="series-container">
     {#each series as s (s.id)}
-        <span><a href="/series/{s.id}">{s.nameIndex}</a></span>
+        <span><a href="/series/{s.id}">{s.index}</a></span>
     {/each}
 </div>
 <div class="button-container">

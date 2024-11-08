@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { WorkType } from '../../../../types/work';
-    import type { RelatedPeronsType } from '../../../../types/relatedPersons';
     import type { ResultType } from '../../../../types/result';
 
     import { goto } from "$app/navigation";

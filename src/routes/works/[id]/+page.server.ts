@@ -28,48 +28,46 @@ type WorkDetailType = {
 }
 
 // 作品を取得する
-const getWork = (id: number, db: pkg.Database) => {
-	return new Promise<WorkDetailType|Error>((ok, ng) => {
-        db.serialize(() => {
-            db.get<WorkType>("SELECT * FROM works WHERE id = ?", [id], (err, row) => {
-                if (err) {
-                    ng(err);
-                } else {
-                    db.all<RelatedPersonDetailType>(
-                        "SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description " +
-                        "FROM related_persons as r " +
-                        "JOIN persons as p ON p.id = r.personId " +
-                        "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", [row.id], (err2, rows) => {
-                            if (err2) {
-                                ng(err);
-                            } else {
-                                const work: WorkDetailType = {
-                                    id: row.id,
-                                    title: row.title,
-                                    originalTitle: row.originalTitle,
-                                    contentType: row.contentType,
-                                    description: row.description,
-                                    url: row.url,
-                                    note: row.note,
-                                    publicationYear: row.publicationYear,
-                                    seqNo: row.seqNo,
-                                    relatedPersons: rows
-                                };
-                                ok(work);
-                            }
-                        });
-                }
-            });    
-        })
-	})
-};
+const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Error>((ok, ng) => {
+    db.serialize(() => {
+        db.get<WorkType>("SELECT * FROM works WHERE id = ?", [id], (err, row) => {
+            if (err) {
+                ng(err);
+            } else {
+                db.all<RelatedPersonDetailType>(
+                    "SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description " +
+                    "FROM related_persons as r " +
+                    "JOIN persons as p ON p.id = r.personId " +
+                    "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", [row.id], (err2, rows) => {
+                        if (err2) {
+                            ng(err);
+                        } else {
+                            const work: WorkDetailType = {
+                                id: row.id,
+                                title: row.title,
+                                originalTitle: row.originalTitle,
+                                contentType: row.contentType,
+                                description: row.description,
+                                url: row.url,
+                                note: row.note,
+                                publicationYear: row.publicationYear,
+                                seqNo: row.seqNo,
+                                relatedPersons: rows
+                            };
+                            ok(work);
+                        }
+                    });
+            }
+        });    
+    })
+});
 
 export const load: PageServerLoad = async ({ params }) => {
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);    
     try {
 		return {
-			work: await getWork(Number(params.id), db) as WorkDetailType
+			work: await getWork(db, Number(params.id)) as WorkDetailType
 		};
     } catch (e) {
 		console.log(e);

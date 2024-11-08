@@ -22,7 +22,7 @@
 </script>
 
 <h2>Brands - Append</h2>
-<BrandEditor {...brand} callback={onSubmit}></BrandEditor>
+<BrandEditor {brand} callback={onSubmit}></BrandEditor>
 <div class="footer">
     <a href="/brands">Back to Brands</a>
 </div>

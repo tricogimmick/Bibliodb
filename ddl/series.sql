@@ -2,8 +2,8 @@
 CREATE TABLE series (
     -- ID (PK)
     id INTEGER PRIMARY KEY
-    -- インデックス名
-    , nameIndex TEXT NOT NULL
+    -- インデックス
+    , index TEXT NOT NULL
     -- 題名
     , title TEXT NOT NULL
     -- 原題
@@ -15,4 +15,4 @@ CREATE TABLE series (
     -- 説明
     , description TEXT
 );
-CREATE UNIQUE INDEX series_nameIndex ON series(nameIndex);
+CREATE UNIQUE INDEX series_index ON series(index);

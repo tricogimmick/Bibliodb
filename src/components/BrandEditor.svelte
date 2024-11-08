@@ -2,45 +2,31 @@
     import type { BrandType } from '../types/brand';
     import type { ResultType } from '../types/result';
  
-    type PropsType = BrandType & {
+    type PropsType =  {
+        brand: BrandType;
         callback: (result: ResultType<BrandType>) => void | null;
     }
 
-    let { id, name, description, callback }: PropsType = $props();
-    let buttonCaption = $derived(id == null || id == 0 ? "登　録" : "更　新");
+    let { brand, callback }: PropsType = $props();
+    let name = $state(brand.name);
+    let description = $state(brand.description);
+    let buttonCaption = $derived(brand.id == null || brand.id == 0 ? "登　録" : "更　新");
  
-    // 登録
-    const appendBrand = async (brand: BrandType) => {
+    // 登録・更新APIの呼出
+    const callApi = async (brand: BrandType, method: string) => {
         const response = await fetch('/api/brands', {
-            method: 'POST',
+            method: method,
             body: JSON.stringify(brand),
             headers: {
                 'content-type': 'application/json'
             }
         });
         if (response.ok) {
-            return await response.json();
+            return await response.json() as BrandType;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
     }
-
-    // 更新
-    const updateBrand = async (brand: BrandType) => {
-        const response = await fetch('/api/brands', {
-            method: 'PUT',
-            body: JSON.stringify(brand),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json();
-        } else {
-            throw new Error(`Fetch Error (${response.status})`)
-        }
-    }
-
 
     // FOMRがサブミットされた
     const onSubmit = async (e: Event)  => {
@@ -49,17 +35,10 @@
         e.preventDefault();
 
         try {
-            const brand: BrandType = { id, name, description };
-            const result : BrandType = id != null ? await updateBrand(brand) : await appendBrand(brand);
-            callback?.({
-                ok: true,
-                data: result
-            });
+            const result = await callApi({ id: brand.id, name, description }, brand.id != null ? "PUT" : "POST");
+            callback?.({ ok: true,data: result });
         } catch (e: any) {
-            callback?.({
-                ok: false,
-                data: null
-            });
+            callback?.({ ok: false, data: null });
         }
     }
 </script>

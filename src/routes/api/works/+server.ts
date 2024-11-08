@@ -24,7 +24,7 @@ export type PostDataType = {
     }[]
 };
 
-
+// 作品の追加
 const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<WorkType|Error>((ok, ng) => {
     db.run("INSERT INTO works (title, originalTitle, contentType, description, url, note, publicationYear, seqNo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         [ postData.title, postData.originalTitle, postData.contentType, postData.description, postData.url, postData.note, postData.publicationYear, postData.seqNo ],
@@ -64,6 +64,7 @@ const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<Wor
     );
 });
 
+// 作品の更新
 const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<WorkType|Error>((ok, ng) => {
     db.serialize(() => {
         db.run("UPDATE works SET title = ?, originalTitle = ?, contentType = ?, description = ?, url = ?, note = ?, publicationYear = ?, seqNo = ? WHERE id = ?",
@@ -121,7 +122,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const putData : PostDataType = await request.json();
-
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {

@@ -29,19 +29,23 @@
         <label for="printType">出版種別</label>
         <span class="data-value">{printData.printType}</span>
     </div>
-    {#each printData.authors as author, i (author.orderNo)}
+    {#each printData.relatedPersons as relatedPerson, i (relatedPerson.orderNo)}
     <div class="input-field">
         {#if i == 0}
         <label for="">著作者</label>
         {:else}
         <label for="">&nbsp</label>
         {/if}
-        <span class="data-value">{author.personName} {author.role.replace("者", "")}</span>
+        <span class="data-value">{relatedPerson.personName} {relatedPerson.role.replace("者", "")}</span>
     </div>              
     {/each}
     <div class="input-field">
         <label for="publisherName">出版社</label>
         <span class="data-value">{printData.publisherName}</span>
+    </div>      
+    <div class="input-field">
+        <label for="brandName">ブランド</label>
+        <span class="data-value">{printData.brandName}</span>
     </div>      
     <div class="input-field">
         <label for="publicationDate">発行日</label>

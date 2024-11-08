@@ -7,11 +7,7 @@
     import { goto } from "$app/navigation";
     import PrintEditor from '../../../components/PrintEditor.svelte';
 
-
     const { data }: { data: PageData } = $props();
-    const persons = data.persons;
-    const publishers = data.publishers;
-    const series = data.series;
 
     let print: PrintType = {
         id: null,
@@ -19,6 +15,7 @@
         originalTitle: "",
         printType: "書籍",
         publisherId: null,
+        brandId: null,
         publicationDate: "",
         seriesId: null,
         description: "",   
@@ -36,6 +33,7 @@
             description: ""
         }
     ]
+    
     const onSubmit = (result: ResultType<PrintType>) => {
         if (result.ok) {
             goto("/prints");
@@ -47,7 +45,7 @@
 </script>
 
 <h2>Print - Append</h2>
-<PrintEditor {print} {relatedPersons} {persons} {publishers} {series} callback={onSubmit}></PrintEditor>
+<PrintEditor {print} {relatedPersons} {...data} callback={onSubmit}></PrintEditor>
 <div class="footer">
     <a href="/prints">Back to Print</a>
 </div>

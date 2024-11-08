@@ -7,10 +7,9 @@
     import { goto } from "$app/navigation";
     import SeriesEditor from '../../../components/SeriesEditor.svelte';
 
-
     const { data }: { data: PageData } = $props();
-    const series : SeriesType = data.series as SeriesType;
-    const publishers: PublisherType[] = data.publishers as PublisherType[];
+    const series= data.series as SeriesType;
+    const publishers = data.publishers as PublisherType[];
 
     const onSubmit = (result: ResultType<SeriesType>) => {
         if (result.ok) {

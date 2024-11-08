@@ -1,6 +1,6 @@
 export type SeriesType = {
     id: number|null;
-    nameIndex: string;
+    index: string;
     title: string;
     originalTitle: string;
     seriesType: string;

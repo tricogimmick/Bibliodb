@@ -2,8 +2,8 @@
 CREATE TABLE persons ( 
   -- ID(PK)
   id INTEGER PRIMARY KEY 
-  -- 氏名 INDEX
-  , nameIndex TEXT NOT NULL
+  -- INDEX
+  , index TEXT NOT NULL
   -- 氏名
   , name TEXT NOT NULL
   -- ふりがな
@@ -15,4 +15,4 @@ CREATE TABLE persons (
   -- 説明
   , description TEXT
 );
-CREATE UNIQUE INDEX persons_nameIndex ON persons(nameIndex);
+CREATE UNIQUE INDEX persons_index ON persons(index);
