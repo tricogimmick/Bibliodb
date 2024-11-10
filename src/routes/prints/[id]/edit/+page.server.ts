@@ -5,13 +5,14 @@ import type { SeriesType } from '../../../../types/series';
 import type { PersonType } from '../../../../types/person';
 import type { PrintType } from '../../../../types/print';
 import type { RelatedPeronsType } from '../../../../types/relatedPersons';
+import type { RelatedLinksType } from '../../../../types/relatedLinks';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
-import { getAllPublishers, getAllBrands, getAllSeries, getAllPersons, getPrint, getAllRelatedPersons } from '$lib/common';
+import { getAllPublishers, getAllBrands, getAllSeries, getAllPersons, getPrint, getAllRelatedPersons, getAllRelatedLinks } from '$lib/common';
 
 export const load: PageServerLoad = async ({ params }) => {
     const dbPath = env["LIBMANDB_PATH"] ?? "";
@@ -34,7 +35,8 @@ export const load: PageServerLoad = async ({ params }) => {
             series: await getAllSeries(db) as SeriesType[],
 			persons: await getAllPersons(db) as PersonType[],
             print: await getPrint(db, Number(params.id)) as PrintType,
-            relatedPersons: relatedPersons
+            relatedPersons: relatedPersons,
+            relatedLinks: await getAllRelatedLinks(db, "PRINT", Number(params.id)) as RelatedLinksType[]
 		};
     } catch (e) {
 		error(500, { message: 'Database Error' });

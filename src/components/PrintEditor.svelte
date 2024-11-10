@@ -5,12 +5,17 @@
     import type { SeriesType } from "../types/series";
     import type { PersonType } from "../types/person";
     import type { RelatedPeronsType } from "../types/relatedPersons";
+    import type { RelatedLinksType } from "../types/relatedLinks";
     import type { PostDataType } from "../routes/api/prints/+server";
     import type { ResultType } from "../types/result";
+
+    import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
+    import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
 
     type PropsType = {
         print: PrintType,
         relatedPersons: RelatedPeronsType[],
+        relatedLinks: RelatedLinksType[],
         persons: PersonType[],
         publishers: PublisherType[],
         brands: BrandType[],
@@ -26,7 +31,7 @@
         description: string;
     };
 
-    let { print, relatedPersons, persons, publishers, brands, series, callback } : PropsType = $props();
+    let { print, relatedPersons, relatedLinks, persons, publishers, brands, series, callback } : PropsType = $props();
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
@@ -36,18 +41,8 @@
     let publicationDate = $state(print.publicationDate);
     let seriesName = $state(series.find(x => x.id === print.seriesId)?.index ?? "");
     let description = $state(print.description);
-    let ndl = $state(print.ndl);
     let ownedType = $state(print.ownedType);
     let buttonCaption = $derived(print.id == null || print.id == 0 ? "登　録" : "更　新")
-
-    const _relatedPersons: RelatedPersonEntryType[] = relatedPersons.map(x => ({
-        orderNo: x.orderNo as number,
-        role: x.role,
-        personId: x.personId,
-        personName: persons.find(p => p.id == x.personId)?.index ?? "",
-        description: x.description
-    }));
-    let relatedPersonEntries = $state(_relatedPersons);
 
      // 更新用APIの呼出
      const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
@@ -80,13 +75,18 @@
                 publicationDate,
                 seriesId: series.find(x => x.index === seriesName)?.id ?? null,
                 description,
-                ndl,
                 ownedType,
-                relatedPersons: relatedPersonEntries.map(a => ({
-                    orderNo: a.orderNo,
-                    personId: persons.find(p => p.index === a.personName)?.id ?? 0,
-                    role: a.role,
-                    description: a.description
+                relatedPersons: relatedPersons.map(x => ({
+                    orderNo: x.orderNo as number,
+                    personId: x.personId as number,
+                    role: x.role,
+                    description: x.description
+                })),
+                relatedLinks: relatedLinks.map(x => ({
+                    linkType: x.linkType,
+                    url: x.url,
+                    alt: x.alt,
+                    description: x.description
                 }))
             };
             const result = await callApi(postData,print.id != null ? "PUT" : "POST");
@@ -97,64 +97,6 @@
         }
     }
 
-    // 関連人物追加ボタンがクリックされた
-    const onClickRelatedPersonAdd = (e: Event) => {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
-        console.log(`Order No: ${orderNo}`);
-        if (relatedPersonEntries.length == orderNo) {
-            relatedPersonEntries.push({
-                orderNo: orderNo + 1,
-                role: "作者",
-                personId: null,
-                personName: "",
-                description: ""
-            });
-        } else {
-            const t = relatedPersonEntries.map(p => ({
-                orderNo: p.orderNo > orderNo ? p.orderNo + 1 : p.orderNo,
-                role: p.role,
-                personId: p.personId,
-                personName: p.personName,
-                description: p.description
-            }));
-            t.push({
-                orderNo: orderNo + 1,
-                role: "作者",
-                personId: null,
-                personName: "",
-                description: ""
-            });
-            relatedPersonEntries = t.toSorted((a, b) => a.orderNo - b.orderNo);
-        }
-    };
-
-    // 関連人物削除ボタンがクリックされた
-    const onClickRelatedPersonDelete = (e: Event) => {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
-        console.log(`Order No: ${orderNo}`);
-        relatedPersonEntries = relatedPersonEntries.filter(p => p.orderNo != orderNo).map(p => ({  
-            orderNo: p.orderNo > orderNo ? p.orderNo -1 : p.orderNo,
-                role: p.role,
-                personId: p.personId,
-                personName: p.personName,
-                description: p.description
-        }));
-    }
-
-    // 関連人物名が変更された
-    const onChangeRelatedPersonName = (e: Event) => {
-        console.log(e.target);    
-        const field = e.target as HTMLInputElement;
-        if (persons.find(x => x.index === field.value) == null) {
-            field.setCustomValidity("著作者が存在しません")
-        } else {
-            field.setCustomValidity("")
-        }
-    }
     // 出版社名が変更された
     const onChangePublisherName = (e: Event) => {
         console.log(e.target);    
@@ -186,6 +128,17 @@
         }
     }
 
+    // 関連人物リンクが変更された
+    const onChangeRelationPersons = (rp: RelatedPeronsType[]) => {
+        console.log(rp);
+        relatedPersons = rp;
+    }
+
+    // 関連リンクが変更された
+    const onChangeRelationLinks = (rl: RelatedLinksType[]) => {
+        relatedLinks = rl;
+    }
+
 </script>
 
 <div>
@@ -201,7 +154,7 @@
     </datalist>
     <datalist id="series">
         {#each series as s (s.id)}
-        <option value={s.nameIndex}></option>
+        <option value={s.index}></option>
         {/each}
     </datalist>
     <form onsubmit={onSubmit}>
@@ -224,30 +177,7 @@
             <label for="seriesName">シリーズ</label>
             <input name="seriesName" type="text" bind:value={seriesName} list="series" onchange={onChangeSeriesName} />
         </div>              
-        {#each relatedPersonEntries as author, i (author.orderNo)}
-        <div class="input-field">
-            {#if i == 0}
-            <label for="">著作者</label>
-            {:else}
-            <label for="">&nbsp</label>
-            {/if}
-            <div class="person-data" data-order-no={author.orderNo}>
-                <select name="role" bind:value={author.role}>
-                    <option value="作者">作者</option>
-                    <option value="著者">著者</option>
-                    <option value="翻訳者">翻訳者</option>
-                    <option value="編者">編者</option>
-                    <option value="話者">話者</option>
-                    <option value="解説">解説</option>
-                    <option value="原作者">原作者</option>
-                    <option value="作画">作画</option>
-                </select>
-                <input name="authorName" type="text" bind:value={author.personName} required list="persons" onchange={onChangeRelatedPersonName} />
-                <button onclick={onClickRelatedPersonAdd}>追加</button>               
-                <button onclick={onClickRelatedPersonDelete}>削除</button>               
-            </div>
-        </div>              
-        {/each}
+        <RelatedPersonEditor relatedType="PRINT" relatedId={print.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
         <div class="input-field">
             <label for="publisherName">出版社</label>
             <input name="publisherName" type="text" bind:value={publisherName} list="publishers" required onchange={onChangePublisherName}/>
@@ -264,10 +194,7 @@
             <label for="description">解説</label>
             <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>
         </div>      
-        <div class="input-field">
-            <label for="ndl">NDL Link</label>
-            <input name="ndl" type="url" bind:value={ndl}  />
-        </div>      
+        <RelatedLinkEditor relatedType="PRINT" relatedId={print.id} {relatedLinks} callback={onChangeRelationLinks}></RelatedLinkEditor>
         <div class="input-field">
             <label for="ownedType">所有種別</label>
             <select name="ownedType" bind:value={ownedType}>

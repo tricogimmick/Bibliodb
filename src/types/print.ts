@@ -8,6 +8,5 @@ export type PrintType = {
     publicationDate: string;
     seriesId: number | null;
     description: string;   
-    ndl: string;
     ownedType: string; 
 }

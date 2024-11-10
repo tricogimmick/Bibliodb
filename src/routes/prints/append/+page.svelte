@@ -2,6 +2,7 @@
     import type { PageData } from './$types';
     import type { PrintType } from '../../../types/print';
     import type { RelatedPeronsType } from '../../../types/relatedPersons';
+    import type { RelatedLinksType } from '../../../types/relatedLinks';
     import type { ResultType } from '../../../types/result';
 
     import { goto } from "$app/navigation";
@@ -33,6 +34,8 @@
             description: ""
         }
     ]
+
+    const relatedLinks: RelatedLinksType[] = []
     
     const onSubmit = (result: ResultType<PrintType>) => {
         if (result.ok) {
@@ -45,7 +48,7 @@
 </script>
 
 <h2>Print - Append</h2>
-<PrintEditor {print} {relatedPersons} {...data} callback={onSubmit}></PrintEditor>
+<PrintEditor {print} {relatedPersons} {relatedLinks} {...data} callback={onSubmit}></PrintEditor>
 <div class="footer">
     <a href="/prints">Back to Print</a>
 </div>

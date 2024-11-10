@@ -6,6 +6,8 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
+import { runSql } from '$lib/common';
+
 export type PostDataType = {
     id: number | null;
     title: string;
@@ -16,103 +18,83 @@ export type PostDataType = {
     publicationDate: string;
     seriesId: number | null;
     description: string;   
-    ndl: string;
     ownedType: string; 
     relatedPersons: {
         orderNo: number;
         personId: number;
         role: string;
         description: string;
+    }[];
+    relatedLinks: {
+        linkType: "IMG" | "LINK";
+        url: string;
+        alt: string;
+        description: string;
     }[]
 };
 
+const cretaePostData = (id: number, postData: PostDataType) => ({
+    id,
+    title: postData.title,
+    originalTitle: postData.originalTitle,
+    printType: postData.printType,
+    publisherId: postData.publisherId,
+    brandId: postData.brandId,
+    publicationDate: postData.publicationDate,
+    seriesId: postData.seriesId,
+    description: postData.description,
+    ownedType: postData.ownedType 
+});
+
 const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<PrintType|Error>((ok, ng) => {
-    db.serialize(() => {
-        db.run("INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, seriesId, description, ndl , ownedType) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [ postData.title , postData.originalTitle, postData.printType, postData.publisherId, postData.brandId, postData.publicationDate, 
-              postData.seriesId, postData.description, postData.ndl , postData.ownedType ],
-            function(error) {
-                if (error) {
-                    ng(error);
-                } else {
-                    const printId = this.lastID;
-                    let err: Error | null = null;
-                    for (const author of postData.relatedPersons) {
-                        db.run("INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
-                                ["PRINT", printId, author.orderNo, author.personId, author.role, author.description],
-                            (e) => { err = e });
-                        if (err) {
-                            break;
-                        }
-                    }
-                    if (err) {
-                        ng(err);
-                    } else {
-                        ok({
-                            id: printId,
-                            title: postData.title,
-                            originalTitle: postData.originalTitle,
-                            printType: postData.printType,
-                            publisherId: postData.publisherId,
-                            brandId: postData.brandId,
-                            publicationDate: postData.publicationDate,
-                            seriesId: postData.seriesId,
-                            description: postData.description,
-                            ndl: postData.ndl,
-                            ownedType: postData.ownedType 
-                        });    
-                    }
-                }
+    db.serialize(async () => {
+        try {
+            const printId = await runSql(db, "INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, seriesId, description, ownedType) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [ postData.title , postData.originalTitle, postData.printType, postData.publisherId, postData.brandId, postData.publicationDate, 
+                   postData.seriesId, postData.description, postData.ownedType ]);
+            for (const relatedPerson of postData.relatedPersons) {
+                await runSql(db, 
+                    "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
+                    ["PRINT", printId, relatedPerson.orderNo, relatedPerson.personId, relatedPerson.role, relatedPerson.description]);
             }
-        );
+            for (const relatedLink of postData.relatedLinks) {
+                await runSql(db,
+                    "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
+                    ["PRINT", printId, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
+            }
+            ok(cretaePostData(printId as number, postData));
+        } catch (error) {
+            ng(error);
+        }
     });
 });
 
 const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<PrintType|Error>((ok, ng) => {
-    db.serialize(() => {
-        db.run("UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, " +
-               "seriesId = ?, description = ?, ndl = ?, ownedType = ? WHERE id = ?",
-            [ putData.title , putData.originalTitle, putData.printType, putData.publisherId, putData.brandId, putData.publicationDate, 
-                putData.seriesId, putData.description, putData.ndl , putData.ownedType, putData.id ],
-            function(error) {
-                if (error) {
-                    ng(error);
-                } else {
-                    let err: Error | null = null;
-                    db.run("DELETE FROM related_persons WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id], (error2) => {
-                        if (error2) {
-                            ng(error2);
-                        } else {
-                            for (const author of putData.relatedPersons) {
-                                db.run("INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
-                                        ["PRINT", putData.id, author.orderNo, author.personId, author.role, author.description],
-                                    (error3) => { err = error3 });
-                                if (err) {
-                                    break;
-                                }
-                            }    
-                            if (err) {
-                                ng(err);
-                            } else {
-                                ok({
-                                    id: putData.id,
-                                    title: putData.title,
-                                    originalTitle: putData.originalTitle,
-                                    printType: putData.printType,
-                                    publisherId: putData.publisherId,
-                                    brandId: putData.brandId,
-                                    publicationDate: putData.publicationDate,
-                                    seriesId: putData.seriesId,
-                                    description: putData.description,
-                                    ndl: putData.ndl,
-                                    ownedType: putData.ownedType 
-                                });    
-                            }
-                        }
-                    });
-                }   
-            })    
+    db.serialize(async () => {
+        try {
+            await runSql(db,
+                "UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, " +
+                "seriesId = ?, description = ?, ownedType = ? WHERE id = ?",
+                [ putData.title , putData.originalTitle, putData.printType, putData.publisherId, putData.brandId, putData.publicationDate, 
+                  putData.seriesId, putData.description, putData.ownedType, putData.id ]
+            );
+            await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
+            for (const author of putData.relatedPersons) {
+                await runSql(db,
+                        "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
+                        ["PRINT", putData.id, author.orderNo, author.personId, author.role, author.description]);
+            }    
+            await runSql(db, "DELETE FROM related_links WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
+            for (const relatedLink of putData.relatedLinks) {
+                await runSql(db,
+                    "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
+                    ["PRINT", putData.id, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
+            }
+            ok(cretaePostData(putData.id as number, putData));    
+        } catch (error) {
+            ng(error);
+        }
     });
 });
 

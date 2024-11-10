@@ -1,4 +1,4 @@
--- 著作者関連データ
+-- 関連人物データ
 CREATE TABLE related_persons ( 
   -- 関連先種別
   relatedType TEXT NOT NULL

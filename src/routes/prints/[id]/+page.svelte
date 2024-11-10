@@ -6,6 +6,10 @@
     const { data }: { data: PageData } = $props();
     const printData = data.prints;
 
+    const bookImage = printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "カバー");
+    const extelanLink = printData.relatedLinks.filter(x => x.linkType === "LINK");
+
+
     const onclickModifyPrint = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -17,6 +21,11 @@
 
 <h2>Prints - Details</h2>
 <div>
+    {#if bookImage != null}
+    <div class="book-images">
+        <img src={bookImage.url} alt={bookImage.alt} height="200px" >
+    </div>
+    {/if}
     <div class="input-field">
         <label for="title">題名</label>
         <span class="data-value">{printData.title}</span>
@@ -60,12 +69,16 @@
         <span class="data-value">{printData.description}</span>
     </div>      
     <div class="input-field">
-        <label for="ndl">NDL Link</label>
-        <span class="data-value"><a href="{printData.ndl}">{printData.ndl}</a></span>
-    </div>      
-    <div class="input-field">
         <label for="ownedType">所有種別</label>
         <span class="data-value">{printData.ownedType}</span>
+    </div>      
+    <div class="input-field">
+        <label for="ownedType">関連リンク</label>
+        <div>
+            {#each extelanLink as relatedLink, i}
+            <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span>
+            {/each}
+        </div>
     </div>      
 </div>
 <div class="button-container">

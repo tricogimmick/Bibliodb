@@ -18,8 +18,6 @@ CREATE TABLE prints (
     , seriesId INTEGER
     -- 説明
     , description TEXT
-    -- NDL Link
-    , ndl TEXT
     -- 所有種別
     , ownedType TEXT
 )
