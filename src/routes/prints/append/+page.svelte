@@ -24,7 +24,7 @@
         ownedType: "" 
     };
 
-    const works: PrintsWorksType[] = [];
+    const printWorks: PrintsWorksType[] = [];
     const relatedPersons: RelatedPeronsType[] = [];
     const relatedLinks: RelatedLinksType[] = [];
     
@@ -39,7 +39,7 @@
 </script>
 
 <h2>Print - Append</h2>
-<PrintEditor {print} {works} {relatedPersons} {relatedLinks} {...data} callback={onSubmit}></PrintEditor>
+<PrintEditor {print} {printWorks} {relatedPersons} {relatedLinks} {...data} callback={onSubmit}></PrintEditor>
 <div class="footer">
     <a href="/prints">Back to Print</a>
 </div>

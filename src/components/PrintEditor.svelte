@@ -16,7 +16,7 @@
 
     type PropsType = {
         print: PrintType,
-        works: PrintsWorksType[],
+        printWorks: PrintsWorksType[],
         relatedPersons: RelatedPeronsType[],
         relatedLinks: RelatedLinksType[],
         persons: PersonType[],
@@ -26,7 +26,7 @@
         callback: ((result: ResultType<PrintType>) => void) | null
     };
 
-    let { print, works, relatedPersons, relatedLinks, persons, publishers, brands, series, callback } : PropsType = $props();
+    let { print, printWorks, relatedPersons, relatedLinks, persons, publishers, brands, series, callback } : PropsType = $props();
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
@@ -203,7 +203,7 @@
         </div>
         <div>
             <div>Contents</div>
-            <PrintWorksEditor printid={print.id} printWorks={works} callback={onChangePrintWorks}></PrintWorksEditor>
+            <PrintWorksEditor printId={print.id} {printWorks} callback={onChangePrintWorks}></PrintWorksEditor>
         </div>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />

@@ -15,73 +15,270 @@
         pageNo: number | null;
         publishType: string;
         serializationStatus: string;
-        color: number | null;
-        firstPublished: number | null;
+        color: boolean;
+        firstPublished: boolean;
         description: string;        
     }
 
     let { printId, printWorks, callback } : PropsType = $props();
 
     if (printWorks.length === 0) {
+        console.log("DEBUG");
         printWorks.push({
             printId,
             orderNo: 1,
-            worksId: null,
-            subTitle: "",
-            pageNo: null,
-            publishType: "",
-            serializationStatus: "",
-            color: 0,
-            firstPublished: 0,
-            description: ""        
+            workId: null,
+            subTitle: "SUB-TITLE",
+            pageNo: 999,
+            publishType: "出張連載",
+            serializationStatus: "新連載",
+            color: 1,
+            firstPublished: 1,
+            description: "Description"        
         });
     }
 
     let _items: ItemType[] = printWorks.map((x, i) => ({
         orderNo: i + 1,
         worksId: x.workId,
-        title: "",
+        title: "TITLE",
         subTitle: x.subTitle,
         pageNo: x.pageNo,
         publishType: x.publishType,
         serializationStatus: x.serializationStatus,
-        color: x.color,
-        firstPublished: x.firstPublished,
+        color: x.color == 1,
+        firstPublished: x.firstPublished == 1,
         description: x.description        
     }));
     let items = $state(_items);
 
+    const newItem: (oderNo: number) => ItemType = (orderNo: number) => ({
+        orderNo,
+        worksId: null,
+        title: "",
+        subTitle: "",
+        pageNo: "",
+        publishType: "",
+        serializationStatus: "",
+        color: false,
+        firstPublished: false,
+        description: ""        
+    });
+
+    // 追加ボタンがクリックされた
+    const onClickAddButton = (e: Event) => {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        const orderNo = Number((e.target as HTMLButtonElement)?.closest("div.table-works-row")?.dataset.orderNo);
+        if (items.length == orderNo) {
+            items.push(newItem(orderNo + 1));
+        } else {
+            const t = items.map(x => ({
+                orderNo: x.orderNo > orderNo ? x.orderNo + 1 : x.orderNo,
+                worksId: x.worksId,
+                title: x.title,
+                subTitle: x.subTitle,
+                pageNo: x.pageNo,
+                publishType: x.publishType,
+                serializationStatus: x.serializationStatus,
+                color: x.color,
+                firstPublished: x.firstPublished,
+                description: x.description        
+            }));
+            t.push(newItem(orderNo + 1));
+            items = t.toSorted((a, b) => a.orderNo - b.orderNo);
+        }
+        // callCallback();
+    };
+
+
 
 </script>
 
-<table>
-    <thead>
-        <tr>
-            <th>No</th><th>タイトル</th><th>サブタイトル</th><th>頁</th><th>種別</th><th>連載</th><th>C</th><th>初</th><th>備考</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="table-works">
+    <div class="table-works-header">
+        <div class="table-works-row">
+            <div class="table-works-column">No</div>
+            <div class="table-works-column">タイトル</div>
+            <div class="table-works-column">サブタイトル</div>
+            <div class="table-works-column">頁</div>
+            <div class="table-works-column">種別</div>
+            <div class="table-works-column">連載</div>
+            <div class="table-works-column">カラー</div>
+            <div class="table-works-column">初出</div>
+            <div class="table-works-column">備考</div>
+            <div class="table-works-column">&nbsp;</div>
+        </div>
+    </div>
+    <div class="table-works-body">
         {#each items as item (item.orderNo)}
-            <tr>
-                <td>{item.orderNo}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+        <div class="table-works-row" data-order-no={item.orderNo}>
+            <div class="table-works-column">{item.orderNo}</div>
+            <div class="table-works-column">
+                <input type="text" name="title" bind:value={item.title} readonly />
+            </div>
+            <div class="table-works-column">
+                <input type="text" name="subtitle" bind:value={item.subTitle} />
+            </div>
+            <div class="table-works-column">
+                <input type="number" name="pageNo" bind:value={item.pageNo} /><span>頁</span>
+            </div>
+            <div class="table-works-column">
+                <select name="publishType" bind:value={item.publishType}>
+                    <option value=""></option>
+                    <option value="読切り">読切り</option>
+                    <option value="連載">連載</option>
+                    <option value="出張掲載">出張掲載</option>
+                </select>
+            </div>
+            <div class="table-works-column">
+                <select name="serializationStatus" bind:value={item.serializationStatus}>
+                    <option value=""></option>
+                    <option value="新連載">新連載</option>
+                    <option value="連載中">連載中</option>
+                    <option value="最終回">最終回</option>
+                </select>
+            </div>
+            <div class="table-works-column">
+                <input type="checkbox" name="color" bind:checked={item.color} />
+            </div>
+            <div class="table-works-column">
+                <input type="checkbox" name="firstPublished" bind:checked={item.firstPublished} />
+            </div>
+            <div class="table-works-column">
+                <input type="text" name="description" bind:value={item.description} />
+            </div>
+            <div class="table-works-column">
+                <button onclick={onClickAddButton} >追加</button>               
+                <button >削除</button>                       
+            </div>
+        </div>
         {/each}
-        <tr>
-        </tr>
-    </tbody>
-</table>
+    </div>
+</div>
 
 <style>
-    table {
-        border-collapse:  collapse; 
+    .table-works-header {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        > .table-works-row {
+            display: grid;
+            margin: 0;
+            padding: 0;
+            grid-template-columns: 2rem 6rem 8rem 8rem 4rem 4rem 30rem 5rem;
+            grid-template-rows: 1.5rem 1.5rem;
+        }
     }
+    .table-works-body {
+        box-sizing: border-box;
+        margin: 0 0 1rem 0;
+        padding: 0;
+        > .table-works-row {
+            display: grid;
+            margin: 0;
+            padding: 0;
+            grid-template-columns: 2rem 6rem 8rem 8rem 4rem 4rem 30rem 5rem;
+            grid-template-rows: 2.2rem 2rem;
+        }
+    }
+    .table-works-column:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1/3;
+        text-align: center;
+        padding-top: 0.3rem;
+        border-bottom: 1px solid gray;
+    }
+    .table-works-column:nth-child(2) {
+        grid-column: 2 / 6;
+        grid-row: 1;
+        padding-top: 0.3rem;
+        padding-left: 0.3rem;
+        > input {
+            min-width: none;
+            width: 29rem;
+        }
+    }
+    .table-works-column:nth-child(3) {
+        grid-column: 7;
+        grid-row: 1;
+        padding-top: 0.3rem;
+        padding-left: 0.3rem;
+        > input {
+            min-width: none;
+            width: 28rem;
+        }
+    }
+    .table-works-column:nth-child(4) {
+        grid-column: 2;
+        grid-row: 2;
+        padding-left: 0.3rem;
+        border-bottom: 1px solid gray;
+        > input {
+            min-width: none;
+            width: 3rem;
+            text-align: right;
+        }
+        > input+span {
+            margin-left: 0.2rem;
+        }
+    }
+    .table-works-column:nth-child(5) {
+        grid-column: 3;
+        grid-row: 2;
+        padding-left: 0.3rem;
+        border-bottom: 1px solid gray;
+        > select {
+            min-width: none;
+            width: 95%;
+        }
+    }
+    .table-works-column:nth-child(6) {
+        grid-column: 4;
+        grid-row: 2;
+        padding-left: 0.3rem;
+        border-bottom: 1px solid gray;
+        > select {
+            min-width: none;
+            width: 95%;
+        }
+    }
+    .table-works-column:nth-child(7) {
+        grid-column: 5;
+        grid-row: 2;
+        text-align: center;
+        border-bottom: 1px solid gray;
+        > input {
+            margin-top: 0.3rem;
+        }
+    }
+    .table-works-column:nth-child(8) {
+        grid-column: 6;
+        grid-row: 2;
+        text-align: center;
+        border-bottom: 1px solid gray;
+        > input {
+            margin-top: 0.3rem;
+        }
+    }
+    .table-works-column:nth-child(9) {
+        grid-column: 7;
+        grid-row: 2;
+        border-bottom: 1px solid gray;
+        padding-left: 0.3rem;
+        > input {
+            min-width: none;
+            width: 28rem;
+        }
+    }
+    .table-works-column:nth-child(10) {
+        grid-column: 8;
+        grid-row: 1 / 3;
+        text-align: center;
+        border-bottom: 1px solid gray;
+        > button {
+            margin-top: 0.3rem;
+            width: 5rem;
+        }
+    }    
 </style>
