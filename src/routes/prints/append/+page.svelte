@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { PrintType } from '../../../types/print';
+    import type { PrintsWorksType } from '../../../types/printsWorks';
     import type { RelatedPeronsType } from '../../../types/relatedPersons';
     import type { RelatedLinksType } from '../../../types/relatedLinks';
     import type { ResultType } from '../../../types/result';
@@ -20,22 +21,12 @@
         publicationDate: "",
         seriesId: null,
         description: "",   
-        ndl: "",
         ownedType: "" 
     };
 
-    const relatedPersons: RelatedPeronsType[] = [
-        {
-            relatedType: "PRINT",
-            relatedId: null,
-            orderNo: 1,
-            personId: null,
-            role: "作者",
-            description: ""
-        }
-    ]
-
-    const relatedLinks: RelatedLinksType[] = []
+    const works: PrintsWorksType[] = [];
+    const relatedPersons: RelatedPeronsType[] = [];
+    const relatedLinks: RelatedLinksType[] = [];
     
     const onSubmit = (result: ResultType<PrintType>) => {
         if (result.ok) {
@@ -48,7 +39,7 @@
 </script>
 
 <h2>Print - Append</h2>
-<PrintEditor {print} {relatedPersons} {relatedLinks} {...data} callback={onSubmit}></PrintEditor>
+<PrintEditor {print} {works} {relatedPersons} {relatedLinks} {...data} callback={onSubmit}></PrintEditor>
 <div class="footer">
     <a href="/prints">Back to Print</a>
 </div>

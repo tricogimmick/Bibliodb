@@ -46,56 +46,52 @@ const cretaePostData = (id: number, postData: PostDataType) => ({
     ownedType: postData.ownedType 
 });
 
-const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<PrintType|Error>((ok, ng) => {
-    db.serialize(async () => {
-        try {
-            const printId = await runSql(db, "INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, seriesId, description, ownedType) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [ postData.title , postData.originalTitle, postData.printType, postData.publisherId, postData.brandId, postData.publicationDate, 
-                   postData.seriesId, postData.description, postData.ownedType ]);
-            for (const relatedPerson of postData.relatedPersons) {
-                await runSql(db, 
-                    "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
-                    ["PRINT", printId, relatedPerson.orderNo, relatedPerson.personId, relatedPerson.role, relatedPerson.description]);
-            }
-            for (const relatedLink of postData.relatedLinks) {
-                await runSql(db,
-                    "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
-                    ["PRINT", printId, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
-            }
-            ok(cretaePostData(printId as number, postData));
-        } catch (error) {
-            ng(error);
+const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<PrintType|Error>(async (ok, ng) => {
+    try {
+        const printId = await runSql(db, "INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, seriesId, description, ownedType) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [ postData.title , postData.originalTitle, postData.printType, postData.publisherId, postData.brandId, postData.publicationDate, 
+                postData.seriesId, postData.description, postData.ownedType ]);
+        for (const relatedPerson of postData.relatedPersons) {
+            await runSql(db, 
+                "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
+                ["PRINT", printId, relatedPerson.orderNo, relatedPerson.personId, relatedPerson.role, relatedPerson.description]);
         }
-    });
+        for (const relatedLink of postData.relatedLinks) {
+            await runSql(db,
+                "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
+                ["PRINT", printId, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
+        }
+        ok(cretaePostData(printId as number, postData));
+    } catch (error) {
+        ng(error);
+    }
 });
 
-const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<PrintType|Error>((ok, ng) => {
-    db.serialize(async () => {
-        try {
+const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<PrintType|Error>(async (ok, ng) => {
+    try {
+        await runSql(db,
+            "UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, " +
+            "seriesId = ?, description = ?, ownedType = ? WHERE id = ?",
+            [ putData.title , putData.originalTitle, putData.printType, putData.publisherId, putData.brandId, putData.publicationDate, 
+                putData.seriesId, putData.description, putData.ownedType, putData.id ]
+        );
+        await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
+        for (const author of putData.relatedPersons) {
             await runSql(db,
-                "UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, " +
-                "seriesId = ?, description = ?, ownedType = ? WHERE id = ?",
-                [ putData.title , putData.originalTitle, putData.printType, putData.publisherId, putData.brandId, putData.publicationDate, 
-                  putData.seriesId, putData.description, putData.ownedType, putData.id ]
-            );
-            await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
-            for (const author of putData.relatedPersons) {
-                await runSql(db,
-                        "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
-                        ["PRINT", putData.id, author.orderNo, author.personId, author.role, author.description]);
-            }    
-            await runSql(db, "DELETE FROM related_links WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
-            for (const relatedLink of putData.relatedLinks) {
-                await runSql(db,
-                    "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
-                    ["PRINT", putData.id, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
-            }
-            ok(cretaePostData(putData.id as number, putData));    
-        } catch (error) {
-            ng(error);
+                    "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
+                    ["PRINT", putData.id, author.orderNo, author.personId, author.role, author.description]);
+        }    
+        await runSql(db, "DELETE FROM related_links WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
+        for (const relatedLink of putData.relatedLinks) {
+            await runSql(db,
+                "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
+                ["PRINT", putData.id, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
         }
-    });
+        ok(cretaePostData(putData.id as number, putData));    
+    } catch (error) {
+        ng(error);
+    }
 });
 
 export const POST: RequestHandler = async ({ request }) => {

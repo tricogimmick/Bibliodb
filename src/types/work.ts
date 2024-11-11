@@ -4,8 +4,8 @@ export type WorkType = {
     originalTitle: string;
     contentType: string;
     description: string;
-    url: string;
     note: string;
     publicationYear: number | null;
     seqNo: number | null;
+    finishedReading: string;
 };

@@ -6,6 +6,8 @@
     const { data }: { data: PageData } = $props();
     const workData = data.work;
 
+    const extelanLink = workData.relatedLinks.filter(x => x.linkType === "LINK");
+
     const onclickModifyWork = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -21,10 +23,12 @@
         <label for="title">題名</label>
         <span class="data-value">{workData.title}</span>
     </div>
+    {#if workData.originalTitle}
     <div class="input-field">
         <label for="originalTitle">原題</label>
         <span class="data-value">{workData.originalTitle}</span>
     </div>
+    {/if}
     <div class="input-field">
         <label for="contentType">種別</label>
         <span class="data-value">{workData.contentType}</span>
@@ -48,12 +52,20 @@
         <span class="data-value">{workData.description}</span>
     </div>      
     <div class="input-field">
-        <label for="url">URL</label>
-        <span class="data-value"><a href="{workData.url}">{workData.url}</a></span>
-    </div>      
-    <div class="input-field">
         <label for="seqNo">連番</label>
         <span class="data-value">{workData.seqNo}</span>
+    </div>      
+    <div class="input-field">
+        <label for="ownedType">関連リンク</label>
+        <div>
+            {#each extelanLink as relatedLink, i}
+            <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span>
+            {/each}
+        </div>
+    </div>      
+    <div class="input-field">
+        <label for="finishedReading">読了日</label>
+        <span class="data-value">{workData.finishedReading}</span>
     </div>      
     <div class="input-field">
         <label for="note">補記</label>

@@ -4,6 +4,7 @@
     import type { BrandType } from "../types/brand";
     import type { SeriesType } from "../types/series";
     import type { PersonType } from "../types/person";
+    import type { PrintsWorksType } from "../types/printsWorks";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { PostDataType } from "../routes/api/prints/+server";
@@ -11,9 +12,11 @@
 
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
+	import PrintWorksEditor from "./PrintWorksEditor.svelte";
 
     type PropsType = {
         print: PrintType,
+        works: PrintsWorksType[],
         relatedPersons: RelatedPeronsType[],
         relatedLinks: RelatedLinksType[],
         persons: PersonType[],
@@ -23,15 +26,7 @@
         callback: ((result: ResultType<PrintType>) => void) | null
     };
 
-    type RelatedPersonEntryType = {
-        orderNo: number;
-        role: string;
-        personId: number | null;
-        personName: string;
-        description: string;
-    };
-
-    let { print, relatedPersons, relatedLinks, persons, publishers, brands, series, callback } : PropsType = $props();
+    let { print, works, relatedPersons, relatedLinks, persons, publishers, brands, series, callback } : PropsType = $props();
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
@@ -139,6 +134,9 @@
         relatedLinks = rl;
     }
 
+    const onChangePrintWorks = (wks: PrintsWorksType[]) => {
+
+    }
 </script>
 
 <div>
@@ -202,6 +200,10 @@
                 <option value="所有">所有</option>
                 <option value="PDF">PDF</option>
             </select>
+        </div>
+        <div>
+            <div>Contents</div>
+            <PrintWorksEditor printid={print.id} printWorks={works} callback={onChangePrintWorks}></PrintWorksEditor>
         </div>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />

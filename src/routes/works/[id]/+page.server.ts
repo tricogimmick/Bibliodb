@@ -6,11 +6,20 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
+import { getRow, getAllRows } from '$lib/common';
+
 type RelatedPersonDetailType = {
     orderNo: number;
     personId: number;
     personName: string;
     role: string;
+    description: string;
+};
+
+type RelationLinkDetailType = {
+    linkType: "IMG" | "LINK";
+    url: string;
+    alt: string;
     description: string;
 };
 
@@ -20,46 +29,50 @@ type WorkDetailType = {
     originalTitle: string;
     contentType: string;
     description: string;
-    url: string;
     note: string;
     publicationYear: number | null;
     seqNo: number | null;
-    relatedPersons: RelatedPersonDetailType[]
+    finishedReading: string;
+    relatedPersons: RelatedPersonDetailType[],
+    relatedLinks: RelationLinkDetailType[]
 }
 
+// 作品情報を生成する
+const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDetailType[], relatedLinks: RelationLinkDetailType[]) => ({
+        id: work.id,
+        title: work.title,
+        originalTitle: work.originalTitle,
+        contentType: work.contentType,
+        description: work.description,
+        note: work.note,
+        publicationYear: work.publicationYear,
+        seqNo: work.seqNo,
+        finishedReading: work.finishedReading,
+        relatedPersons,
+        relatedLinks
+});
+
 // 作品を取得する
-const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Error>((ok, ng) => {
-    db.serialize(() => {
-        db.get<WorkType>("SELECT * FROM works WHERE id = ?", [id], (err, row) => {
-            if (err) {
-                ng(err);
-            } else {
-                db.all<RelatedPersonDetailType>(
-                    "SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description " +
-                    "FROM related_persons as r " +
-                    "JOIN persons as p ON p.id = r.personId " +
-                    "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", [row.id], (err2, rows) => {
-                        if (err2) {
-                            ng(err);
-                        } else {
-                            const work: WorkDetailType = {
-                                id: row.id,
-                                title: row.title,
-                                originalTitle: row.originalTitle,
-                                contentType: row.contentType,
-                                description: row.description,
-                                url: row.url,
-                                note: row.note,
-                                publicationYear: row.publicationYear,
-                                seqNo: row.seqNo,
-                                relatedPersons: rows
-                            };
-                            ok(work);
-                        }
-                    });
-            }
-        });    
-    })
+const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Error>(async (ok, ng) => {
+    try {
+        const work: WorkType = await getRow(db, "SELECT * FROM works WHERE id = ?", [id]);
+        const relatedPersons: RelatedPersonDetailType[] = await getAllRows(db,
+            "SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description " +
+            "FROM related_persons as r " +
+            "JOIN persons as p ON p.id = r.personId " +
+            "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", 
+            [work.id]
+        );
+        const relatedLinks: RelationLinkDetailType[] = await getAllRows<RelationLinkDetailType>(db,
+            "SELECT r.linkType, r.url, r.alt, r.description " +
+            "FROM related_links as r " +
+            "WHERE r.relatedType = 'WORK' AND  r.relatedId = ?", 
+            [work.id]
+        );
+        ok(createWorkDetail(work, relatedPersons, relatedLinks));
+    } catch (e: any) {
+        ng(e);
+    }
 });
 
 export const load: PageServerLoad = async ({ params }) => {

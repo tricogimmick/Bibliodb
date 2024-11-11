@@ -7,6 +7,7 @@ import type { PrintType } from '../types/print';
 import type { RelatedPeronsType } from '../types/relatedPersons';
 import type { RelatedLinksType } from '../types/relatedLinks';
 import pkg from 'sqlite3';
+import type { PrintsWorksType } from '../types/printsWorks';
 
 // SQLの実行
 export const runSql = (db: pkg.Database, sql: string, params: any) =>  new Promise((ok, ng) => {
@@ -155,8 +156,19 @@ export const getPrint = (db: pkg.Database, id: number) => new Promise<PrintType|
     });
 });
 
+// 出版物・作品を全て取得
+export const getPrintWorks = (db: pkg.Database, printId: number) => new Promise<PrintsWorksType[]|Error>((ok, ng) => {
+    db.all<PrintsWorksType>("SELECT * FROM prints_works WHERE printId = ?", [printId], (err, rows) => {
+        if (err) {
+            ng(err);
+        } else {
+            ok(rows);
+        }
+    });
+});
+
 // 関連人物を全て取得
-export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number, ) => new Promise<RelatedPeronsType[]|Error>((ok, ng) => {
+export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number ) => new Promise<RelatedPeronsType[]|Error>((ok, ng) => {
     db.all<RelatedPeronsType>("SELECT * FROM related_persons WHERE relatedType = ? AND relatedId = ?", [relatedType, relatedId], (err, rows) => {
         if (err) {
             ng(err);
@@ -167,7 +179,7 @@ export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, rela
 });
 
 // 関連リンクを全て取得
-export const getAllRelatedLinks = (db: pkg.Database, relatedType: string, relatedId: number, ) => new Promise<RelatedLinksType[]|Error>((ok, ng) => {
+export const getAllRelatedLinks = (db: pkg.Database, relatedType: string, relatedId: number ) => new Promise<RelatedLinksType[]|Error>((ok, ng) => {
     db.all<RelatedLinksType>("SELECT * FROM related_links WHERE relatedType = ? AND relatedId = ?", [relatedType, relatedId], (err, rows) => {
         if (err) {
             ng(err);

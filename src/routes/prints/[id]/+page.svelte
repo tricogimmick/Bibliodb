@@ -9,7 +9,6 @@
     const bookImage = printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "カバー");
     const extelanLink = printData.relatedLinks.filter(x => x.linkType === "LINK");
 
-
     const onclickModifyPrint = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -30,10 +29,12 @@
         <label for="title">題名</label>
         <span class="data-value">{printData.title}</span>
     </div>
+    {#if printData.originalTitle != null &&  printData.originalTitle != ""}
     <div class="input-field">
         <label for="originalTitle">原題</label>
         <span class="data-value">{printData.originalTitle}</span>
     </div>
+    {/if}
     <div class="input-field">
         <label for="printType">出版種別</label>
         <span class="data-value">{printData.printType}</span>
@@ -50,11 +51,7 @@
     {/each}
     <div class="input-field">
         <label for="publisherName">出版社</label>
-        <span class="data-value">{printData.publisherName}</span>
-    </div>      
-    <div class="input-field">
-        <label for="brandName">ブランド</label>
-        <span class="data-value">{printData.brandName}</span>
+        <span class="data-value">{printData.publisherName}{#if printData.brandName}&nbsp;({printData.brandName}){/if}</span>
     </div>      
     <div class="input-field">
         <label for="publicationDate">発行日</label>

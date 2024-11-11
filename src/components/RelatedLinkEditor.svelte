@@ -22,9 +22,9 @@
             id: null,
             relatedType: relatedType,
             relatedId: relatedId,
-            linkType: "IMG",
+            linkType: relatedType === "PRINT" ? "IMG" : "LINK",
             url: "",
-            alt: "aaaaa",
+            alt: "",
             description: ""
         });
     }
@@ -117,3 +117,21 @@
     </div>
 </div>
 {/each}
+
+<style>
+    select[name="linkType"] {
+        width: 5rem;
+        min-width: 5rem;
+        margin-bottom: 0.2rem;
+    }
+    input[name="url"] {
+        width: 29rem;
+        min-width: 29rem;
+        margin-bottom: 0.2rem;
+    }
+    input[name="alt"] {
+        width: 29rem;
+        min-width: 29rem;
+        margin-bottom: 0.2rem;
+    }
+</style>

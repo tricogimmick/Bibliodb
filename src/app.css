@@ -13,20 +13,20 @@ body {
         display: inline-block;
         width: 5rem;
     }
-    > input {
+    input {
         margin: 0;
         padding: 0.2rem 0.2rem;
         min-width: 15rem;
     }
-    > input[type=url] {
+    input[type=url] {
         width: 35rem;
     }
-    > select {
+    select {
         margin: 0;
         padding: 0.2rem 0.2rem;
         min-width: 15.5rem;
     }
-    > textarea {
+    textarea {
         width: 35rem;
     }
 }

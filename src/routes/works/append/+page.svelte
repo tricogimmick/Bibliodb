@@ -3,6 +3,7 @@
     import type { PersonType } from '../../../types/person';
     import type { WorkType } from '../../../types/work';
     import type { RelatedPeronsType } from '../../../types/relatedPersons';
+    import type { RelatedLinksType } from '../../../types/relatedLinks';
     import type { ResultType } from '../../../types/result';
 
     import { goto } from "$app/navigation";
@@ -16,21 +17,13 @@
         originalTitle: "",
         contentType: "小説",
         description: "",
-        url: "",
         note: "",
         publicationYear: null,
-        seqNo: null
+        seqNo: null,
+        finishedReading: ""
     };
-    const relatedPersons: RelatedPeronsType[] = [
-        {
-            relatedType: "WORK",
-            relatedId: null,
-            orderNo: 1,
-            personId: null,
-            role: "作者",
-            description: ""
-        }
-    ]
+    const relatedPersons: RelatedPeronsType[] = [];
+    const relatedLinks: RelatedLinksType[] = [];
     const persons = data.persons as PersonType[];
 
     const onSubmit = (result: ResultType<WorkType>) => {
@@ -45,7 +38,7 @@
 </script>
 
 <h2>Work - Append</h2>
-<WorkEditor {work} {persons} {relatedPersons} callback={onSubmit}></WorkEditor>
+<WorkEditor {work} {relatedPersons} {relatedLinks} {persons}callback={onSubmit}></WorkEditor>
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>

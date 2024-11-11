@@ -19,7 +19,7 @@
     let { relatedType, relatedId, relatedPersons, persons, callback } : PropsType = $props();
     if (relatedPersons.length === 0) {
         relatedPersons.push({
-            relatedType: "PRINT",
+            relatedType: relatedType,
             relatedId: null,
             orderNo: 1,
             personId: null,
@@ -127,3 +127,11 @@
     </div>
 </div>              
 {/each}
+
+<style>
+    select[name="role"] {
+        width: 5rem;
+        min-width: 5rem;
+        margin-bottom: 0.2rem;
+    }
+</style>

@@ -6,106 +6,92 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
+import { runSql } from '$lib/common';
+
 export type PostDataType = {
     id: number | null;
     title: string;
     originalTitle: string;
     contentType: string;
     description: string;
-    url: string;
     note: string;
     publicationYear: number | null;
     seqNo: number | null;
+    finishedReading: string;
     relatedPersons: {
         orderNo: number;
         personId: number;
         role: string;
         description: string;
+    }[],
+    relatedLinks: {
+        linkType: "IMG" | "LINK";
+        url: string;
+        alt: string;
+        description: string;
     }[]
 };
 
+const createWork = (id: number, postData: PostDataType) => ({
+    id,
+    title: postData.title,
+    originalTitle: postData.originalTitle,
+    contentType: postData.contentType,
+    description: postData.description,
+    note: postData.note,
+    publicationYear: postData.publicationYear,
+    seqNo: postData.seqNo,
+    finishedReading: postData.finishedReading
+});
+
 // 作品の追加
-const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<WorkType|Error>((ok, ng) => {
-    db.run("INSERT INTO works (title, originalTitle, contentType, description, url, note, publicationYear, seqNo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        [ postData.title, postData.originalTitle, postData.contentType, postData.description, postData.url, postData.note, postData.publicationYear, postData.seqNo ],
-        function(error) {
-            if (error) {
-                ng(error);
-            } else {
-                const workId = this.lastID;
-                let err: Error | null = null;
-                db.serialize(() => {
-                    for (const author of postData.relatedPersons) {
-                        db.run("INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
-                                ["WORK", workId, author.orderNo, author.personId, author.role, author.description],
-                            (e) => { err = e });
-                        if (err) {
-                            break;
-                        }
-                    }
-                    if (err) {
-                        ng(err);
-                    } else {
-                        ok({
-                            id: this.lastID,
-                            title: postData.title,
-                            originalTitle: postData.originalTitle,
-                            contentType: postData.contentType,
-                            description: postData.description,
-                            url: postData.url,
-                            note: postData.note,
-                            publicationYear: postData.publicationYear,
-                            seqNo: postData.seqNo
-                        });    
-                    }
-                });
-            }
+const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<WorkType|Error>(async (ok, ng) => {
+    try {
+        const workId = await runSql(db,
+            "INSERT INTO works (title, originalTitle, contentType, description, note, publicationYear, seqNo, finishedReading) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [ postData.title, postData.originalTitle, postData.contentType, postData.description, postData.note, 
+              postData.publicationYear, postData.seqNo, postData.finishedReading ]
+        );
+        for (const relatedPerson of postData.relatedPersons) {
+            await runSql(db,
+                "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
+                ["WORK", workId, relatedPerson.orderNo, relatedPerson.personId, relatedPerson.role, relatedPerson.description]);
         }
-    );
+        for (const relatedLink of postData.relatedLinks) {
+            await runSql(db,
+                "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
+                ["WORK", workId, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
+        }
+        ok(createWork(workId as number, postData));
+    } catch (e: any) {
+        ng(e);
+    }
 });
 
 // 作品の更新
-const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<WorkType|Error>((ok, ng) => {
-    db.serialize(() => {
-        db.run("UPDATE works SET title = ?, originalTitle = ?, contentType = ?, description = ?, url = ?, note = ?, publicationYear = ?, seqNo = ? WHERE id = ?",
-            [ putData.title, putData.originalTitle, putData.contentType, putData.description, putData.url, putData.note, putData.publicationYear, putData.seqNo, putData.id ],
-            function(error) {
-                if (error) {
-                    ng(error);
-                } else {
-                    let err: Error | null = null;
-                    db.run("DELETE FROM related_persons WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id], (error2) => {
-                        if (error2) {
-                            ng(error2);
-                        } else {
-                            for (const author of putData.relatedPersons) {
-                                db.run("INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
-                                        ['WORK', putData.id, author.orderNo, author.personId, author.role, author.description],
-                                    (error3) => { err = error3 });
-                                if (err) {
-                                    break;
-                                }
-                            }    
-                            if (err) {
-                                ng(err);
-                            } else {
-                                ok({
-                                    id: putData.id,
-                                    title: putData.title,
-                                    originalTitle: putData.originalTitle,
-                                    contentType: putData.contentType,
-                                    description: putData.description,
-                                    url: putData.url,
-                                    note: putData.note,
-                                    publicationYear: putData.publicationYear,
-                                    seqNo: putData.seqNo
-                                });    
-                            }
-                        }
-                    });
-                }   
-            })    
-    });
+const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<WorkType|Error>(async (ok, ng) => {
+    try {
+        await runSql(db,
+            "UPDATE works SET title = ?, originalTitle = ?, contentType = ?, description = ?, note = ?, " +
+            "publicationYear = ?, seqNo = ?, finishedReading = ? WHERE id = ?",
+            [ putData.title, putData.originalTitle, putData.contentType, putData.description, putData.note, 
+              putData.publicationYear, putData.seqNo, putData.finishedReading, putData.id ]);
+        await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id]);
+        for (const relatedPerson of putData.relatedPersons) {
+            await runSql(db,
+                "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
+                ["WORK", putData.id, relatedPerson.orderNo, relatedPerson.personId, relatedPerson.role, relatedPerson.description]);
+        }
+        await runSql(db, "DELETE FROM related_links WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id]);
+        for (const relatedLink of putData.relatedLinks) {
+            await runSql(db,
+                "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
+                ["WORK", putData.id, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
+        }
+        ok(createWork(putData.id as number, putData));
+    } catch (e: any) {
+        ng(e);
+    }
 });
 
 export const POST: RequestHandler = async ({ request }) => {

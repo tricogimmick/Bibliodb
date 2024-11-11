@@ -10,12 +10,12 @@ CREATE TABLE works (
     , contentType TEXT NOT NULL
     -- 説明
     , description TEXT
-    -- URL
-    , url TEXT
     -- 付記
     , note TEXT
     -- 発表年
     , publishYear INTEGER
     -- 連番
     , seqNo INTEGER
+    -- 読了日
+    , finishedReading TEXT
 )

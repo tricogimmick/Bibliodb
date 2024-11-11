@@ -11,17 +11,7 @@
     const persons = data.persons;
     const work = data.work;
     const relatedPersons = data.relatedPersons;
-
-    if (relatedPersons.length === 0) {
-        relatedPersons.push({
-            relatedType: "WORK",
-            relatedId: null,
-            orderNo: 1,
-            personId: null,
-            role: "作者",
-            description: ""
-        });
-    }
+    const relatedLinks = data.relatedLinks;
 
     const onSubmit = (result: ResultType<WorkType>) => {
         if (result.ok) {
@@ -33,7 +23,7 @@
 </script>
 
 <h2>Work - Edit</h2>
-<WorkEditor {work} {persons} {relatedPersons} callback={onSubmit}></WorkEditor>
+<WorkEditor {work} {persons} {relatedPersons} {relatedLinks} callback={onSubmit}></WorkEditor>
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>
