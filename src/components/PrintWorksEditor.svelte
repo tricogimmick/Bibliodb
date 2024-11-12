@@ -1,15 +1,21 @@
 <script lang="ts">
     import type { PrintsWorksType } from "../types/printsWorks";
+	import type { WorkType } from "../types/work";
+    import type { RelatedPeronsType } from "../types/relatedPersons";
+    import WorksSelector from "./WorksSelector.svelte";
+    import { workSelectorOpen } from "$lib/workSelectorLib";
 
     type PropsType = {
         printId: number | null;
         printWorks: PrintsWorksType[];
+        relatedPersons: RelatedPeronsType[];
+        works: WorkType[];
         callback: (works: PrintsWorksType[]) => void
     }
 
     type ItemType = {
         orderNo: number;
-        worksId: number | null;
+        workId: number | null;
         title: string;
         subTitle: string;
         pageNo: number | null;
@@ -20,28 +26,27 @@
         description: string;        
     }
 
-    let { printId, printWorks, callback } : PropsType = $props();
+    let { printId, printWorks, relatedPersons, works, callback } : PropsType = $props();
 
     if (printWorks.length === 0) {
-        console.log("DEBUG");
         printWorks.push({
             printId,
             orderNo: 1,
             workId: null,
-            subTitle: "SUB-TITLE",
-            pageNo: 999,
-            publishType: "出張連載",
-            serializationStatus: "新連載",
+            subTitle: "",
+            pageNo: null,
+            publishType: "",
+            serializationStatus: "",
             color: 1,
             firstPublished: 1,
-            description: "Description"        
+            description: ""        
         });
     }
 
     let _items: ItemType[] = printWorks.map((x, i) => ({
         orderNo: i + 1,
-        worksId: x.workId,
-        title: "TITLE",
+        workId: x.workId,
+        title: works.find(z => z.id === x.workId)?.title ?? "",
         subTitle: x.subTitle,
         pageNo: x.pageNo,
         publishType: x.publishType,
@@ -52,12 +57,24 @@
     }));
     let items = $state(_items);
 
+    let targetOrderNo = $state(0);
+    
+    // 作品選択からのコールバック
+    const workSelectDialogCallback = (orderNo: number, work: WorkType) => {
+        const item = items.find(x => x.orderNo === orderNo);
+        if (item) {
+            item.workId = work.id;
+            item.title = work.title;
+            callCallback();
+        }
+    }
+
     const newItem: (oderNo: number) => ItemType = (orderNo: number) => ({
         orderNo,
-        worksId: null,
+        workId: null,
         title: "",
         subTitle: "",
-        pageNo: "",
+        pageNo: null,
         publishType: "",
         serializationStatus: "",
         color: false,
@@ -65,17 +82,34 @@
         description: ""        
     });
 
+    // 親コンポーネントのコールバックを呼び出す
+    const callCallback = () => {
+        const t: PrintsWorksType[] = items.map(x => ({
+            printId,
+            orderNo: x.orderNo,
+            workId: x.workId,
+            subTitle: x.subTitle,
+            pageNo: x.pageNo,
+            publishType: x.publishType,
+            serializationStatus: x.serializationStatus,
+            color: x.color ? 1 : 0,
+            firstPublished: x.firstPublished ? 1 : 0,
+            description: x.description       
+        }));
+        callback?.(t);
+    }
+
     // 追加ボタンがクリックされた
     const onClickAddButton = (e: Event) => {
         e.stopImmediatePropagation();
         e.preventDefault();
-        const orderNo = Number((e.target as HTMLButtonElement)?.closest("div.table-works-row")?.dataset.orderNo);
+        const orderNo = Number(((e.target as HTMLButtonElement).closest("div.table-works-row") as HTMLElement).dataset.orderNo);
         if (items.length == orderNo) {
             items.push(newItem(orderNo + 1));
         } else {
             const t = items.map(x => ({
                 orderNo: x.orderNo > orderNo ? x.orderNo + 1 : x.orderNo,
-                worksId: x.worksId,
+                workId: x.workId,
                 title: x.title,
                 subTitle: x.subTitle,
                 pageNo: x.pageNo,
@@ -88,11 +122,38 @@
             t.push(newItem(orderNo + 1));
             items = t.toSorted((a, b) => a.orderNo - b.orderNo);
         }
-        // callCallback();
+        callCallback();
     };
 
+    // 削除ボタンがクリックされた
+    const onClickDeleteButton = (e: Event) => {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        if (items.length > 1) {
+            const orderNo = Number(((e.target as HTMLButtonElement).closest("div.table-works-row") as HTMLElement).dataset.orderNo);
+            items = items.filter(x => x.orderNo != orderNo).map(x => ({  
+                orderNo: x.orderNo > orderNo ? x.orderNo -1 : x.orderNo,
+                workId: x.workId,
+                title: x.title,
+                subTitle: x.subTitle,
+                pageNo: x.pageNo,
+                publishType: x.publishType,
+                serializationStatus: x.serializationStatus,
+                color: x.color,
+                firstPublished: x.firstPublished,
+                description: x.description        
+            }));
+            callCallback();
+        }
+    };
 
-
+    // タイトル欄でダブルクリック
+    const ondblclickText = (e: Event) => {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        targetOrderNo = Number(((e.target as HTMLButtonElement).closest("div.table-works-row") as HTMLElement).dataset.orderNo);
+        workSelectorOpen(relatedPersons.length > 0 ? relatedPersons[0].personId : null);
+    }
 </script>
 
 <div class="table-works">
@@ -115,16 +176,17 @@
         <div class="table-works-row" data-order-no={item.orderNo}>
             <div class="table-works-column">{item.orderNo}</div>
             <div class="table-works-column">
-                <input type="text" name="title" bind:value={item.title} readonly />
+                <input type="text" name="title" bind:value={item.title} readonly required />
+                <button onclick={ondblclickText}>検索</button>
             </div>
             <div class="table-works-column">
-                <input type="text" name="subtitle" bind:value={item.subTitle} />
+                <input type="text" name="subtitle" bind:value={item.subTitle} onchange={callCallback} />
             </div>
             <div class="table-works-column">
-                <input type="number" name="pageNo" bind:value={item.pageNo} /><span>頁</span>
+                <input type="number" name="pageNo" bind:value={item.pageNo}  onchange={callCallback} /><span>頁</span>
             </div>
             <div class="table-works-column">
-                <select name="publishType" bind:value={item.publishType}>
+                <select name="publishType" bind:value={item.publishType} onchange={callCallback} >
                     <option value=""></option>
                     <option value="読切り">読切り</option>
                     <option value="連載">連載</option>
@@ -132,7 +194,7 @@
                 </select>
             </div>
             <div class="table-works-column">
-                <select name="serializationStatus" bind:value={item.serializationStatus}>
+                <select name="serializationStatus" bind:value={item.serializationStatus} onchange={callCallback} >
                     <option value=""></option>
                     <option value="新連載">新連載</option>
                     <option value="連載中">連載中</option>
@@ -140,22 +202,23 @@
                 </select>
             </div>
             <div class="table-works-column">
-                <input type="checkbox" name="color" bind:checked={item.color} />
+                <input type="checkbox" name="color" bind:checked={item.color} onchange={callCallback} />
             </div>
             <div class="table-works-column">
-                <input type="checkbox" name="firstPublished" bind:checked={item.firstPublished} />
+                <input type="checkbox" name="firstPublished" bind:checked={item.firstPublished} onchange={callCallback}  />
             </div>
             <div class="table-works-column">
-                <input type="text" name="description" bind:value={item.description} />
+                <input type="text" name="description" bind:value={item.description} onchange={callCallback}  />
             </div>
             <div class="table-works-column">
                 <button onclick={onClickAddButton} >追加</button>               
-                <button >削除</button>                       
+                <button onclick={onClickDeleteButton}>削除</button>                       
             </div>
         </div>
         {/each}
     </div>
 </div>
+<WorksSelector orderNo={targetOrderNo} callback={workSelectDialogCallback}></WorksSelector>
 
 <style>
     .table-works-header {
@@ -190,13 +253,13 @@
         border-bottom: 1px solid gray;
     }
     .table-works-column:nth-child(2) {
-        grid-column: 2 / 6;
+        grid-column: 2 / 7;
         grid-row: 1;
         padding-top: 0.3rem;
         padding-left: 0.3rem;
         > input {
             min-width: none;
-            width: 29rem;
+            width: 26rem;
         }
     }
     .table-works-column:nth-child(3) {

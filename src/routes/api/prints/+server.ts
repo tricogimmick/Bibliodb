@@ -30,7 +30,18 @@ export type PostDataType = {
         url: string;
         alt: string;
         description: string;
-    }[]
+    }[];
+    works: {
+        orderNo: number;
+        workId: number;
+        subTitle: string;
+        pageNo: number | null;
+        publishType: string;
+        serializationStatus: string;
+        color: number | null;
+        firstPublished: number | null;
+        description: string;
+    }[];
 };
 
 const cretaePostData = (id: number, postData: PostDataType) => ({
@@ -62,6 +73,14 @@ const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<Pr
                 "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
                 ["PRINT", printId, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
         }
+        for (const work of postData.works) {
+            await runSql(db,
+                "INSERT INTO prints_works (printId, orderNo, workId, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [printId, work.orderNo, work.workId, work.subTitle, work.pageNo, work.publishType, work.serializationStatus, 
+                    work.color, work.firstPublished, work.description
+                ]);
+        }
         ok(cretaePostData(printId as number, postData));
     } catch (error) {
         ng(error);
@@ -87,6 +106,15 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
             await runSql(db,
                 "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
                 ["PRINT", putData.id, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
+        }
+        await runSql(db, "DELETE FROM prints_works WHERE printId = ?", [putData.id]);
+        for (const work of putData.works) {
+            await runSql(db,
+                "INSERT INTO prints_works (printId, orderNo, workId, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [putData.id, work.orderNo, work.workId, work.subTitle, work.pageNo, work.publishType, work.serializationStatus, 
+                    work.color, work.firstPublished, work.description
+                ]);
         }
         ok(cretaePostData(putData.id as number, putData));    
     } catch (error) {

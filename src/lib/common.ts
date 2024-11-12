@@ -46,7 +46,6 @@ export function getAllRows<T>(db: pkg.Database, sql: string, params: any) {
     }); 
 }
 
-
 // 全ての出版社を取得
 export const getAllPublishers = (db: pkg.Database) => new Promise<PublisherType[]|Error>((ok, ng) => {
     db.all<PublisherType>("SELECT * FROM publishers ORDER BY name, id", (err, rows) => {
@@ -113,7 +112,7 @@ export const getSeries = (db: pkg.Database, id: number) => new Promise<SeriesTyp
     });
 });
 
-// 全て人物を取得
+// 全ての人物を取得
 export const getAllPersons = (db: pkg.Database) => new Promise<PersonType[]|Error>((ok, ng) => {
     db.all<PersonType>("SELECT * FROM persons ORDER BY [index], id", (err, rows) => {
         if (err) {
@@ -144,6 +143,18 @@ export const getWork = (db: pkg.Database, id: number) => new Promise<WorkType|Er
         }
     });
 });
+
+// 全ての作品を取得
+export const getAllWorks = (db: pkg.Database) => new Promise<WorkType[]|Error>((ok, ng) => {
+    db.all<WorkType>("SELECT * FROM works order by id", (err, rows) => {
+        if (err) {
+            ng(err);
+        } else {
+            ok(rows);
+        }
+    });
+});
+
 
 // 出版物を取得
 export const getPrint = (db: pkg.Database, id: number) => new Promise<PrintType|Error>((ok, ng) => {

@@ -43,6 +43,7 @@
         description: ""
     });
 
+    // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
         const t: RelatedPeronsType[] = items.map(x => ({
             relatedType,

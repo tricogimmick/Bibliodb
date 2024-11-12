@@ -1,11 +1,12 @@
-import { json } from '@sveltejs/kit';
-import pkg from 'sqlite3';
-import { env } from '$env/dynamic/private';
-
 import type { RequestHandler } from './$types';
 import type { PersonType  } from '../../../types/person';
 
+import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+import pkg from 'sqlite3';
 const {Database} = pkg;
+
+import { getAllPersons } from '$lib/common';
 
 const appendPerson = (db: pkg.Database, person: PersonType) => new Promise<PersonType|Error>((ok, ng) => {
     db.run("INSERT INTO persons ([index], name, kana, born, died, description) VALUES (?, ?, ?, ?, ?, ?)",
@@ -68,3 +69,16 @@ export const PUT: RequestHandler = async ({ request }) => {
         db.close();
     }
 };
+
+export const GET: RequestHandler = async ({ url }) => {
+    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const db = new Database(dbPath);
+    try {
+        const result = await getAllPersons(db);
+        return json({ ok: true, data: result })
+    } catch (e: any) {
+        return json({ ok: false, data: e })
+    } finally {
+        db.close();
+    }
+}

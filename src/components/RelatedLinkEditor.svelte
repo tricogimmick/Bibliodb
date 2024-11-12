@@ -110,7 +110,7 @@
             <option value="IMG">画像</option>
             <option value="LINK">リンク</option>
         </select>
-        <input name="url" type="url" bind:value={item.url} required onchange={callCallback}/><br>
+        <input name="url" type="url" bind:value={item.url} onchange={callCallback}/><br>
         <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} />
         <button onclick={onClickAddButton}>追加</button>               
         <button onclick={onClickDeleteButton}>削除</button>               

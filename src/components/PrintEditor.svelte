@@ -13,6 +13,7 @@
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
 	import PrintWorksEditor from "./PrintWorksEditor.svelte";
+	import type { WorkType } from "../types/work";
 
     type PropsType = {
         print: PrintType,
@@ -23,10 +24,11 @@
         publishers: PublisherType[],
         brands: BrandType[],
         series: SeriesType[],
+        works: WorkType[],
         callback: ((result: ResultType<PrintType>) => void) | null
     };
 
-    let { print, printWorks, relatedPersons, relatedLinks, persons, publishers, brands, series, callback } : PropsType = $props();
+    let { print, printWorks, relatedPersons, relatedLinks, persons, publishers, brands, series, works, callback } : PropsType = $props();
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
@@ -77,10 +79,21 @@
                     role: x.role,
                     description: x.description
                 })),
-                relatedLinks: relatedLinks.map(x => ({
+                relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
                     linkType: x.linkType,
                     url: x.url,
                     alt: x.alt,
+                    description: x.description
+                })),
+                works: printWorks.filter(x => x.workId != null).map(x => ({
+                    orderNo: x.orderNo as number,
+                    workId: x.workId as number,
+                    subTitle: x.subTitle,
+                    pageNo: x.pageNo,
+                    publishType: x.publishType,
+                    serializationStatus: x.serializationStatus,
+                    color: x.color,
+                    firstPublished: x.firstPublished,
                     description: x.description
                 }))
             };
@@ -135,7 +148,7 @@
     }
 
     const onChangePrintWorks = (wks: PrintsWorksType[]) => {
-
+        printWorks = wks;
     }
 </script>
 
@@ -182,7 +195,7 @@
         </div>              
         <div class="input-field">
             <label for="brandName">ブランド</label>
-            <input name="brandName" type="text" bind:value={brandName} list="brands" required onchange={onChangeBrandName}/>
+            <input name="brandName" type="text" bind:value={brandName} list="brands" onchange={onChangeBrandName}/>
         </div>              
         <div class="input-field">
             <label for="publicationDate">発行日</label>
@@ -203,7 +216,7 @@
         </div>
         <div>
             <div>Contents</div>
-            <PrintWorksEditor printId={print.id} {printWorks} callback={onChangePrintWorks}></PrintWorksEditor>
+            <PrintWorksEditor printId={print.id} {printWorks} {relatedPersons} {works} callback={onChangePrintWorks}></PrintWorksEditor>
         </div>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />

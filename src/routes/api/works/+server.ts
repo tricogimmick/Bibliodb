@@ -6,7 +6,7 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
-import { runSql } from '$lib/common';
+import { getAllRows, runSql } from '$lib/common';
 
 export type PostDataType = {
     id: number | null;
@@ -94,6 +94,24 @@ const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<Work
     }
 });
 
+// 作品の取得
+const getWorks = (db: pkg.Database, personId: number|null) => new Promise<WorkType[]|Error>(async (ok, ng) => {
+    try {
+        if (personId) {
+            const sql = "SELECT wk.* FROM works as wk " +
+                        "JOIN related_persons as rp ON rp.relatedType = 'WORK' AND rp.relatedId = wk.id " +
+                        "WHERE rp.personId = ?  ORDER BY wk.title, wk.id";
+            const rows = await getAllRows(db, sql, [personId]) as WorkType[];
+            ok(rows);    
+        } else {
+            const rows = await getAllRows(db, "SELECT * FROM works ORDER BY title, id", []) as WorkType[];
+            ok(rows);   
+        }
+    } catch (e: any) {
+        ng(e);
+    }
+})
+
 export const POST: RequestHandler = async ({ request }) => {
 	const postData : PostDataType = await request.json();
     const dbPath = env["LIBMANDB_PATH"] ?? "";
@@ -117,3 +135,18 @@ export const PUT: RequestHandler = async ({ request }) => {
         db.close();
     }
 };
+
+export const GET: RequestHandler = async ({ url }) => {
+    const pid = url.searchParams.get('pid') ?? null;
+    const personId = pid ? Number(pid) : null;
+    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const db = new Database(dbPath);
+    try {
+        const result = await getWorks(db, personId);
+        return json({ ok: true, data: result })
+    } catch (e: any) {
+        return json({ ok: false, data: e })
+    } finally {
+        db.close();
+    }
+}

@@ -105,11 +105,6 @@
 </script>
 
 <div>
-    <datalist id="persons">
-        {#each persons as p (p.id)}
-        <option value={p.index}></option>
-        {/each}
-    </datalist>
     <form onsubmit={onSubmit}>
         <div class="input-field">
             <label for="title">題名</label>
