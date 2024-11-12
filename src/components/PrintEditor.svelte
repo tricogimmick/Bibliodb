@@ -214,7 +214,7 @@
                 <option value="PDF">PDF</option>
             </select>
         </div>
-        <div>
+        <div class="contents-container">
             <div>Contents</div>
             <PrintWorksEditor printId={print.id} {printWorks} {relatedPersons} {works} callback={onChangePrintWorks}></PrintWorksEditor>
         </div>
@@ -223,3 +223,13 @@
         </div>
     </form>
 </div>
+
+<style>
+    .contents-container {
+        margin-top: 1rem;
+        > div:first-child {
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid gray;
+        }
+    }
+</style>
