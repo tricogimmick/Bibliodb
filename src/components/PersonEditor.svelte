@@ -31,7 +31,7 @@
             }
         });
         if (response.ok) {
-            return await response.json() as PersonType;
+            return await response.json() as ResultType<PersonType>;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
@@ -43,8 +43,9 @@
         e.stopImmediatePropagation();
         e.preventDefault();
         try {
-            const result = await callApi({ id: person.id, index, name, kana, born, died, description }, person.id != null ? "PUT" : "POST");
-            callback?.({ ok: true, data: result });
+            const result: ResultType<PersonType> = await callApi({ id: person.id, index, name, kana, born, died, description }, person.id != null ? "PUT" : "POST");
+            console.log(result);
+            callback?.(result);
         } catch (e: any) {
             callback?.({ ok: false, data: null });
         }

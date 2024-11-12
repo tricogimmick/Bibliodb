@@ -2,6 +2,8 @@
 CREATE TABLE works ( 
     -- ID(PK)
     id INTEGER PRIMARY KEY
+    -- INDEX
+    , index TEXT NOT NULL
     -- 作品名
     , title TEXT NOT NULL
     -- 原題
@@ -19,3 +21,4 @@ CREATE TABLE works (
     -- 読了日
     , finishedReading TEXT
 )
+CREATE UNIQUE INDEX persons_index ON persons(index);

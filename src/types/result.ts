@@ -1,4 +1,4 @@
 export type ResultType<T> = {
     ok: boolean,
-    data: T | null
+    data: T | null | string
 };

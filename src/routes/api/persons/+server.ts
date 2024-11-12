@@ -47,10 +47,10 @@ export const POST: RequestHandler = async ({ request }) => {
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
-        const result = await appendPerson(db, person);
+        const result = await appendPerson(db, person) as PersonType;
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
@@ -61,10 +61,10 @@ export const PUT: RequestHandler = async ({ request }) => {
     const dbPath = env["LIBMANDB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
-        const result = await updatePerson(db, person);
+        const result = await updatePerson(db, person) as PersonType;
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
@@ -77,7 +77,7 @@ export const GET: RequestHandler = async ({ url }) => {
         const result = await getAllPersons(db);
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
