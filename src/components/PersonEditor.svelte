@@ -44,10 +44,9 @@
         e.preventDefault();
         try {
             const result: ResultType<PersonType> = await callApi({ id: person.id, index, name, kana, born, died, description }, person.id != null ? "PUT" : "POST");
-            console.log(result);
             callback?.(result);
         } catch (e: any) {
-            callback?.({ ok: false, data: null });
+            callback?.({ ok: false, data: (e as Error).message });
         }
     }
 </script>

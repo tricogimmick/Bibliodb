@@ -20,11 +20,9 @@
 
     // APIの呼出
     async function callApi<T>(url: string) {
-        console.log(`URL:${url}`);
         const respoonse = await fetch(url);
         if (respoonse.ok) {
             const result: { ok: boolean, data: T } = await respoonse.json();
-            console.log(result);
             if (!result.ok) {
                 error(500, { message: "API Error" });
             } 

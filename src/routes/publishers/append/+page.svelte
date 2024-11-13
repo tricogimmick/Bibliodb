@@ -15,8 +15,8 @@
         if (result.ok) {
             goto("/publishers");
         } else {
-            alert("データの登録に失敗しました。");
-        }
+            alert(`Error! (${result.data})`);
+         }
     }
 
 </script>

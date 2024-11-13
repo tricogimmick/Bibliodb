@@ -9,20 +9,19 @@
 
     const { data }: { data: PageData } = $props();
     const series= data.series as SeriesType;
-    const publishers = data.publishers as PublisherType[];
 
     const onSubmit = (result: ResultType<SeriesType>) => {
         if (result.ok) {
             goto("/series");
         } else {
-         alert("データの更新に失敗しました。");   
+         alert(`Error! (${result.data})`);   
         }
     }
 </script>
 
 
 <h2>Series - Edit</h2>
-<SeriesEditor {series} {publishers} callback={onSubmit}></SeriesEditor>
+<SeriesEditor {series} callback={onSubmit}></SeriesEditor>
 <div class="footer">
     <a href="/series">Back to Series</a>
 </div>

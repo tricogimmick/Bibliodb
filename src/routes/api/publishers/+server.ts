@@ -5,6 +5,7 @@ import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
+import { getAllPublishers } from '$lib/common';
 
 const appendPublisher = (db: pkg.Database, publisher: PublisherType) => new Promise<PublisherType|Error>((ok, ng) => {
     db.run("INSERT INTO publishers (name,description) VALUES (?, ?)",
@@ -44,7 +45,7 @@ export const POST: RequestHandler = async ({ request }) => {
         const result = await appendPublisher(db, person);
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
@@ -58,8 +59,21 @@ export const PUT: RequestHandler = async ({ request }) => {
         const result = await updatePublisher(db, person);
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
 };
+
+export const GET: RequestHandler = async ({ url }) => {
+    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const db = new Database(dbPath);
+    try {
+        const result = await getAllPublishers(db);
+        return json({ ok: true, data: result })
+    } catch (e: any) {
+        return json({ ok: false, data: (e as Error).message })
+    } finally {
+        db.close();
+    }
+}

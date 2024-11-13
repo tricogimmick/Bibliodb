@@ -19,7 +19,7 @@
         if (result.ok) {
             goto("/persons");
         } else {
-            alert("データの登録に失敗しました。");
+            alert(`Error! (${result.data})`);
         }
     }
 

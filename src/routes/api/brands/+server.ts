@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request }) => {
         const result = await appendBrand(db, brand);
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
@@ -58,7 +58,7 @@ export const PUT: RequestHandler = async ({ request }) => {
         const result = await updateBrand(db, brand);
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }

@@ -13,8 +13,8 @@
         if (result.ok) {
             goto("/publishers");
         } else {
-         alert("データの更新に失敗しました。");   
-        }
+            alert(`Error! (${result.data})`);
+         }
     }
 </script>
 

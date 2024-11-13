@@ -7,3 +7,4 @@ CREATE TABLE brands (
     -- 説明
     , description TEXT
 );
+CREATE UNIQUE INDEX brands_name ON brands(name);

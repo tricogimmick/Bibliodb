@@ -13,7 +13,7 @@
         if (result.ok) {
             goto("/persons");
         } else {
-         alert("データの更新に失敗しました。");   
+            alert(`Error! (${result.data})`);
         }
     }
 </script>

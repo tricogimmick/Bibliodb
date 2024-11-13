@@ -2,23 +2,44 @@
     import type { SeriesType } from "../types/series";
     import type { PublisherType } from "../types/publisher";
     import type { ResultType } from "../types/result";
+    import { onMount } from 'svelte';
 
     type PropsType = {
-        series: SeriesType,
-        publishers: PublisherType[],
-        callback: ((result: ResultType<SeriesType>) => void) | null
+        series: SeriesType;
+        callback: ((result: ResultType<SeriesType>) => void) | null;
     };
 
-    let { series, publishers, callback } : PropsType = $props();
-    $inspect(publishers);
+    let { series, callback } : PropsType = $props();
+
+    let publishers: PublisherType[] = $state([]);
 
     let title = $state(series.title);
     let index = $state(series.index);
     let originalTitle = $state(series.originalTitle);
     let seriesType = $state(series.seriesType);
-    let publisherName = $state(publishers?.find(x => x.id === series.publisherId)?.name ?? "");
+    let publisherName = $state("");
     let description = $state(series.description);
     let buttonCaption = $derived(series.id == null || series.id == 0 ? "登　録" : "更　新")
+
+    const getPublishers = async () => {
+        try {
+            const respoonse = await fetch("/api/publishers");
+            if (respoonse.ok) {
+                const result = await respoonse.json() as ResultType<PublisherType[]>;
+                return (result.ok ? result.data : []) as PublisherType[];
+            }
+        } catch (e: any) {
+            console.log(e);
+        }
+        return [] as PublisherType[];
+    }
+
+    // コンポーネントがマウントされた
+    onMount(async () => {
+        console.log("SeriesEditor on Mount!");
+        publishers = await getPublishers();
+        publisherName = publishers.find(x => x.id == series.publisherId)?.name ?? "";
+    });
 
     // INDEXが変更された
     const onChangeIndex = (e: Event) => {
@@ -27,7 +48,6 @@
 
     // 出版社が変更された
     const onChangePublisherName = (e: Event) => {
-        console.log(e.target);
         const field = e.target as HTMLInputElement;
         if (publishers.find(x => x.name === publisherName) == null) {
             field.setCustomValidity("出版社が存在しません")
@@ -46,7 +66,7 @@
             }
         });
         if (response.ok) {
-            return await response.json() as SeriesType;
+            return await response.json() as ResultType<SeriesType>;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
@@ -68,9 +88,9 @@
                 description 
             };
             const result = await callApi(postData, series.id != null ? "PUT" : "POST");
-            callback?.({ ok: true, data: result });
+            callback?.(result);
         } catch (e: any) {
-            callback?.({ ok: false, data: null });
+            callback?.({ ok: false, data: (e as Error).message });
         }
     }
 </script>

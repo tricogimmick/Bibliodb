@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ request }) => {
         const result = await appendSeries(db, series);
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
@@ -62,7 +62,7 @@ export const PUT: RequestHandler = async ({ request }) => {
         const result = await updateSeries(db, series);
         return json({ ok: true, data: result })
     } catch (e: any) {
-        return json({ ok: false, data: e })
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }

@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getAllPublishers, getSeries } from '$lib/common';
+import { getSeries } from '$lib/common';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
@@ -11,7 +11,6 @@ export const load: PageServerLoad = async ({ params }) => {
 	try {
 		return {
 			series: await getSeries(db, Number(params.id)),
-			publishers: await getAllPublishers(db)
 		};
 	} catch (e) {
 		console.log(e);

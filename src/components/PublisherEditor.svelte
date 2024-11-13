@@ -22,7 +22,7 @@
             }
         });
         if (response.ok) {
-            return await response.json() as PublisherType;
+            return await response.json() as ResultType<PublisherType>;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
@@ -35,9 +35,9 @@
         e.preventDefault();
         try {
             const result = await callApi({ id: publisher.id, name, description }, publisher.id != null ? "PUT" : "POST");
-            callback?.({ ok: true, data: result });
+            callback?.(result);
         } catch (e: any) {
-            callback?.({ ok: false, data: null });
+            callback?.({ ok: false, data: (e as Error).message });
         }
     }
 </script>

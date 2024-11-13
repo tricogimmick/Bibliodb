@@ -4,10 +4,11 @@ import type { SeriesType } from '../types/series';
 import type { PersonType } from '../types/person';
 import type { WorkType } from '../types/work';
 import type { PrintType } from '../types/print';
+import type { PrintsWorksType } from '../types/printsWorks';
 import type { RelatedPeronsType } from '../types/relatedPersons';
 import type { RelatedLinksType } from '../types/relatedLinks';
+import type { ResultType } from '../types/result';
 import pkg from 'sqlite3';
-import type { PrintsWorksType } from '../types/printsWorks';
 
 // SQLの実行
 export const runSql = (db: pkg.Database, sql: string, params: any) =>  new Promise((ok, ng) => {

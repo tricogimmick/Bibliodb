@@ -15,7 +15,7 @@
         if (result.ok) {
             goto("/brands");
         } else {
-            alert("データの登録に失敗しました。");
+            alert(`Error! (${result.data})`);
         }
     }
 

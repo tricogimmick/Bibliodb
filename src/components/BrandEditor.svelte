@@ -22,7 +22,7 @@
             }
         });
         if (response.ok) {
-            return await response.json() as BrandType;
+            return await response.json() as ResultType<BrandType>;
         } else {
             throw new Error(`Fetch Error (${response.status})`)
         }
@@ -36,9 +36,9 @@
 
         try {
             const result = await callApi({ id: brand.id, name, description }, brand.id != null ? "PUT" : "POST");
-            callback?.({ ok: true,data: result });
+            callback?.(result);
         } catch (e: any) {
-            callback?.({ ok: false, data: null });
+            callback?.({ ok: false, data: (e as Error).message });
         }
     }
 </script>
