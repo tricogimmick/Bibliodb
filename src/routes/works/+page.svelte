@@ -14,7 +14,7 @@
         if (searchKey == "") {
             works = allWorks;
         } else {
-            works = allWorks.filter(x => x.title.includes(searchKey));
+            works = allWorks.filter(x => x.index.includes(searchKey));
         }
     }
 </script>
@@ -27,8 +27,9 @@
     </div>
 </div>
 <div class="series-container">
+    <div>Total: {works.length.toLocaleString()}件</div>
     {#each works as w (w.id)}
-        <span><a href="/works/{w.id}">{w.title}（{w.relatedPersons.map(x => x.name).join(",")}）</a></span>
+        <span><a href="/works/{w.id}">{w.index}（{w.relatedPersons.map(x => x.name).join(",")}）</a></span>
     {/each}
 </div>
 <div class="button-container">
@@ -48,6 +49,10 @@
     }
     .series-container {
         margin-bottom: 1rem;
+    }
+    .series-container > div {
+        padding: 0.2rem;
+        font-weight: bold;
     }
     .series-container > span {
         display: inline-block;

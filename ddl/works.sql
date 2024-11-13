@@ -6,6 +6,8 @@ CREATE TABLE works (
     , index TEXT NOT NULL
     -- 作品名
     , title TEXT NOT NULL
+    -- 別名
+    , variantTitles TEXT
     -- 原題
     , originalTitle TEXT
     -- 種別
@@ -21,4 +23,4 @@ CREATE TABLE works (
     -- 読了日
     , finishedReading TEXT
 )
-CREATE UNIQUE INDEX persons_index ON persons(index);
+CREATE UNIQUE INDEX works_index ON works(index);

@@ -1,89 +1,82 @@
 <script lang="ts">
-    import type { RelatedPeronsType } from "../types/relatedPersons";
-    import type { PersonType } from "../types/person";
+    import type { RelatedSeriesType } from "../types/relatedSeries";
+    import type { SeriesType } from "../types/series";
     import type { ResultType } from "../types/result";
     import { onMount } from 'svelte';
 
     type PropsType = {
         relatedType: string;
         relatedId: number | null;
-        relatedPersons: RelatedPeronsType[];
-        callback: (links: RelatedPeronsType[]) => void
+        relatedSeries: RelatedSeriesType[];
+        callback: (links: RelatedSeriesType[]) => void
     }
     type ItemType = {
         orderNo: number;
-        role: string;
-        personName: string;
+        seriesTitle: string;
         description: string;
     }
 
-    let { relatedType, relatedId, relatedPersons, callback } : PropsType = $props();
-    let persons: PersonType[] = $state([]);
+    let { relatedType, relatedId, relatedSeries, callback } : PropsType = $props();
+    let series: SeriesType[] = $state([]);
 
-    if (relatedPersons.length === 0) {
-        relatedPersons.push({
+    if (relatedSeries.length === 0) {
+        relatedSeries.push({
             relatedType: relatedType,
             relatedId: null,
-            orderNo: 1,
-            personId: null,
-            role: "作者",
+            seriesId: null,
             description: ""
         });
     }
 
     let items: ItemType[] = $state([]);
 
-    const getPersons = async () => {
+    const getSeries = async () => {
         try {
-            const respoonse = await fetch("/api/persons");
+            const respoonse = await fetch("/api/series");
             if (respoonse.ok) {
-                const result = await respoonse.json() as ResultType<PersonType[]>;
-                return (result.ok ? result.data : []) as PersonType[];
+                const result = await respoonse.json() as ResultType<SeriesType[]>;
+                return (result.ok ? result.data : []) as SeriesType[];
             }
         } catch (e: any) {
             console.log(e);
         }
-        return [] as PersonType[];
+        return [] as SeriesType[];
     }
 
     // コンポーネントがマウントされた
     onMount(async () => {
-        persons = await getPersons();
-        let _items: ItemType[] = relatedPersons.map((x, i) => ({
+        series = await getSeries();
+        let _items: ItemType[] = relatedSeries.map((x, i) => ({
             orderNo: i + 1,
-            role: x.role,
-            personName: persons.find(z => z.id == x.personId)?.index ?? "",
+            seriesTitle: series.find(z => z.id == x.seriesId)?.title ?? "",
             description: x.description
         }));
         items = _items;
     });
 
     // 新たな関連人物を生成
-    const newRelatedPerson: (orderNo: number) => ItemType = (orderNo: number) => ({
+    const newRelatedSeries = (orderNo: number) => ({
         orderNo,
-        role: "作者",
-        personName: "",
+        seriesTitle: "",
         description: ""
     });
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: RelatedPeronsType[] = items.map(x => ({
+        const t: RelatedSeriesType[] = items.map(x => ({
             relatedType,
             relatedId,
-            orderNo: x.orderNo,
-            personId: persons.find(z => z.index === x.personName)?.id ?? null,
-            role: x.role,
+            seriesId: series.find(z => z.title === x.seriesTitle)?.id ?? null,
             description: x.description            
         }));
         callback?.(t);
     }
 
-   // 関連人物名が変更された
-   const onChangeRelatedPersonName = (e: Event) => {
+   // 関連シリーズ名が変更された
+   const onChangeRelatedSeriesTitle = (e: Event) => {
         const field = e.target as HTMLInputElement;
-        if (persons.find(x => x.index === field.value) == null) {
-            field.setCustomValidity("著作者が存在しません")
+        if (series.find(x => x.title === field.value) == null) {
+            field.setCustomValidity("シリーズが存在しません")
         } else {
             field.setCustomValidity("")
         }
@@ -96,15 +89,14 @@
         e.preventDefault();
         const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
         if (items.length == orderNo) {
-            items.push(newRelatedPerson(orderNo + 1));
+            items.push(newRelatedSeries(orderNo + 1));
         } else {
             const t = items.map(x => ({
                 orderNo: x.orderNo > orderNo ? x.orderNo + 1 : x.orderNo,
-                role: x.role,
-                personName: x.personName,
+                seriesTitle: x.seriesTitle,
                 description: x.description
             }));
-            t.push(newRelatedPerson(orderNo + 1));
+            t.push(newRelatedSeries(orderNo + 1));
             items = t.toSorted((a, b) => a.orderNo - b.orderNo);
         }
         callCallback();
@@ -118,48 +110,31 @@
             const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
             items = items.filter(x => x.orderNo != orderNo).map(x => ({  
                 orderNo: x.orderNo > orderNo ? x.orderNo -1 : x.orderNo,
-                role: x.role,
-                personName: x.personName,
+                seriesTitle: x.seriesTitle,
                 description: x.description
             }));
             callCallback();
         }
     }
 </script>
-<datalist id="6EFEFD7E-E5D7-4166-BA08-A3C4B7C62D89">
-    {#each persons as p (p.id)}
-        <option>{p.index}</option>
+<datalist id="9A5B2108-E5B9-407D-8D7C-F241E27C787A">
+    {#each series.filter(x => x.seriesType === "雑誌") as p (p.id)}
+        <option>{p.title}</option>
     {/each}
 </datalist>
 {#each items as item, i (item.orderNo)}
 <div class="input-field">
     {#if i == 0}
-    <label for="">著作者</label>
+    <label for="">掲載誌</label>
     {:else}
     <label for="">&nbsp</label>
     {/if}
     <div class="person-data" data-order-no={item.orderNo}>
-        <select name="role" bind:value={item.role} onchange={callCallback}>
-            <option value="作者">作者</option>
-            <option value="著者">著者</option>
-            <option value="翻訳者">翻訳者</option>
-            <option value="編者">編者</option>
-            <option value="話者">話者</option>
-            <option value="解説">解説</option>
-            <option value="原作者">原作者</option>
-            <option value="作画">作画</option>
-        </select>
-        <input name="authorName" type="text" bind:value={item.personName} required list="6EFEFD7E-E5D7-4166-BA08-A3C4B7C62D89" onchange={onChangeRelatedPersonName} />
+        <input name="seriesTitle" type="text" bind:value={item.seriesTitle} list="9A5B2108-E5B9-407D-8D7C-F241E27C787A" onchange={onChangeRelatedSeriesTitle} />
+        <input name="description" type="text" bind:value={item.description} />
         <button onclick={onClickAddButton}>追加</button>               
         <button onclick={onClickDeleteButton}>削除</button>               
     </div>
 </div>              
 {/each}
 
-<style>
-    select[name="role"] {
-        width: 5rem;
-        min-width: 5rem;
-        margin-bottom: 0.2rem;
-    }
-</style>

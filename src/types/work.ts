@@ -1,6 +1,8 @@
 export type WorkType = {
     id: number | null;
+    index: string;
     title: string;
+    variantTitles: string;
     originalTitle: string;
     contentType: string;
     description: string;

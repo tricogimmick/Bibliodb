@@ -6,6 +6,8 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
+import { getAllSeries } from '$lib/common';
+
 const appendSeries = (db: pkg.Database, series: SeriesType) => new Promise<SeriesType|Error>((ok, ng) => {
     db.run("INSERT INTO series ([index], title, originalTitle, seriesType, publisherId, description) VALUES (?, ?, ?, ?, ?, ?)",
         [ series.index, series.title, series.originalTitle, series.seriesType, series.publisherId, series.description ],
@@ -67,3 +69,16 @@ export const PUT: RequestHandler = async ({ request }) => {
         db.close();
     }
 };
+
+export const GET: RequestHandler = async ({ url }) => {
+    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const db = new Database(dbPath);
+    try {
+        const result = await getAllSeries(db);
+        return json({ ok: true, data: result })
+    } catch (e: any) {
+        return json({ ok: false, data: (e as Error).message })
+    } finally {
+        db.close();
+    }
+}

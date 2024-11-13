@@ -23,9 +23,18 @@ type RelationLinkDetailType = {
     description: string;
 };
 
+type RelatedSeriesDetailType = {
+    seriesId: number;
+    seriesTitle: string;
+    description: string;
+};
+
+
 type WorkDetailType = {
     id: number | null;
+    index: string;
     title: string;
+    variantTitles: string;
     originalTitle: string;
     contentType: string;
     description: string;
@@ -34,13 +43,16 @@ type WorkDetailType = {
     seqNo: number | null;
     finishedReading: string;
     relatedPersons: RelatedPersonDetailType[],
-    relatedLinks: RelationLinkDetailType[]
+    relatedLinks: RelationLinkDetailType[],
+    relatedSeries: RelatedSeriesDetailType[]
 }
 
 // 作品情報を生成する
-const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDetailType[], relatedLinks: RelationLinkDetailType[]) => ({
+const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDetailType[], relatedLinks: RelationLinkDetailType[], relatedSeries: RelatedSeriesDetailType[]) => ({
         id: work.id,
+        index: work.index,
         title: work.title,
+        variantTitles: work.variantTitles,
         originalTitle: work.originalTitle,
         contentType: work.contentType,
         description: work.description,
@@ -49,7 +61,8 @@ const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDetailTyp
         seqNo: work.seqNo,
         finishedReading: work.finishedReading,
         relatedPersons,
-        relatedLinks
+        relatedLinks,
+        relatedSeries
 });
 
 // 作品を取得する
@@ -69,7 +82,14 @@ const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Err
             "WHERE r.relatedType = 'WORK' AND  r.relatedId = ?", 
             [work.id]
         );
-        ok(createWorkDetail(work, relatedPersons, relatedLinks));
+        const relatedSeries: RelatedSeriesDetailType[] = await getAllRows(db,
+            "SELECT r.seriesId, s.title as seriesTitle, r.description " +
+            "FROM related_series as r " +
+            "JOIN series as s ON s.id = r.seriesId " +
+            "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", 
+            [work.id]
+        );
+        ok(createWorkDetail(work, relatedPersons, relatedLinks, relatedSeries));
     } catch (e: any) {
         ng(e);
     }

@@ -21,8 +21,14 @@
 <div>
     <div class="input-field">
         <label for="title">題名</label>
-        <span class="data-value">{workData.title}</span>
+        <span class="data-value">{workData.title} {#if workData.index != workData.title}({workData.index}){/if}</span>
     </div>
+    {#if workData.variantTitles}
+    <div class="input-field">
+        <label for="variantTitles">別名</label>
+        <span class="data-value">{workData.variantTitles}</span>
+    </div>
+    {/if}
     {#if workData.originalTitle}
     <div class="input-field">
         <label for="originalTitle">原題</label>
@@ -33,7 +39,7 @@
         <label for="contentType">種別</label>
         <span class="data-value">{workData.contentType}</span>
     </div>
-    {#each workData.relatedPersons as relatedPerson, i (relatedPerson.orderNo)}
+    {#each workData.relatedPersons as relatedPerson, i }
     <div class="input-field">
         {#if i == 0}
         <label for="">著作者</label>
@@ -41,6 +47,16 @@
         <label for="">&nbsp</label>
         {/if}
         <span class="data-value">{relatedPerson.personName} {relatedPerson.role.replace("者", "")}</span>
+    </div>              
+    {/each}
+    {#each workData.relatedSeries as relatedSeries, i }
+    <div class="input-field">
+        {#if i == 0}
+        <label for="">掲載誌</label>
+        {:else}
+        <label for="">&nbsp</label>
+        {/if}
+        <span class="data-value">{relatedSeries.seriesTitle}</span>
     </div>              
     {/each}
     <div class="input-field">

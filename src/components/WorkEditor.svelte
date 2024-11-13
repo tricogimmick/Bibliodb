@@ -1,25 +1,28 @@
 <script lang="ts">
     import type { WorkType } from "../types/work";
-    import type { PersonType } from "../types/person";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { RelatedLinksType } from "../types/relatedLinks";
+    import type { RelatedSeriesType } from "../types/relatedSeries";
     import type { ResultType } from "../types/result";
     import type { PostDataType } from "../routes/api/works/+server";
 
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
+    import RelatedSeriesEditor from "./RelatedSeriesEditor.svelte";
 
     type PropsType = {
         work: WorkType,
         relatedPersons: RelatedPeronsType[],
         relatedLinks: RelatedLinksType[],
-        persons: PersonType[],
+        relatedSeries: RelatedSeriesType[],
         callback: ((result: ResultType<WorkType>) => void) | null
     };
 
-    let { work, relatedPersons, relatedLinks, persons, callback } : PropsType = $props();
+    let { work, relatedPersons, relatedLinks, relatedSeries, callback } : PropsType = $props();
 
+    let index = $state(work.index);
     let title = $state(work.title);
+    let variantTitles = $state(work.variantTitles);
     let originalTitle = $state(work.originalTitle);
     let contentType = $state(work.contentType);
     let description = $state(work.description);
@@ -39,9 +42,9 @@
             }
         });
         if (response.ok) {
-            return await response.json() as WorkType;
+            return await response.json() as ResultType<WorkType>;
         } else {
-            throw new Error(`Fetch Error:(${response.status})`)
+            throw new Error(`${response.status} (${response.statusText})`)
         }
     }
     // FOMRがサブミットされた
@@ -53,7 +56,9 @@
         try {
             const postData: PostDataType = {
                 id: work.id,
+                index: index,
                 title,
+                variantTitles,
                 originalTitle,
                 contentType,
                 description,
@@ -61,38 +66,36 @@
                 publicationYear,
                 seqNo,
                 finishedReading,
-                relatedPersons: relatedPersons.map(x => ({
-                    orderNo: x.orderNo as number,
+                relatedPersons: relatedPersons.map((x, i) => ({
+                    orderNo: i + 1,
                     personId: x.personId as number,
                     role: x.role,
                     description: x.description
                 })),
-                relatedLinks: relatedLinks.map(x => ({
+                relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
                     linkType: x.linkType,
                     url: x.url,
                     alt: x.alt,
                     description: x.description
+                })),
+                relatedSeries: relatedSeries.filter(x => x.seriesId != null).map(x => ({
+                    seriesId: x.seriesId as number,
+                    description: x.description
                 }))
             };
             const result = await callApi(postData, work.id != null ? "PUT" : "POST");
-            console.log(result);
-            callback?.({ ok: true, data: result });
+            callback?.(result);
         } catch (e: any) {
-            callback?.({ ok: false, data: e });
+            callback?.({ ok: false, data: (e as Error).message });
         }
     };
 
-    // 著作者名が変更された
-    const onChangeRelatedPersonName = (e: Event) => {
-        const field = e.target as HTMLInputElement;
-        if (persons.find(x => x.index === field.value) == null) {
-            field.setCustomValidity("著作者が存在しません")
-        } else {
-            field.setCustomValidity("")
-        }
+    // INDEXが変更された
+    const onChangeIndex = (e: Event) => {
+        title = index;
     }
 
-    // 関連人物リンクが変更された
+    // 関連人物が変更された
     const onChangeRelationPersons = (rp: RelatedPeronsType[]) => {
         relatedPersons = rp;
     }
@@ -102,13 +105,26 @@
         relatedLinks = rl;
     }
 
+    // 関連シリーズが変更された
+    const onChangeRelationSeries = (rs: RelatedSeriesType[]) => {
+        relatedSeries = rs;
+    }
+
 </script>
 
 <div>
     <form onsubmit={onSubmit}>
         <div class="input-field">
+            <label for="index">INDEX</label>
+            <input name="index" type="text" bind:value={index} required onchange={onChangeIndex} />
+        </div>
+        <div class="input-field">
             <label for="title">題名</label>
             <input name="title" type="text" bind:value={title} required />
+        </div>
+        <div class="input-field">
+            <label for="variantTitles">別名</label>
+            <input name="variantTitles" type="text" bind:value={variantTitles} />
         </div>
         <div class="input-field">
             <label for="originalTitle">原題</label>
@@ -118,12 +134,16 @@
             <label for="contentType">種別</label>
             <select name="contentType" bind:value={contentType}>
                 <option value="小説">小説</option>
+                <option value="詩歌">詩歌</option>
                 <option value="エッセイ">エッセイ</option>
+                <option value="日記">日記</option>
                 <option value="評論">評論</option>
                 <option value="対談・座談">対談・座談</option>
+                <option value="漫画">漫画</option>
             </select>
         </div>
-        <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
+        <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} callback={onChangeRelationPersons}></RelatedPersonEditor>
+        <RelatedSeriesEditor relatedType="WORK" relatedId={work.id} {relatedSeries} callback={onChangeRelationSeries}></RelatedSeriesEditor>
         <div class="input-field">
             <label for="publishYear">発表年</label>
             <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/><span>年</span>
