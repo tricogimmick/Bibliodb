@@ -2,12 +2,12 @@
     import type { RelatedSeriesType } from "../types/relatedSeries";
     import type { SeriesType } from "../types/series";
     import type { ResultType } from "../types/result";
-    import { onMount } from 'svelte';
 
     type PropsType = {
         relatedType: string;
         relatedId: number | null;
         relatedSeries: RelatedSeriesType[];
+        series: SeriesType[];
         callback: (links: RelatedSeriesType[]) => void
     }
     type ItemType = {
@@ -16,8 +16,7 @@
         description: string;
     }
 
-    let { relatedType, relatedId, relatedSeries, callback } : PropsType = $props();
-    let series: SeriesType[] = $state([]);
+    let { relatedType, relatedId, relatedSeries, series, callback } : PropsType = $props();
 
     if (relatedSeries.length === 0) {
         relatedSeries.push({
@@ -28,31 +27,12 @@
         });
     }
 
-    let items: ItemType[] = $state([]);
-
-    const getSeries = async () => {
-        try {
-            const respoonse = await fetch("/api/series");
-            if (respoonse.ok) {
-                const result = await respoonse.json() as ResultType<SeriesType[]>;
-                return (result.ok ? result.data : []) as SeriesType[];
-            }
-        } catch (e: any) {
-            console.log(e);
-        }
-        return [] as SeriesType[];
-    }
-
-    // コンポーネントがマウントされた
-    onMount(async () => {
-        series = await getSeries();
-        let _items: ItemType[] = relatedSeries.map((x, i) => ({
-            orderNo: i + 1,
-            seriesTitle: series.find(z => z.id == x.seriesId)?.title ?? "",
-            description: x.description
-        }));
-        items = _items;
-    });
+    let _items: ItemType[] = relatedSeries.map((x, i) => ({
+        orderNo: i + 1,
+        seriesTitle: series.find(z => z.id == x.seriesId)?.title ?? "",
+        description: x.description
+    }));
+    let items: ItemType[] = $state(_items);
 
     // 新たな関連人物を生成
     const newRelatedSeries = (orderNo: number) => ({
@@ -118,7 +98,7 @@
     }
 </script>
 <datalist id="9A5B2108-E5B9-407D-8D7C-F241E27C787A">
-    {#each series.filter(x => x.seriesType === "雑誌") as p (p.id)}
+    {#each series.filter(x => x.seriesType === "雑誌" || x.seriesType === "WEB") as p (p.id)}
         <option>{p.title}</option>
     {/each}
 </datalist>

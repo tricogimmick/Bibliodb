@@ -7,6 +7,7 @@
     const workData = data.work;
 
     const extelanLink = workData.relatedLinks.filter(x => x.linkType === "LINK");
+    const relatedPersons = workData.relatedPersons.map(x => `${x.personName} ${x.role.replace("者", "")}`).join(" / ");
 
     const onclickModifyWork = (e: Event) => {
         e.preventDefault();
@@ -39,16 +40,10 @@
         <label for="contentType">種別</label>
         <span class="data-value">{workData.contentType}</span>
     </div>
-    {#each workData.relatedPersons as relatedPerson, i }
     <div class="input-field">
-        {#if i == 0}
         <label for="">著作者</label>
-        {:else}
-        <label for="">&nbsp</label>
-        {/if}
-        <span class="data-value">{relatedPerson.personName} {relatedPerson.role.replace("者", "")}</span>
+        <span class="data-value">{relatedPersons}</span>
     </div>              
-    {/each}
     {#each workData.relatedSeries as relatedSeries, i }
     <div class="input-field">
         {#if i == 0}
@@ -71,6 +66,7 @@
         <label for="seqNo">連番</label>
         <span class="data-value">{workData.seqNo}</span>
     </div>      
+    {#if extelanLink.length > 0 }
     <div class="input-field">
         <label for="ownedType">関連リンク</label>
         <div>
@@ -79,6 +75,7 @@
             {/each}
         </div>
     </div>      
+    {/if}
     <div class="input-field">
         <label for="finishedReading">読了日</label>
         <span class="data-value">{workData.finishedReading}</span>
@@ -96,7 +93,7 @@
 </div>
 
 <style>
-    .footer {
-        margin-top: 1rem;
+    .data-item {
+        margin-right: 1rem;
     }
 </style>

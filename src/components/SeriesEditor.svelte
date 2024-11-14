@@ -2,44 +2,22 @@
     import type { SeriesType } from "../types/series";
     import type { PublisherType } from "../types/publisher";
     import type { ResultType } from "../types/result";
-    import { onMount } from 'svelte';
 
     type PropsType = {
         series: SeriesType;
+        publishers: PublisherType[];
         callback: ((result: ResultType<SeriesType>) => void) | null;
     };
 
-    let { series, callback } : PropsType = $props();
-
-    let publishers: PublisherType[] = $state([]);
+    let { series, publishers, callback } : PropsType = $props();
 
     let title = $state(series.title);
     let index = $state(series.index);
     let originalTitle = $state(series.originalTitle);
     let seriesType = $state(series.seriesType);
-    let publisherName = $state("");
+    let publisherName = $state(publishers.find(x => x.id == series.publisherId)?.name);
     let description = $state(series.description);
     let buttonCaption = $derived(series.id == null || series.id == 0 ? "登　録" : "更　新")
-
-    const getPublishers = async () => {
-        try {
-            const respoonse = await fetch("/api/publishers");
-            if (respoonse.ok) {
-                const result = await respoonse.json() as ResultType<PublisherType[]>;
-                return (result.ok ? result.data : []) as PublisherType[];
-            }
-        } catch (e: any) {
-            console.log(e);
-        }
-        return [] as PublisherType[];
-    }
-
-    // コンポーネントがマウントされた
-    onMount(async () => {
-        console.log("SeriesEditor on Mount!");
-        publishers = await getPublishers();
-        publisherName = publishers.find(x => x.id == series.publisherId)?.name ?? "";
-    });
 
     // INDEXが変更された
     const onChangeIndex = (e: Event) => {
@@ -96,7 +74,7 @@
 </script>
 
 <div>
-    <datalist id="publishers">
+    <datalist id="C201555D-CE95-4182-909E-FF1BA4EA3351">
         {#each publishers as p (p.id)}
         <option value={p.name}></option>
         {/each}
@@ -118,12 +96,13 @@
             <label for="seriesType">種別</label>
             <select name="seriesType" bind:value={seriesType}>
                 <option value="雑誌">雑誌</option>
+                <option value="WEB">WEB</option>
                 <option value="叢書">叢書</option>
             </select>
         </div>
         <div class="input-field">
             <label for="publisherName">出版社</label>
-            <input name="publisherName" type="text" bind:value={publisherName} list="publishers" onchange={onChangePublisherName}  />
+            <input name="publisherName" type="text" bind:value={publisherName} list="C201555D-CE95-4182-909E-FF1BA4EA3351" onchange={onChangePublisherName}  />
         </div>
         <div class="input-field">
             <label for="description">解説</label>

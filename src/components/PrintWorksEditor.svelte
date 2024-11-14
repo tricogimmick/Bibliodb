@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { PrintsWorksType } from "../types/printsWorks";
 	import type { WorkType } from "../types/work";
+	import type { WorkTagType } from "../routes/api/workTags/+server";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import WorksSelector from "./WorksSelector.svelte";
     import { workSelectorOpen } from "$lib/workSelectorLib";
@@ -9,7 +10,7 @@
         printId: number | null;
         printWorks: PrintsWorksType[];
         relatedPersons: RelatedPeronsType[];
-        works: WorkType[];
+        workTags: WorkTagType[];
         callback: (works: PrintsWorksType[]) => void
     }
 
@@ -26,7 +27,9 @@
         description: string;        
     }
 
-    let { printId, printWorks, relatedPersons, works, callback } : PropsType = $props();
+    let { printId, printWorks, relatedPersons, workTags, callback } : PropsType = $props();
+
+    $inspect(workTags);
 
     if (printWorks.length === 0) {
         printWorks.push({
@@ -46,7 +49,7 @@
     let _items: ItemType[] = printWorks.map((x, i) => ({
         orderNo: i + 1,
         workId: x.workId,
-        title: works.find(z => z.id === x.workId)?.title ?? "",
+        title: workTags.find(z => z.workId === x.workId)?.title ?? "",
         subTitle: x.subTitle,
         pageNo: x.pageNo,
         publishType: x.publishType,
@@ -64,7 +67,7 @@
         const item = items.find(x => x.orderNo === orderNo);
         if (item) {
             item.workId = work.id;
-            item.title = work.title;
+            item.title = work.index;
             callCallback();
         }
     }
@@ -147,6 +150,11 @@
         }
     };
 
+    // タイトルが変更された
+    const onChangeTitle = (e: Event) => {
+
+    }
+
     // タイトル欄でダブルクリック
     const ondblclickText = (e: Event) => {
         e.stopImmediatePropagation();
@@ -157,6 +165,11 @@
 </script>
 
 <div class="table-works">
+    <datalist id="A3F6CC9A-A102-4723-85EE-B395582ED634">
+        {#each workTags as workTag }
+            <option>{workTag.index}</option>
+        {/each}
+    </datalist>
     <div class="table-works-header">
         <div class="table-works-row">
             <div class="table-works-column">No</div>
@@ -176,7 +189,7 @@
         <div class="table-works-row" data-order-no={item.orderNo}>
             <div class="table-works-column">{item.orderNo}</div>
             <div class="table-works-column">
-                <input type="text" name="title" bind:value={item.title} readonly required />
+                <input type="text" name="title" bind:value={item.title} required list="A3F6CC9A-A102-4723-85EE-B395582ED634" onchange={onChangeTitle} />
                 <button onclick={ondblclickText}>検索</button>
             </div>
             <div class="table-works-column">

@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { SeriesType } from '../../../types/series';
-    import type { PublisherType } from '../../../types/publisher';
     import type { ResultType } from '../../../types/result';
 
     import { goto } from "$app/navigation";
@@ -21,7 +20,7 @@
 
 
 <h2>Series - Edit</h2>
-<SeriesEditor {series} callback={onSubmit}></SeriesEditor>
+<SeriesEditor {...data} callback={onSubmit}></SeriesEditor>
 <div class="footer">
     <a href="/series">Back to Series</a>
 </div>

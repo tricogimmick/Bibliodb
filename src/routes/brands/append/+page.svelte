@@ -26,9 +26,3 @@
 <div class="footer">
     <a href="/brands">Back to Brands</a>
 </div>
-
-<style>
-    .footer {
-        margin-top: 1rem;
-    }
-</style>

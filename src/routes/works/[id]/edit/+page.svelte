@@ -22,9 +22,3 @@
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>
-
-<style>
-    .footer {
-        margin-top: 1rem;
-    }
-</style>

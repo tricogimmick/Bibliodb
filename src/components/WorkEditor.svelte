@@ -1,5 +1,7 @@
 <script lang="ts">
     import type { WorkType } from "../types/work";
+    import type { PersonType } from "../types/person";
+	import type { SeriesType } from "../types/series";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { RelatedSeriesType } from "../types/relatedSeries";
@@ -15,10 +17,12 @@
         relatedPersons: RelatedPeronsType[],
         relatedLinks: RelatedLinksType[],
         relatedSeries: RelatedSeriesType[],
+        persons: PersonType[],
+        series: SeriesType[],
         callback: ((result: ResultType<WorkType>) => void) | null
     };
 
-    let { work, relatedPersons, relatedLinks, relatedSeries, callback } : PropsType = $props();
+    let { work, relatedPersons, relatedLinks, relatedSeries, persons, series, callback } : PropsType = $props();
 
     let index = $state(work.index);
     let title = $state(work.title);
@@ -142,8 +146,8 @@
                 <option value="漫画">漫画</option>
             </select>
         </div>
-        <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} callback={onChangeRelationPersons}></RelatedPersonEditor>
-        <RelatedSeriesEditor relatedType="WORK" relatedId={work.id} {relatedSeries} callback={onChangeRelationSeries}></RelatedSeriesEditor>
+        <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
+        <RelatedSeriesEditor relatedType="WORK" relatedId={work.id} {relatedSeries} {series} callback={onChangeRelationSeries}></RelatedSeriesEditor>
         <div class="input-field">
             <label for="publishYear">発表年</label>
             <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/><span>年</span>

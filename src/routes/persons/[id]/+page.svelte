@@ -23,9 +23,3 @@
 <div class="footer">
     <a href="/persons">Back to Persons</a>
 </div>
-
-<style>
-    .footer {
-        margin-top: 1rem;
-    }
-</style>

@@ -9,7 +9,6 @@
 
     const { data }: { data: PageData } = $props();
     const brand : BrandType = data.brand as BrandType;
-    $inspect(data);
 
     const onSubmit = (result: ResultType<BrandType>) => {
         if (result.ok) {
@@ -26,9 +25,3 @@
 <div class="footer">
     <a href="/brands">Back to Brands</a>
 </div>
-
-<style>
-    .footer {
-        margin-top: 1rem;
-    }
-</style>

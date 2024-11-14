@@ -3,43 +3,120 @@
     import type { PublisherType } from "../types/publisher";
     import type { BrandType } from "../types/brand";
     import type { SeriesType } from "../types/series";
-    import type { PersonType } from "../types/person";
+	import type { WorkType } from "../types/work";
+    import type { WorkTagType } from "../routes/api/workTags/+server";
     import type { PrintsWorksType } from "../types/printsWorks";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { PostDataType } from "../routes/api/prints/+server";
     import type { ResultType } from "../types/result";
 
+    import { onMount } from 'svelte';
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
 	import PrintWorksEditor from "./PrintWorksEditor.svelte";
-	import type { WorkType } from "../types/work";
 
     type PropsType = {
         print: PrintType,
         printWorks: PrintsWorksType[],
         relatedPersons: RelatedPeronsType[],
         relatedLinks: RelatedLinksType[],
-        persons: PersonType[],
-        publishers: PublisherType[],
-        brands: BrandType[],
-        series: SeriesType[],
-        works: WorkType[],
         callback: ((result: ResultType<PrintType>) => void) | null
     };
 
-    let { print, printWorks, relatedPersons, relatedLinks, persons, publishers, brands, series, works, callback } : PropsType = $props();
+    let { print, printWorks, relatedPersons, relatedLinks, callback } : PropsType = $props();
+
+    let publishers: PublisherType[] = $state([]);
+    let brands: BrandType[] = $state([]);
+    let series: SeriesType[] = $state([]);
+    let allWorkTags: WorkTagType[] = $state([]);
+    let workTags: WorkTagType[] = $state([]);
+    $inspect(workTags);
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
     let printType = $state(print.printType);
-    let publisherName = $state(publishers.find(x => x.id === print.publisherId)?.name ?? "");
-    let brandName = $state(brands.find(x => x.id == print.brandId)?.name ?? "");
+    let publisherName = $state("");
+    let brandName = $state("");
     let publicationDate = $state(print.publicationDate);
-    let seriesName = $state(series.find(x => x.id === print.seriesId)?.index ?? "");
+    let seriesName = $state("");
     let description = $state(print.description);
     let ownedType = $state(print.ownedType);
     let buttonCaption = $derived(print.id == null || print.id == 0 ? "登　録" : "更　新")
+
+    // 出版社を取得する
+    const getPublishers = async () => {
+        try {
+            const respoonse = await fetch("/api/publishers");
+            if (respoonse.ok) {
+                const result = await respoonse.json() as ResultType<PublisherType[]>;
+                return (result.ok ? result.data : []) as PublisherType[];
+            }
+        } catch (e: any) {
+            console.log(e);
+        }
+        return [] as PublisherType[];
+    }
+
+    // ブランドを取得する
+    const getBrands = async () => {
+        try {
+            const respoonse = await fetch("/api/brands");
+            if (respoonse.ok) {
+                const result = await respoonse.json() as ResultType<BrandType[]>;
+                return (result.ok ? result.data : []) as BrandType[];
+            }
+        } catch (e: any) {
+            console.log(e);
+        }
+        return [] as BrandType[];
+    }
+
+    // シリーズを取得する
+    const getSeries = async () => {
+        try {
+            const respoonse = await fetch("/api/series");
+            if (respoonse.ok) {
+                const result = await respoonse.json() as ResultType<SeriesType[]>;
+                return (result.ok ? result.data : []) as SeriesType[];
+            }
+        } catch (e: any) {
+            console.log(e);
+        }
+        return [] as SeriesType[];
+    }
+
+    // 作品タグを取得する
+    const getWorkTags = async () => {
+        try {
+            const respoonse = await fetch("/api/workTags");
+            if (respoonse.ok) {
+                const result = await respoonse.json() as ResultType<WorkTagType[]>;
+                return (result.ok ? result.data : []) as WorkTagType[];
+            }
+        } catch (e: any) {
+            console.log(e);
+        }
+        return [] as WorkTagType[];
+    }
+
+    const uniqWorkTag : (ar: WorkTagType[]) => WorkTagType[] =  (ar: WorkTagType[]) => 
+        [... new Set(ar.map(x => ({ workId: x.workId, index: x.index, title: x.title, personId: null })))];
+
+    // コンポーネントがマウントされた
+    onMount(async () => {
+        publishers = await getPublishers();
+        publisherName = publishers.find(x => x.id == print.publisherId)?.name ?? "";
+        brands = await getBrands();
+        brandName = brands.find(x => x.id == print.brandId)?.name ?? "";
+        series = await getSeries();
+        seriesName =series.find(x => x.id === print.seriesId)?.index ?? "";
+        allWorkTags = await getWorkTags();
+        workTags = relatedPersons.length > 0 ?
+            uniqWorkTag(allWorkTags.filter(x => relatedPersons.findIndex(z => z.personId == x.personId) >= 0)) :
+            uniqWorkTag(allWorkTags);
+        console.log(workTags);
+    });
 
      // 更新用APIの呼出
      const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
@@ -137,9 +214,12 @@
     }
 
     // 関連人物リンクが変更された
-    const onChangeRelationPersons = (rp: RelatedPeronsType[]) => {
+    const onChangeRelationPersons = async (rp: RelatedPeronsType[]) => {
         console.log(rp);
         relatedPersons = rp;
+        workTags = relatedPersons.length > 0 ?
+            uniqWorkTag(allWorkTags.filter(x => relatedPersons.findIndex(z => z.personId == x.personId) >= 0)) :
+            uniqWorkTag(allWorkTags);
     }
 
     // 関連リンクが変更された
@@ -147,28 +227,33 @@
         relatedLinks = rl;
     }
 
+    // 収録作品が変更された
     const onChangePrintWorks = (wks: PrintsWorksType[]) => {
         printWorks = wks;
     }
 </script>
 
 <div>
-    <datalist id="publishers">
+    <datalist id="5F8F5F10-8B21-421A-8D9B-B13DAED88B96">
         {#each publishers as p (p.id)}
         <option value={p.name}></option>
         {/each}
     </datalist>
-    <datalist id="brands">
+    <datalist id="F92B8C10-0942-4179-82DA-18C505B2F21A">
         {#each brands as b (b.id)}
         <option value={b.name}></option>
         {/each}
     </datalist>
-    <datalist id="series">
+    <datalist id="0A72E1A9-DC21-4B88-9A4E-C6506E917B6B">
         {#each series as s (s.id)}
         <option value={s.index}></option>
         {/each}
     </datalist>
     <form onsubmit={onSubmit}>
+        <div class="input-field">
+            <label for="seriesName">シリーズ</label>
+            <input name="seriesName" type="text" bind:value={seriesName} list="0A72E1A9-DC21-4B88-9A4E-C6506E917B6B" onchange={onChangeSeriesName} />
+        </div>              
         <div class="input-field">
             <label for="title">題名</label>
             <input name="title" type="text" bind:value={title} required />
@@ -184,18 +269,14 @@
                 <option value="雑誌">雑誌</option>
             </select>
         </div>
-        <div class="input-field">
-            <label for="seriesName">シリーズ</label>
-            <input name="seriesName" type="text" bind:value={seriesName} list="series" onchange={onChangeSeriesName} />
-        </div>              
-        <RelatedPersonEditor relatedType="PRINT" relatedId={print.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
+        <RelatedPersonEditor relatedType="PRINT" relatedId={print.id} {relatedPersons} callback={onChangeRelationPersons}></RelatedPersonEditor>
         <div class="input-field">
             <label for="publisherName">出版社</label>
-            <input name="publisherName" type="text" bind:value={publisherName} list="publishers" required onchange={onChangePublisherName}/>
+            <input name="publisherName" type="text" bind:value={publisherName} list="5F8F5F10-8B21-421A-8D9B-B13DAED88B96" required onchange={onChangePublisherName}/>
         </div>              
         <div class="input-field">
             <label for="brandName">ブランド</label>
-            <input name="brandName" type="text" bind:value={brandName} list="brands" onchange={onChangeBrandName}/>
+            <input name="brandName" type="text" bind:value={brandName} list="F92B8C10-0942-4179-82DA-18C505B2F21A" onchange={onChangeBrandName}/>
         </div>              
         <div class="input-field">
             <label for="publicationDate">発行日</label>
@@ -216,7 +297,7 @@
         </div>
         <div class="contents-container">
             <div>Contents</div>
-            <PrintWorksEditor printId={print.id} {printWorks} {relatedPersons} {works} callback={onChangePrintWorks}></PrintWorksEditor>
+            <PrintWorksEditor printId={print.id} {printWorks} {relatedPersons} workTags={allWorkTags} callback={onChangePrintWorks}></PrintWorksEditor>
         </div>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />

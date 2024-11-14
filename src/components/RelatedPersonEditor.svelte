@@ -2,13 +2,13 @@
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { PersonType } from "../types/person";
     import type { ResultType } from "../types/result";
-    import { onMount } from 'svelte';
 
     type PropsType = {
         relatedType: string;
         relatedId: number | null;
         relatedPersons: RelatedPeronsType[];
-        callback: (links: RelatedPeronsType[]) => void
+        persons: PersonType[];
+        callback: (links: RelatedPeronsType[]) => void;
     }
     type ItemType = {
         orderNo: number;
@@ -17,8 +17,7 @@
         description: string;
     }
 
-    let { relatedType, relatedId, relatedPersons, callback } : PropsType = $props();
-    let persons: PersonType[] = $state([]);
+    let { relatedType, relatedId, relatedPersons, persons, callback } : PropsType = $props();
 
     if (relatedPersons.length === 0) {
         relatedPersons.push({
@@ -31,32 +30,13 @@
         });
     }
 
-    let items: ItemType[] = $state([]);
-
-    const getPersons = async () => {
-        try {
-            const respoonse = await fetch("/api/persons");
-            if (respoonse.ok) {
-                const result = await respoonse.json() as ResultType<PersonType[]>;
-                return (result.ok ? result.data : []) as PersonType[];
-            }
-        } catch (e: any) {
-            console.log(e);
-        }
-        return [] as PersonType[];
-    }
-
-    // コンポーネントがマウントされた
-    onMount(async () => {
-        persons = await getPersons();
-        let _items: ItemType[] = relatedPersons.map((x, i) => ({
-            orderNo: i + 1,
-            role: x.role,
-            personName: persons.find(z => z.id == x.personId)?.index ?? "",
-            description: x.description
-        }));
-        items = _items;
-    });
+    let _items: ItemType[] = relatedPersons.map((x, i) => ({
+        orderNo: i + 1,
+        role: x.role,
+        personName: persons.find(z => z.id === x.personId)?.name ?? "",
+        description: x.description
+    }))
+    let items: ItemType[] = $state(_items);
 
     // 新たな関連人物を生成
     const newRelatedPerson: (orderNo: number) => ItemType = (orderNo: number) => ({
@@ -148,6 +128,8 @@
             <option value="解説">解説</option>
             <option value="原作者">原作者</option>
             <option value="作画">作画</option>
+            <option value="協力">協力</option>
+            <option value="監修">監修</option>
         </select>
         <input name="authorName" type="text" bind:value={item.personName} required list="6EFEFD7E-E5D7-4166-BA08-A3C4B7C62D89" onchange={onChangeRelatedPersonName} />
         <button onclick={onClickAddButton}>追加</button>               
