@@ -36,6 +36,14 @@ type RelationLinkDetailType = {
     description: string;
 };
 
+type PrintWorksDetailType = {
+    orderNo: number;
+    workId: number;
+    title: string;
+    subTitle: string;
+    pageNo: number | null;
+}
+
 type PrintDetailType = {
     id: number | null;
     title: string;
@@ -47,8 +55,9 @@ type PrintDetailType = {
     seriesName: number | null;
     description: string;   
     ownedType: string; 
-    relatedPersons: RelatedPersonDetailType[]
-    relatedLinks: RelationLinkDetailType[]
+    relatedPersons: RelatedPersonDetailType[];
+    relatedLinks: RelationLinkDetailType[];
+    works: PrintWorksDetailType[];
 };
 
 // 出版物を取得する
@@ -74,6 +83,11 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 "FROM related_links as r " +
                 "WHERE r.relatedType = 'PRINT' AND  r.relatedId = ?", [row.id]
             );
+            const works = await getAllRows<PrintWorksDetailType>(db,
+                "SELECT pw.orderNo, pw.workId, wk.title, pw.subTitle, pw.pageNo FROM prints_works as pw " +
+                "JOIN works as wk ON wk.id = pw.workId " +
+                "WHERE pw.printId = ? ORDER BY pw.orderNo", [row.id]
+            );
             const print: PrintDetailType = {
                 id: row.id,
                 title: row.title,
@@ -86,7 +100,8 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 description: row.description, 
                 ownedType: row.ownedType,                            
                 relatedPersons,
-                relatedLinks
+                relatedLinks,
+                works
             };
             ok(print);
         } catch (error) {
@@ -100,7 +115,7 @@ export const load: PageServerLoad = async ({ params }) => {
     const db = new Database(dbPath);    
     try {
 		return {
-			prints: await getPrint(db, Number(params.id)) as PrintDetailType
+			print: await getPrint(db, Number(params.id)) as PrintDetailType
 		};
     } catch (e) {
 		console.log(e);

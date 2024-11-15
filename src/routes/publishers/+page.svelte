@@ -19,6 +19,9 @@
 </script>
 
 <h2>Publishers</h2>
+<div class="button-container">
+    <button onclick={onClickAppendPublishers}>追　加</button>
+</div>
 <div class="condition-container">
     <div class="input-field">
         <label for="search-key">出版社名 : </label>
@@ -29,9 +32,6 @@
     {#each publishers as pubslisher (pubslisher.id)}
         <span><a href="/publishers/{pubslisher.id}">{pubslisher.name}</a></span>
     {/each}
-</div>
-<div class="button-container">
-    <button onclick={onClickAppendPublishers}>追　加</button>
 </div>
 <div class="footer">
     <a href="/">Back to Root</a>
@@ -52,8 +52,5 @@
         display: inline-block;
         margin: 0;
         padding: 0.2rem 0.5rem;
-    }
-    .footer {
-        margin-top: 1rem;
     }
 </style>

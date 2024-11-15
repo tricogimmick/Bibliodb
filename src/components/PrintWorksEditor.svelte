@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PrintsWorksType } from "../types/printsWorks";
+	import type { PersonType } from "../types/person";
 	import type { WorkType } from "../types/work";
-	import type { WorkTagType } from "../routes/api/workTags/+server";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import WorksSelector from "./WorksSelector.svelte";
     import { workSelectorOpen } from "$lib/workSelectorLib";
@@ -10,7 +10,10 @@
         printId: number | null;
         printWorks: PrintsWorksType[];
         relatedPersons: RelatedPeronsType[];
-        workTags: WorkTagType[];
+        persons: PersonType[];
+        works: WorkType[];
+        worksRelatedPersons: RelatedPeronsType[];
+        filterdWorks: WorkType[];
         callback: (works: PrintsWorksType[]) => void
     }
 
@@ -27,9 +30,8 @@
         description: string;        
     }
 
-    let { printId, printWorks, relatedPersons, workTags, callback } : PropsType = $props();
-
-    $inspect(workTags);
+    let { printId, printWorks, relatedPersons, persons, works, worksRelatedPersons, filterdWorks, callback } : PropsType = $props();
+    $inspect(filterdWorks);
 
     if (printWorks.length === 0) {
         printWorks.push({
@@ -49,7 +51,7 @@
     let _items: ItemType[] = printWorks.map((x, i) => ({
         orderNo: i + 1,
         workId: x.workId,
-        title: workTags.find(z => z.workId === x.workId)?.title ?? "",
+        title: works.find(z => z.id === x.workId)?.title ?? "",
         subTitle: x.subTitle,
         pageNo: x.pageNo,
         publishType: x.publishType,
@@ -87,7 +89,7 @@
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: PrintsWorksType[] = items.map(x => ({
+        const t: PrintsWorksType[] = items.filter(x => x.workId != null).map(x => ({
             printId,
             orderNo: x.orderNo,
             workId: x.workId,
@@ -152,11 +154,28 @@
 
     // タイトルが変更された
     const onChangeTitle = (e: Event) => {
+        const field = e.target as HTMLInputElement;
+        const orderNo = Number(((e.target as HTMLInputElement).closest("div.table-works-row") as HTMLElement).dataset.orderNo);
+        const item = items.find(x => x.orderNo === orderNo) as ItemType;
 
+        if (field.value != null && field.value != "") {
+            const work = works.find(x => x.index === field.value);
+            if (work == null) {
+                field.setCustomValidity("作品が存在しません")
+                item.workId = null;
+            } else {
+                field.setCustomValidity("")
+                item.workId = work.id;
+            }
+        } else {
+            field.setCustomValidity("")
+            item.workId = null;
+        }
+        callCallback();
     }
 
-    // タイトル欄でダブルクリック
-    const ondblclickText = (e: Event) => {
+    // 検索ボタンがクリックされた
+    const onClickSearchButton = (e: Event) => {
         e.stopImmediatePropagation();
         e.preventDefault();
         targetOrderNo = Number(((e.target as HTMLButtonElement).closest("div.table-works-row") as HTMLElement).dataset.orderNo);
@@ -166,8 +185,8 @@
 
 <div class="table-works">
     <datalist id="A3F6CC9A-A102-4723-85EE-B395582ED634">
-        {#each workTags as workTag }
-            <option>{workTag.index}</option>
+        {#each filterdWorks as work }
+            <option>{work.index}</option>
         {/each}
     </datalist>
     <div class="table-works-header">
@@ -189,8 +208,8 @@
         <div class="table-works-row" data-order-no={item.orderNo}>
             <div class="table-works-column">{item.orderNo}</div>
             <div class="table-works-column">
-                <input type="text" name="title" bind:value={item.title} required list="A3F6CC9A-A102-4723-85EE-B395582ED634" onchange={onChangeTitle} />
-                <button onclick={ondblclickText}>検索</button>
+                <input type="text" name="title" bind:value={item.title} list="A3F6CC9A-A102-4723-85EE-B395582ED634" onchange={onChangeTitle} />
+                <button onclick={onClickSearchButton}>検索</button>
             </div>
             <div class="table-works-column">
                 <input type="text" name="subtitle" bind:value={item.subTitle} onchange={callCallback} />
@@ -231,7 +250,7 @@
         {/each}
     </div>
 </div>
-<WorksSelector orderNo={targetOrderNo} callback={workSelectDialogCallback}></WorksSelector>
+<WorksSelector orderNo={targetOrderNo} {persons} {works} relatedPersons={worksRelatedPersons} callback={workSelectDialogCallback}></WorksSelector>
 
 <style>
     .table-works-header {
@@ -262,14 +281,13 @@
         grid-column: 1;
         grid-row: 1/3;
         text-align: center;
-        padding-top: 0.3rem;
+        padding: 0.3rem 0 0.3rem 0;
         border-bottom: 1px solid gray;
     }
     .table-works-column:nth-child(2) {
         grid-column: 2 / 7;
         grid-row: 1;
-        padding-top: 0.3rem;
-        padding-left: 0.3rem;
+        padding: 0.3rem 0 0 0.3rem;
         > input {
             min-width: none;
             width: 26rem;
@@ -278,8 +296,7 @@
     .table-works-column:nth-child(3) {
         grid-column: 7;
         grid-row: 1;
-        padding-top: 0.3rem;
-        padding-left: 0.3rem;
+        padding: 0.3rem 0 0 0.3rem;
         > input {
             min-width: none;
             width: 28rem;
@@ -288,7 +305,7 @@
     .table-works-column:nth-child(4) {
         grid-column: 2;
         grid-row: 2;
-        padding-left: 0.3rem;
+        padding: 0 0 0 0.3rem;
         border-bottom: 1px solid gray;
         > input {
             min-width: none;
@@ -302,7 +319,7 @@
     .table-works-column:nth-child(5) {
         grid-column: 3;
         grid-row: 2;
-        padding-left: 0.3rem;
+        padding: 0 0 0 0.3rem;
         border-bottom: 1px solid gray;
         > select {
             min-width: none;
@@ -312,7 +329,7 @@
     .table-works-column:nth-child(6) {
         grid-column: 4;
         grid-row: 2;
-        padding-left: 0.3rem;
+        padding: 0 0 0.3rem 0.3rem;
         border-bottom: 1px solid gray;
         > select {
             min-width: none;
@@ -323,6 +340,7 @@
         grid-column: 5;
         grid-row: 2;
         text-align: center;
+        padding: 0 0 0.3rem 0;
         border-bottom: 1px solid gray;
         > input {
             margin-top: 0.3rem;
@@ -332,6 +350,7 @@
         grid-column: 6;
         grid-row: 2;
         text-align: center;
+        padding: 0 0 0.3rem 0;
         border-bottom: 1px solid gray;
         > input {
             margin-top: 0.3rem;
@@ -341,7 +360,7 @@
         grid-column: 7;
         grid-row: 2;
         border-bottom: 1px solid gray;
-        padding-left: 0.3rem;
+        padding: 0 0 0 0.3rem;
         > input {
             min-width: none;
             width: 28rem;
@@ -351,6 +370,7 @@
         grid-column: 8;
         grid-row: 1 / 3;
         text-align: center;
+        padding: 0 0 0.3rem 0;
         border-bottom: 1px solid gray;
         > button {
             margin-top: 0.3rem;

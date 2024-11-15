@@ -59,7 +59,7 @@ const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<Res
         const workId = await runSql(db,
             "INSERT INTO works ([index], title, variantTitles, originalTitle, contentType, description, note, publicationYear, seqNo, finishedReading) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [ postData.index, postData.title, postData.originalTitle, postData.contentType, postData.description, postData.note, 
+            [ postData.index, postData.title, postData.variantTitles, postData.originalTitle, postData.contentType, postData.description, postData.note, 
               postData.publicationYear, postData.seqNo, postData.finishedReading ]
         );
         for (const relatedPerson of postData.relatedPersons) {

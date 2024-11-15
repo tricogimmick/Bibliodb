@@ -181,8 +181,12 @@ export const getPrintWorks = (db: pkg.Database, printId: number) => new Promise<
 });
 
 // 関連人物を全て取得
-export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number ) => new Promise<RelatedPeronsType[]|Error>((ok, ng) => {
-    db.all<RelatedPeronsType>("SELECT * FROM related_persons WHERE relatedType = ? AND relatedId = ?", [relatedType, relatedId], (err, rows) => {
+export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number|null ) => new Promise<RelatedPeronsType[]|Error>((ok, ng) => {
+    const sql = relatedId != null ? 
+                "SELECT * FROM related_persons WHERE relatedType = ? AND relatedId = ?" : 
+                "SELECT * FROM related_persons WHERE relatedType = ?";
+    const params = relatedId != null ? [relatedType, relatedId] : [relatedType]
+    db.all<RelatedPeronsType>(sql, params, (err, rows) => {
         if (err) {
             ng(err);
         } else {

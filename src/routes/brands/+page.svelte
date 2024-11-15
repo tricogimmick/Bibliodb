@@ -19,6 +19,9 @@
 </script>
 
 <h2>Brands</h2>
+<div class="button-container">
+    <button onclick={onClickAppendBrand}>追　加</button>
+</div>
 <div class="condition-container">
     <div class="input-field">
         <label for="search-key">名前 : </label>
@@ -29,9 +32,6 @@
     {#each brands as brand (brand.id)}
         <span><a href="/brands/{brand.id}">{brand.name}</a></span>
     {/each}
-</div>
-<div class="button-container">
-    <button onclick={onClickAppendBrand}>追　加</button>
 </div>
 <div class="footer">
     <a href="/">Back to Root</a>

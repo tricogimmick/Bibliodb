@@ -20,6 +20,9 @@
 </script>
 
 <h2>Prints</h2>
+<div class="button-container">
+    <button onclick={onClickAppendPrint}>追　加</button>
+</div>
 <div class="condition-container">
     <div class="input-field">
         <label for="search-key">題名 : </label>
@@ -30,9 +33,6 @@
     {#each prints as p (p.id)}
         <span><a href="/prints/{p.id}">{p.title}（{p.relatedPersons.map(x => x.name).join(",")}）</a></span>
     {/each}
-</div>
-<div class="button-container">
-    <button onclick={onClickAppendPrint}>追　加</button>
 </div>
 <div class="footer">
     <a href="/">Back to Root</a>

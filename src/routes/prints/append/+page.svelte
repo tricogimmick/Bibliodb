@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { PageData } from './$types';
     import type { PrintType } from '../../../types/print';
     import type { PrintsWorksType } from '../../../types/printsWorks';
     import type { RelatedPeronsType } from '../../../types/relatedPersons';
@@ -7,6 +8,8 @@
 
     import { goto } from "$app/navigation";
     import PrintEditor from '../../../components/PrintEditor.svelte';
+
+    const { data }: { data: PageData } = $props();
 
     let print: PrintType = {
         id: null,
@@ -36,7 +39,7 @@
 </script>
 
 <h2>Print - Append</h2>
-<PrintEditor {print} {printWorks} {relatedPersons} {relatedLinks} callback={onSubmit}></PrintEditor>
+<PrintEditor {print} {printWorks} {relatedPersons} {relatedLinks} {...data} callback={onSubmit}></PrintEditor>
 <div class="footer">
     <a href="/prints">Back to Print</a>
 </div>

@@ -19,6 +19,9 @@
 
 
 <h2>Work - Details</h2>
+<div class="button-container">
+    <button onclick={onclickModifyWork}>変更</button>
+</div>
 <div>
     <div class="input-field">
         <label for="title">題名</label>
@@ -62,10 +65,12 @@
         <label for="description">解説</label>
         <span class="data-value">{workData.description}</span>
     </div>      
+    {#if workData.seqNo != null}
     <div class="input-field">
         <label for="seqNo">連番</label>
         <span class="data-value">{workData.seqNo}</span>
-    </div>      
+    </div>  
+    {/if}    
     {#if extelanLink.length > 0 }
     <div class="input-field">
         <label for="ownedType">関連リンク</label>
@@ -84,9 +89,6 @@
         <label for="note">補記</label>
         <span class="data-value">{workData.note}</span>
     </div>      
-</div>
-<div class="button-container">
-    <button onclick={onclickModifyWork}>変更</button>
 </div>
 <div class="footer">
     <a href="/works">Back to Works</a>

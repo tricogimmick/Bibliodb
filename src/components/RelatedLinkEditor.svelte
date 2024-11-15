@@ -98,6 +98,16 @@
     }
 </script>
 
+<div>
+    <datalist id="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C">
+        <option>青空文庫</option>
+        <option>国立国会図書館デジタルコレクション</option>
+        <option>表紙</option>
+        <option>カバー</option>
+        <option>目次</option>
+        <option>奥付</option>
+    </datalist>
+</div>
 {#each items as item, i (item.orderNo)}
 <div class="input-field">
     {#if i == 0}
@@ -111,7 +121,7 @@
             <option value="LINK">リンク</option>
         </select>
         <input name="url" type="url" bind:value={item.url} onchange={callCallback}/><br>
-        <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} />
+        <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} list="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C"/>
         <button onclick={onClickAddButton}>追加</button>               
         <button onclick={onClickDeleteButton}>削除</button>               
     </div>

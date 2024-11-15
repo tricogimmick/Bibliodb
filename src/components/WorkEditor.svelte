@@ -125,14 +125,14 @@
         <div class="input-field">
             <label for="title">題名</label>
             <input name="title" type="text" bind:value={title} required />
+            <span>
+                <label for="originalTitle">原題</label>
+                <input name="originalTitle" type="text" bind:value={originalTitle} />
+            </span>
         </div>
         <div class="input-field">
             <label for="variantTitles">別名</label>
             <input name="variantTitles" type="text" bind:value={variantTitles} />
-        </div>
-        <div class="input-field">
-            <label for="originalTitle">原題</label>
-            <input name="originalTitle" type="text" bind:value={originalTitle} />
         </div>
         <div class="input-field">
             <label for="contentType">種別</label>
@@ -151,15 +151,15 @@
         <div class="input-field">
             <label for="publishYear">発表年</label>
             <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/><span>年</span>
+            <span>
+                <label for="seqNo">連番</label>
+                <input name="seqNo" type="number" bind:value={seqNo} max="99999999" />
+            </span>    
         </div>
         <div class="input-field">
             <label for="description">解説</label>
             <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>
         </div>      
-        <div class="input-field">
-            <label for="seqNo">連番</label>
-            <input name="seqNo" type="number" bind:value={seqNo} max="99999999" />
-        </div>
         <RelatedLinkEditor relatedType="WORK" relatedId={work.id} {relatedLinks} callback={onChangeRelationLinks}></RelatedLinkEditor>
         <div class="input-field">
             <label for="finishedReading">読了日</label>
@@ -181,13 +181,19 @@
         width: 4rem;
         text-align: right;
     }
+    input[name="title"]+span {
+        margin-left: 0.5rem;
+    }
     input[name="publicationYear"]+span {
         margin-left: 0.5rem;
         padding-top: 0.1rem;
     }
+    input[name="publicationYear"]+span+span {
+        margin-left: 1rem;
+    }
     input[name="seqNo"] {
-        min-width: 4rem;
-        width: 4rem;
+        min-width: unset;
+        width: 5rem;
         text-align: right;
     }
 </style>

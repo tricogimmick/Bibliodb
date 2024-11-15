@@ -19,6 +19,9 @@
 </script>
 
 <h2>Persons</h2>
+<div class="button-container">
+    <button onclick={onClickAppendPerson}>追　加</button>
+</div>
 <div class="condition-container">
     <div class="input-field">
         <label for="search-key">氏名 : </label>
@@ -26,12 +29,10 @@
     </div>
 </div>
 <div class="persons-container">
+    <div>Total: {persons.length.toLocaleString()}件</div>
     {#each persons as person (person.id)}
         <span><a href="/persons/{person.id}">{person.index}</a></span>
     {/each}
-</div>
-<div class="button-container">
-    <button onclick={onClickAppendPerson}>追　加</button>
 </div>
 <div class="footer">
     <a href="/">Back to Root</a>

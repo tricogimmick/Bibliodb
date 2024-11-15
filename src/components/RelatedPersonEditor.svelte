@@ -48,7 +48,7 @@
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: RelatedPeronsType[] = items.map(x => ({
+        const t: RelatedPeronsType[] = items.filter(x => x.personName != null && x.personName != "").map(x => ({
             relatedType,
             relatedId,
             orderNo: x.orderNo,
@@ -62,8 +62,12 @@
    // 関連人物名が変更された
    const onChangeRelatedPersonName = (e: Event) => {
         const field = e.target as HTMLInputElement;
-        if (persons.find(x => x.index === field.value) == null) {
-            field.setCustomValidity("著作者が存在しません")
+        if (field.value != null && field.value != "") {
+            if (persons.find(x => x.index === field.value) == null) {
+                field.setCustomValidity("著作者が存在しません")
+            } else {
+                field.setCustomValidity("")
+            }
         } else {
             field.setCustomValidity("")
         }
@@ -131,7 +135,7 @@
             <option value="協力">協力</option>
             <option value="監修">監修</option>
         </select>
-        <input name="authorName" type="text" bind:value={item.personName} required list="6EFEFD7E-E5D7-4166-BA08-A3C4B7C62D89" onchange={onChangeRelatedPersonName} />
+        <input name="authorName" type="text" bind:value={item.personName} list="6EFEFD7E-E5D7-4166-BA08-A3C4B7C62D89" onchange={onChangeRelatedPersonName} />
         <button onclick={onClickAddButton}>追加</button>               
         <button onclick={onClickDeleteButton}>削除</button>               
     </div>

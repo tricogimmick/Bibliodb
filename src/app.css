@@ -24,8 +24,13 @@ select {
     input {
         min-width: 15rem;
     }
-    input[type=url] {
+    input[type="url"] {
+        min-width: unset;
         width: 35rem;
+    }
+    input[type="date"] {
+        min-width: unset;
+        width: 6rem;
     }
     select {
         min-width: 15.5rem;
@@ -33,6 +38,19 @@ select {
     textarea {
         width: 35rem;
     }
+}
+.button-container {
+    margin-bottom: 1rem;
+    button {
+        min-width: 8rem;
+        padding: 0.2rem 1rem;
+        border: 1px solid gray;
+        background-color: white;
+        color: black;
+        font-weight: bold;
+    }
+    button:hover {
+        background-color: lightsalmon
 }
 .footer {
     margin-top: 1rem;

@@ -8,12 +8,14 @@ const {Database} = pkg;
 type QueryResultType = {
 	id: number | null;
     index: string;
+	contentType: string;
 	relatedPersonName: string;
 }
 
 type WorkListType = {
 	id: number | null;
     index: string;
+	contentType: string;
 	relatedPersons: {
 		name: string;
 	}[]
@@ -22,7 +24,7 @@ type WorkListType = {
 const getWorks = (db: pkg.Database) => new Promise<WorkListType[]|Error>((ok, ng) => {
 	db.serialize(() => {
 		db.all<QueryResultType>(
-			"SELECT w.id, w.[index], p.name as relatedPersonName FROM works as w " +
+			"SELECT w.id, w.[index], w.contentType, p.name as relatedPersonName FROM works as w " +
 			"LEFT JOIN related_persons as r ON r.relatedType = 'WORK' AND r.relatedId = w.id " + 
 			"LEFT JOIN persons as p ON p.id = r.personId ORDER BY w.[index], r.orderNo",
 			(err, rows) => {
@@ -38,6 +40,7 @@ const getWorks = (db: pkg.Database) => new Promise<WorkListType[]|Error>((ok, ng
 							works.push({
 								id: r.id,
 								index: r.index,
+								contentType: r.contentType,
 								relatedPersons: [ { name: r.relatedPersonName }]
 							})
 						}

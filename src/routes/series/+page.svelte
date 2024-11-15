@@ -20,6 +20,9 @@
 </script>
 
 <h2>Series</h2>
+<div class="button-container">
+    <button onclick={onClickAppendSeries}>追　加</button>
+</div>
 <div class="condition-container">
     <div class="input-field">
         <label for="search-key">題名 : </label>
@@ -30,9 +33,6 @@
     {#each series as s (s.id)}
         <span><a href="/series/{s.id}">{s.index}</a></span>
     {/each}
-</div>
-<div class="button-container">
-    <button onclick={onClickAppendSeries}>追　加</button>
 </div>
 <div class="footer">
     <a href="/">Back to Root</a>
@@ -53,8 +53,5 @@
         display: inline-block;
         margin: 0;
         padding: 0.2rem 0.5rem;
-    }
-    .footer {
-        margin-top: 1rem;
     }
 </style>
