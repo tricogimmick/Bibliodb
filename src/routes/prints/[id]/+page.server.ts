@@ -16,7 +16,9 @@ type QueryResultType = {
     publisherName: string;
     brandName: string;
     publicationDate: string;
-    seriesName: number | null;
+    issueNumber: number | null;
+    seriesId: number | null;
+    seriesName: string;
     description: string;   
     ownedType: string; 
 }
@@ -41,6 +43,7 @@ type PrintWorksDetailType = {
     workId: number;
     title: string;
     subTitle: string;
+    description: string;
     pageNo: number | null;
 }
 
@@ -52,7 +55,9 @@ type PrintDetailType = {
     publisherName: string;
     brandName: string;
     publicationDate: string;
-    seriesName: number | null;
+    issueNumber: number | null;
+    seriesId: number | null;
+    seriesName: string;
     description: string;   
     ownedType: string; 
     relatedPersons: RelatedPersonDetailType[];
@@ -66,7 +71,7 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
         try {
             const row = await getRow<QueryResultType>(db,
                 "SELECT p.id, p.title, p.originalTitle, p.printType, c.name as publisherName, b.name as brandName, p.publicationDate, " +
-                "s.title as seriesName, p.description, p.ownedType FROM prints as p " +
+                "p.issueNumber, p.seriesId, s.title as seriesName, p.description, p.ownedType FROM prints as p " +
                 "LEFT JOIN publishers as c ON c.id = p.publisherId " +
                 "LEFT JOIN brands as b ON b.id = p.brandId " +
                 "LEFT JOIN series as s ON s.id = p.seriesId WHERE p.id = ?", 
@@ -84,7 +89,7 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 "WHERE r.relatedType = 'PRINT' AND  r.relatedId = ?", [row.id]
             );
             const works = await getAllRows<PrintWorksDetailType>(db,
-                "SELECT pw.orderNo, pw.workId, wk.title, pw.subTitle, pw.pageNo FROM prints_works as pw " +
+                "SELECT pw.orderNo, pw.workId, wk.title, pw.subTitle, pw.description, pw.pageNo FROM prints_works as pw " +
                 "JOIN works as wk ON wk.id = pw.workId " +
                 "WHERE pw.printId = ? ORDER BY pw.orderNo", [row.id]
             );
@@ -96,6 +101,8 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 publisherName: row.publisherName,
                 brandName: row.brandName,
                 publicationDate: row.publicationDate,
+                issueNumber: row.issueNumber,
+                seriesId: row.seriesId,
                 seriesName: row.seriesName,
                 description: row.description, 
                 ownedType: row.ownedType,                            

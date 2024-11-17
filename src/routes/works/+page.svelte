@@ -52,7 +52,7 @@
         </select>
     </div>
 </div>
-<div class="series-container">
+<div class="works-container">
     <div>Total: {works.length.toLocaleString()}件</div>
     {#each works as w (w.id)}
         <span><a href="/works/{w.id}">{w.index}（{w.relatedPersons.map(x => x.name).join(",")}）</a></span>
@@ -74,14 +74,14 @@
         width: auto;
         margin-right: 1rem;
     }
-    .series-container {
+    .works-container {
         margin-bottom: 1rem;
     }
-    .series-container > div {
+    .works-container > div {
         padding: 0.2rem;
         font-weight: bold;
     }
-    .series-container > span {
+    .works-container > span {
         display: inline-block;
         margin: 0;
         padding: 0.2rem 0.5rem;

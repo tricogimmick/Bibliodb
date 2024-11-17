@@ -2,14 +2,18 @@
     import type { PageData } from './$types';
 
     import { goto } from "$app/navigation";
+    import { marked } from 'marked';
 
     const { data }: { data: PageData } = $props();
     const workData = data.work;
 
     const extelanLink = workData.relatedLinks.filter(x => x.linkType === "LINK");
-    const relatedPersons = workData.relatedPersons.map(x => `${x.personName} ${x.role.replace("者", "")}`).join(" / ");
+    const relatedPersons = workData.relatedPersons.map(x => `<a href="/persons/${x.personId}" >${x.personName}</a> ${x.role.replace("者", "")}`).join(" / ");
 
-    const onclickModifyWork = (e: Event) => {
+    const descHtml = workData.description != null ? marked.parse(workData.description): "";
+    const noteHtml = workData.note != null ? marked.parse(workData.note) : "";
+    
+    const onClickModifyWork = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
         goto(`/works/${workData.id}/edit`)
@@ -20,7 +24,7 @@
 
 <h2>Work - Details</h2>
 <div class="button-container">
-    <button onclick={onclickModifyWork}>変更</button>
+    <button onclick={onClickModifyWork}>変更</button>
 </div>
 <div>
     <div class="input-field">
@@ -45,7 +49,7 @@
     </div>
     <div class="input-field">
         <label for="">著作者</label>
-        <span class="data-value">{relatedPersons}</span>
+        <span class="data-value">{@html relatedPersons}</span>
     </div>              
     {#each workData.relatedSeries as relatedSeries, i }
     <div class="input-field">
@@ -54,7 +58,7 @@
         {:else}
         <label for="">&nbsp</label>
         {/if}
-        <span class="data-value">{relatedSeries.seriesTitle}</span>
+        <span class="data-value">{relatedSeries.seriesTitle} {relatedSeries.description}</span>
     </div>              
     {/each}
     <div class="input-field">
@@ -63,7 +67,7 @@
     </div>      
     <div class="input-field">
         <label for="description">解説</label>
-        <span class="data-value">{workData.description}</span>
+        <div class="data-content">{@html descHtml}</div>
     </div>      
     {#if workData.seqNo != null}
     <div class="input-field">
@@ -76,7 +80,7 @@
         <label for="ownedType">関連リンク</label>
         <div>
             {#each extelanLink as relatedLink, i}
-            <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span>
+            <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span><br>
             {/each}
         </div>
     </div>      
@@ -87,15 +91,73 @@
     </div>      
     <div class="input-field">
         <label for="note">補記</label>
-        <span class="data-value">{workData.note}</span>
+        <div class="data-content">{@html noteHtml}</div>
     </div>      
+</div>
+<div class="featured-prints">
+    <h4>掲載書籍・雑誌</h4>
+    <div class="container">
+        <div class="header">
+            <div class="cell">No</div>
+            <div class="cell">タイトル</div>
+            <div class="cell">出版社</div>
+            <div class="cell">発行日</div>
+            <div class="cell">種別</div>
+        </div>
+        <div class="body">
+            {#each workData.prints as print, i (print.id) }
+                <div class="row">
+                    <div class="cell">{i + 1}</div>
+                    <div class="cell"><a href="/prints/{print.id}">{#if print.series}{print.series}&nbsp{/if}{print.title}</a></div>
+                    <div class="cell">{print.publisher}{#if print.brand} ({print.brand}){/if}</div>
+                    <div class="cell">{print.publicationDate}</div>
+                    <div class="cell">{print.printType}</div>
+                </div>
+            {/each}        
+        </div>
+    </div>
 </div>
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>
 
 <style>
-    .data-item {
-        margin-right: 1rem;
+    .container {
+        margin-bottom: 1rem;
+        .cell {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0.2rem 0.5rem;
+        }
+        .cell:nth-child(1) {
+            width: 3rem;
+            text-align: right;
+        }
+        .cell:nth-child(2) {
+            width: 25rem;
+        }
+        .cell:nth-child(3) {
+            width: 10rem;
+        }
+        .cell:nth-child(4) {
+            width: 6rem;
+            text-align: right;
+        }
+        .cell:nth-child(5) {
+            width: 6rem;
+        }
+        .header {
+            display: flex;
+            .cell {
+                border-bottom: 1px solid gray;
+            }
+        }
+        .body {
+            max-height: 300px;
+            overflow-y: auto;
+            .row {
+                display: flex;
+            }
+        }
     }
 </style>

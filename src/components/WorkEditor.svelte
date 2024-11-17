@@ -23,6 +23,7 @@
     };
 
     let { work, relatedPersons, relatedLinks, relatedSeries, persons, series, callback } : PropsType = $props();
+    $inspect(relatedSeries);
 
     let index = $state(work.index);
     let title = $state(work.title);

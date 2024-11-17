@@ -49,12 +49,13 @@
     .persons-container {
         margin-bottom: 1rem;
     }
+    .persons-container > div {
+        padding: 0.2rem;
+        font-weight: bold;
+    }
     .persons-container > span {
         display: inline-block;
         margin: 0;
         padding: 0.2rem 0.5rem;
-    }
-    .footer {
-        margin-top: 1rem;
     }
 </style>

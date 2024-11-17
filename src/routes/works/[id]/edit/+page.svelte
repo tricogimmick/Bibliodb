@@ -10,7 +10,7 @@
 
     const onSubmit = (result: ResultType<WorkType>) => {
         if (result.ok) {
-            goto("/works");
+            goto(`/works/${data.work.id}`);
         } else {
             alert(`Error! (${result.data})`);
         }
@@ -20,5 +20,5 @@
 <h2>Work - Edit</h2>
 <WorkEditor {...data} callback={onSubmit}></WorkEditor>
 <div class="footer">
-    <a href="/works">Back to Works</a>
+    <a href="/works/{data.work.id}">Back to Work</a>
 </div>

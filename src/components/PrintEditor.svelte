@@ -37,6 +37,7 @@
     let publisherName = $state(publishers.find(x => x.id == print.publisherId)?.name ?? "");
     let brandName = $state(brands.find(x => x.id == print.brandId)?.name ?? "");
     let publicationDate = $state(print.publicationDate);
+    let issueNumber = $state(print.issueNumber);
     let seriesName = $state(series.find(x => x.id === print.seriesId)?.index ?? "");
     let description = $state(print.description);
     let ownedType = $state(print.ownedType);
@@ -75,6 +76,7 @@
                 publisherId: publishers.find(x => x.name === publisherName)?.id ?? null,
                 brandId: brands.find(x => x.name === brandName)?.id ?? null,
                 publicationDate,
+                issueNumber,
                 seriesId: series.find(x => x.index === seriesName)?.id ?? null,
                 description,
                 ownedType,
@@ -207,10 +209,14 @@
             <label for="publisherName">出版社</label>
             <input name="publisherName" type="text" bind:value={publisherName} list="5F8F5F10-8B21-421A-8D9B-B13DAED88B96" required onchange={onChangePublisherName}/>
             <input name="brandName" type="text" bind:value={brandName} list="F92B8C10-0942-4179-82DA-18C505B2F21A" onchange={onChangeBrandName}/>
-        </div>              
+        </div>
         <div class="input-field">
             <label for="publicationDate">発行日</label>
             <input name="publicationDate" type="date" bind:value={publicationDate}  />
+        </div>              
+        <div class="input-field">
+            <label for="issueNumber">号数</label>
+            <input name="issueNumber" type="number" bind:value={issueNumber}  />
         </div>              
         <div class="input-field">
             <label for="description">解説</label>

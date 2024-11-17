@@ -16,6 +16,7 @@ export type PostDataType = {
     publisherId: number | null;
     brandId: number | null;
     publicationDate: string;
+    issueNumber: number | null;
     seriesId: number | null;
     description: string;   
     ownedType: string; 
@@ -52,6 +53,7 @@ const cretaePostData = (id: number, postData: PostDataType) => ({
     publisherId: postData.publisherId,
     brandId: postData.brandId,
     publicationDate: postData.publicationDate,
+    issueNumber: postData.issueNumber,
     seriesId: postData.seriesId,
     description: postData.description,
     ownedType: postData.ownedType 
@@ -59,10 +61,11 @@ const cretaePostData = (id: number, postData: PostDataType) => ({
 
 const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<PrintType|Error>(async (ok, ng) => {
     try {
-        const printId = await runSql(db, "INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, seriesId, description, ownedType) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        const printId = await runSql(db, 
+            "INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, issueNumber, seriesId, description, ownedType) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [ postData.title , postData.originalTitle, postData.printType, postData.publisherId, postData.brandId, postData.publicationDate, 
-                postData.seriesId, postData.description, postData.ownedType ]);
+              postData.issueNumber, postData.seriesId, postData.description, postData.ownedType ]);
         for (const relatedPerson of postData.relatedPersons) {
             await runSql(db, 
                 "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
@@ -91,9 +94,9 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
     try {
         await runSql(db,
             "UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, " +
-            "seriesId = ?, description = ?, ownedType = ? WHERE id = ?",
+            "issueNumber = ?, seriesId = ?, description = ?, ownedType = ? WHERE id = ?",
             [ putData.title , putData.originalTitle, putData.printType, putData.publisherId, putData.brandId, putData.publicationDate, 
-                putData.seriesId, putData.description, putData.ownedType, putData.id ]
+              putData.issueNumber, putData.seriesId, putData.description, putData.ownedType, putData.id ]
         );
         await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
         for (const author of putData.relatedPersons) {

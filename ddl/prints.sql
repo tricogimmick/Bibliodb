@@ -14,6 +14,8 @@ CREATE TABLE prints (
     , brandId INTEGER
     -- 発行日
     , publicationDate TEXT
+    -- 号数
+    , issueNumber INTEGER 
     -- シリーズ
     , seriesId INTEGER
     -- 説明

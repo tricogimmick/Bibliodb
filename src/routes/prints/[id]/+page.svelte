@@ -6,10 +6,9 @@
     const { data }: { data: PageData } = $props();
     const printData = data.print;
 
-    $inspect(printData.works)
-    
     const bookImage = printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "カバー");
     const extelanLink = printData.relatedLinks.filter(x => x.linkType === "LINK");
+    const images = printData.relatedLinks.filter(x => x.linkType === "IMG");
 
     const onclickModifyPrint = (e: Event) => {
         e.preventDefault();
@@ -30,10 +29,12 @@
         <img src={bookImage.url} alt={bookImage.alt} height="200px" >
     </div>
     {/if}
+    {#if printData.seriesName}
     <div class="input-field">
         <label for="seriesName">シリーズ</label>
-        <span class="data-value">{printData.seriesName}</span>
+        <span class="data-value"><a href="/series/{printData.seriesId}">{printData.seriesName}</a></span>
     </div>      
+    {/if}
     <div class="input-field">
         <label for="title">題名</label>
         <span class="data-value">{printData.title}</span>
@@ -55,7 +56,7 @@
         {:else}
         <label for="">&nbsp</label>
         {/if}
-        <span class="data-value">{relatedPerson.personName} {relatedPerson.role.replace("者", "")}</span>
+        <span class="data-value"><a href="/persons/{relatedPerson.personId}">{relatedPerson.personName}</a> {relatedPerson.role.replace("者", "")}</span>
     </div>              
     {/each}
     <div class="input-field">
@@ -66,6 +67,12 @@
         <label for="publicationDate">発行日</label>
         <span class="data-value">{printData.publicationDate}</span>
     </div>      
+    {#if printData.issueNumber}
+    <div class="input-field">
+        <label for="issueNumber">号数</label>
+        <span class="data-value">{printData.issueNumber}</span>
+    </div>      
+    {/if}
     <div class="input-field">
         <label for="description">解説</label>
         <span class="data-value">{printData.description}</span>
@@ -86,23 +93,29 @@
     <table class="contents-table">
         <thead>
             <tr>
-                <th>No</th><th>タイトル</th><th>サブタイトル</th><th>頁</th>
+                <th>No</th><th>タイトル</th><th>備考</th><th>頁</th>
             </tr>
         </thead>
         <tbody>
             {#each printData.works as work (work.orderNo)}
                 <tr>
                     <td>{work.orderNo}</td>
-                    <td>{work.title}</td>
-                    <td>{work.subTitle}</td>
+                    <td><a href="/works/{work.workId}">{work.title}</a>{#if work.subTitle }<br>{work.subTitle}{/if}</td>
+                    <td>{work.description}</td>
                     <td>{work.pageNo}</td>
                 </tr>
             {/each}
         </tbody>
     </table>     
+    <h4>Images</h4>
+    <div class="images">
+        {#each images as img }
+            <div><img src="{img.url}" height="200px" alt="{img.alt}"></div>
+        {/each}
+    </div>
 </div>
 <div class="footer">
-    <a href="/prints">Back to Print</a>
+    <a href="/prints">Back to Prints</a>
 </div>
 
 <style>

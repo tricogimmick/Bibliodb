@@ -62,7 +62,7 @@
             <input name="name" type="text" bind:value={name} required />
         </div>
         <div class="input-field">
-            <label for="kana">ふりがな</label>
+            <label for="kana">よみがな</label>
             <input name="kana" type="text" bind:value={kana} required />
         </div>
         <div class="input-field">

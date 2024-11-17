@@ -29,6 +29,7 @@
     </div>
 </div>
 <div class="publisher-container">
+    <div>Total: {publishers.length.toLocaleString()}件</div>
     {#each publishers as pubslisher (pubslisher.id)}
         <span><a href="/publishers/{pubslisher.id}">{pubslisher.name}</a></span>
     {/each}
@@ -47,6 +48,10 @@
     }
     .publisher-container {
         margin-bottom: 1rem;
+    }
+    .publisher-container > div {
+        padding: 0.2rem;
+        font-weight: bold;
     }
     .publisher-container > span {
         display: inline-block;

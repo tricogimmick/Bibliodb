@@ -85,7 +85,7 @@
             <input name="index" type="text" bind:value={index} onchange={onChangeIndex} required />
         </div>
         <div class="input-field">
-            <label for="title">題名</label>
+            <label for="title">シリーズ名</label>
             <input name="title" type="text" bind:value={title} required />
         </div>
         <div class="input-field">
@@ -95,9 +95,10 @@
         <div class="input-field">
             <label for="seriesType">種別</label>
             <select name="seriesType" bind:value={seriesType}>
-                <option value="雑誌">雑誌</option>
-                <option value="WEB">WEB</option>
                 <option value="叢書">叢書</option>
+                <option value="雑誌">雑誌</option>
+                <option value="新聞">新聞</option>
+                <option value="WEB">WEB</option>
             </select>
         </div>
         <div class="input-field">

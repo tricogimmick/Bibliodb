@@ -28,7 +28,8 @@
         <input name="search-key" type="text" bind:value={searchKey} oninput={onInput} />
     </div>
 </div>
-<div class="persons-container">
+<div class="brands-container">
+    <div>Total: {brands.length.toLocaleString()}件</div>
     {#each brands as brand (brand.id)}
         <span><a href="/brands/{brand.id}">{brand.name}</a></span>
     {/each}
@@ -45,10 +46,14 @@
         width: auto;
         margin-right: 1rem;
     }
-    .persons-container {
+    .brands-container {
         margin-bottom: 1rem;
     }
-    .persons-container > span {
+    .brands-container > div {
+        padding: 0.2rem;
+        font-weight: bold;
+    }
+    .brands-container > span {
         display: inline-block;
         margin: 0;
         padding: 0.2rem 0.5rem;

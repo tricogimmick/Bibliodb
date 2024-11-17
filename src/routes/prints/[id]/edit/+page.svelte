@@ -20,7 +20,7 @@
 <h2>Print - Edit</h2>
 <PrintEditor {...data} callback={onSubmit}></PrintEditor>
 <div class="footer">
-    <a href="/prints">Back to Print</a>
+    <a href="/prints/{data.print.id}">Back to Print</a>
 </div>
 
 <style>

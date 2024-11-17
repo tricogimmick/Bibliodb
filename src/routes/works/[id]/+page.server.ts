@@ -8,7 +8,7 @@ const {Database} = pkg;
 
 import { getRow, getAllRows } from '$lib/common';
 
-type RelatedPersonDetailType = {
+type RelatedPersonDisplayType = {
     orderNo: number;
     personId: number;
     personName: string;
@@ -16,19 +16,28 @@ type RelatedPersonDetailType = {
     description: string;
 };
 
-type RelationLinkDetailType = {
+type RelationLinkDisplayType = {
     linkType: "IMG" | "LINK";
     url: string;
     alt: string;
     description: string;
 };
 
-type RelatedSeriesDetailType = {
+type RelatedSeriesDisplayType = {
     seriesId: number;
     seriesTitle: string;
     description: string;
 };
 
+type PrintDisplayType = {
+    id: number;
+    series: string;
+    title: string;
+    publisher: string;
+    brand: string;
+    publicationDate: string;
+    printType: string;
+}
 
 type WorkDetailType = {
     id: number | null;
@@ -42,13 +51,15 @@ type WorkDetailType = {
     publicationYear: number | null;
     seqNo: number | null;
     finishedReading: string;
-    relatedPersons: RelatedPersonDetailType[],
-    relatedLinks: RelationLinkDetailType[],
-    relatedSeries: RelatedSeriesDetailType[]
+    relatedPersons: RelatedPersonDisplayType[],
+    relatedLinks: RelationLinkDisplayType[],
+    relatedSeries: RelatedSeriesDisplayType[],
+    prints: PrintDisplayType[]
 }
 
 // 作品情報を生成する
-const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDetailType[], relatedLinks: RelationLinkDetailType[], relatedSeries: RelatedSeriesDetailType[]) => ({
+const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDisplayType[], relatedLinks: RelationLinkDisplayType[], 
+                          relatedSeries: RelatedSeriesDisplayType[], prints: PrintDisplayType[]) => ({
         id: work.id,
         index: work.index,
         title: work.title,
@@ -62,34 +73,46 @@ const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDetailTyp
         finishedReading: work.finishedReading,
         relatedPersons,
         relatedLinks,
-        relatedSeries
+        relatedSeries,
+        prints
 });
 
 // 作品を取得する
 const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Error>(async (ok, ng) => {
     try {
         const work: WorkType = await getRow(db, "SELECT * FROM works WHERE id = ?", [id]);
-        const relatedPersons: RelatedPersonDetailType[] = await getAllRows(db,
+        const relatedPersons: RelatedPersonDisplayType[] = await getAllRows(db,
             "SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description " +
             "FROM related_persons as r " +
             "JOIN persons as p ON p.id = r.personId " +
             "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", 
             [work.id]
         );
-        const relatedLinks: RelationLinkDetailType[] = await getAllRows<RelationLinkDetailType>(db,
+        const relatedLinks: RelationLinkDisplayType[] = await getAllRows<RelationLinkDisplayType>(db,
             "SELECT r.linkType, r.url, r.alt, r.description " +
             "FROM related_links as r " +
             "WHERE r.relatedType = 'WORK' AND  r.relatedId = ?", 
             [work.id]
         );
-        const relatedSeries: RelatedSeriesDetailType[] = await getAllRows(db,
+        const relatedSeries: RelatedSeriesDisplayType[] = await getAllRows(db,
             "SELECT r.seriesId, s.title as seriesTitle, r.description " +
             "FROM related_series as r " +
             "JOIN series as s ON s.id = r.seriesId " +
             "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", 
             [work.id]
         );
-        ok(createWorkDetail(work, relatedPersons, relatedLinks, relatedSeries));
+        const prints: PrintDisplayType[] = await getAllRows(db,
+            "SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, bk.publicationDate, bk.printType " +
+            "FROM prints_works as pw " +
+            "JOIN prints as bk on bk.id = pw.printId " +
+            "LEFT JOIN series as sr on sr.id = bk.seriesId " +
+            "LEFT JOIN publishers as pb ON pb.id = bk.publisherId " +
+            "LEFT JOIN brands as br ON br.id = bk.brandId " +
+            "WHERE pw.workId = ? " +
+            "ORDER BY bk.publicationDate",
+            [work.id]
+        );
+        ok(createWorkDetail(work, relatedPersons, relatedLinks, relatedSeries, prints));
     } catch (e: any) {
         ng(e);
     }

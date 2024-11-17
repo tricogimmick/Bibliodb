@@ -12,7 +12,7 @@
     }
     type ItemType = {
         orderNo: number;
-        seriesTitle: string;
+        seriesIndex: string;
         description: string;
     }
 
@@ -29,7 +29,7 @@
 
     let _items: ItemType[] = relatedSeries.map((x, i) => ({
         orderNo: i + 1,
-        seriesTitle: series.find(z => z.id == x.seriesId)?.title ?? "",
+        seriesIndex: series.find(z => z.id == x.seriesId)?.index ?? "",
         description: x.description
     }));
     let items: ItemType[] = $state(_items);
@@ -37,7 +37,7 @@
     // 新たな関連人物を生成
     const newRelatedSeries = (orderNo: number) => ({
         orderNo,
-        seriesTitle: "",
+        seriesIndex: "",
         description: ""
     });
 
@@ -46,7 +46,7 @@
         const t: RelatedSeriesType[] = items.map(x => ({
             relatedType,
             relatedId,
-            seriesId: series.find(z => z.title === x.seriesTitle)?.id ?? null,
+            seriesId: series.find(z => z.index === x.seriesIndex)?.id ?? null,
             description: x.description            
         }));
         callback?.(t);
@@ -55,7 +55,7 @@
    // 関連シリーズ名が変更された
    const onChangeRelatedSeriesTitle = (e: Event) => {
         const field = e.target as HTMLInputElement;
-        if (series.find(x => x.title === field.value) == null) {
+        if (series.find(x => x.index === field.value) == null) {
             field.setCustomValidity("シリーズが存在しません")
         } else {
             field.setCustomValidity("")
@@ -73,7 +73,7 @@
         } else {
             const t = items.map(x => ({
                 orderNo: x.orderNo > orderNo ? x.orderNo + 1 : x.orderNo,
-                seriesTitle: x.seriesTitle,
+                seriesIndex: x.seriesIndex,
                 description: x.description
             }));
             t.push(newRelatedSeries(orderNo + 1));
@@ -90,7 +90,7 @@
             const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
             items = items.filter(x => x.orderNo != orderNo).map(x => ({  
                 orderNo: x.orderNo > orderNo ? x.orderNo -1 : x.orderNo,
-                seriesTitle: x.seriesTitle,
+                seriesIndex: x.seriesIndex,
                 description: x.description
             }));
             callCallback();
@@ -98,8 +98,8 @@
     }
 </script>
 <datalist id="9A5B2108-E5B9-407D-8D7C-F241E27C787A">
-    {#each series.filter(x => x.seriesType === "雑誌" || x.seriesType === "WEB") as p (p.id)}
-        <option>{p.title}</option>
+    {#each series.filter(x => x.seriesType !== "叢書") as p (p.id)}
+        <option>{p.index}</option>
     {/each}
 </datalist>
 {#each items as item, i (item.orderNo)}
@@ -110,8 +110,8 @@
     <label for="">&nbsp</label>
     {/if}
     <div class="person-data" data-order-no={item.orderNo}>
-        <input name="seriesTitle" type="text" bind:value={item.seriesTitle} list="9A5B2108-E5B9-407D-8D7C-F241E27C787A" onchange={onChangeRelatedSeriesTitle} />
-        <input name="description" type="text" bind:value={item.description} />
+        <input name="seriesTitle" type="text" bind:value={item.seriesIndex} list="9A5B2108-E5B9-407D-8D7C-F241E27C787A" onchange={onChangeRelatedSeriesTitle} />
+        <input name="description" type="text" bind:value={item.description} onchange={callCallback} />
         <button onclick={onClickAddButton}>追加</button>               
         <button onclick={onClickDeleteButton}>削除</button>               
     </div>

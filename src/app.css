@@ -38,6 +38,11 @@ select {
     textarea {
         width: 35rem;
     }
+    .data-content {
+        > p {
+            margin-top: 0;
+        }
+    }
 }
 .button-container {
     margin-bottom: 1rem;

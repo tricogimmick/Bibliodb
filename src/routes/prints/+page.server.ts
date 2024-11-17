@@ -7,12 +7,16 @@ const {Database} = pkg;
 
 type QueryResultType = {
 	id: number | null;
+	seriesId: number | null;
+	seriesName: string;
     title: string;
 	relatedPersonName: string;
 }
 
 type PrintListType = {
 	id: number | null;
+	seriesId: number | null;
+	seriesName: string;
     title: string;
 	relatedPersons: {
 		name: string;
@@ -22,9 +26,10 @@ type PrintListType = {
 const getPrints = (db: pkg.Database) => new Promise<PrintListType[]|Error>((ok, ng) => {
 	db.serialize(() => {
 		db.all<QueryResultType>(
-			"SELECT p.id, p.title, a.name as relatedPersonName FROM prints as p " +
+			"SELECT p.id, p.seriesId, s.title as seriesName, p.title, a.name as relatedPersonName FROM prints as p " +
+			"LEFT JOIN series as s on s.id = p.seriesId " + 
 			"LEFT JOIN related_persons as r ON r.relatedType = 'PRINT' AND r.relatedId = p.id " + 
-			"LEFT JOIN persons as a ON a.id = r.personId ORDER BY p.id, r.orderNo",
+			"LEFT JOIN persons as a ON a.id = r.personId ORDER BY s.title, p.title",
 			(err, rows) => {
 				if (err) {
 					ng()
@@ -37,6 +42,8 @@ const getPrints = (db: pkg.Database) => new Promise<PrintListType[]|Error>((ok, 
 						} else {
 							prints.push({
 								id: r.id,
+								seriesId: r.seriesId,
+								seriesName: r.seriesName,
 								title: r.title,
 								relatedPersons: [ { name: r.relatedPersonName }]
 							})

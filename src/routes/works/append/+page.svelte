@@ -25,13 +25,24 @@
         seqNo: null,
         finishedReading: ""
     };
-    const relatedPersons: RelatedPeronsType[] = [];
+
+    const rp: RelatedPeronsType = {
+        relatedType: "WORK",
+        relatedId: null,
+        orderNo: 1,
+        personId: 964,
+        role: "作者",
+        description: ""
+    };
+
+    const relatedPersons: RelatedPeronsType[] = [rp];
     const relatedLinks: RelatedLinksType[] = [];
     const relatedSeries: RelatedSeriesType[] = [];
 
     const onSubmit = (result: ResultType<WorkType>) => {
         if (result.ok) {
-            goto("/works");
+            const work = result.data as WorkType;
+            goto(`/works/${work.id}`);
         } else {
             alert(`Error! (${result.data})`);
         }

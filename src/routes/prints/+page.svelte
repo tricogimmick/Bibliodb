@@ -29,9 +29,10 @@
         <input name="search-key" type="text" bind:value={searchKey} oninput={onInput} />
     </div>
 </div>
-<div class="series-container">
+<div class="prints-container">
+    <div>Total: {prints.length.toLocaleString()}件</div>
     {#each prints as p (p.id)}
-        <span><a href="/prints/{p.id}">{p.title}（{p.relatedPersons.map(x => x.name).join(",")}）</a></span>
+        <span><a href="/prints/{p.id}">{#if p.seriesName }{p.seriesName}&nbsp;{/if}{p.title}（{p.relatedPersons.map(x => x.name).join(",")}）</a></span>
     {/each}
 </div>
 <div class="footer">
@@ -46,10 +47,14 @@
         width: auto;
         margin-right: 1rem;
     }
-    .series-container {
+    .prints-container {
         margin-bottom: 1rem;
     }
-    .series-container > span {
+    .prints-container > div {
+        padding: 0.2rem;
+        font-weight: bold;
+    }
+    .prints-container > span {
         display: inline-block;
         margin: 0;
         padding: 0.2rem 0.5rem;
