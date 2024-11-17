@@ -1,6 +1,6 @@
 import type { PageServerLoad } from '../$types';
 import type { PrintType } from '../../../../types/print';
-import type { PrintsWorksType } from '../../../../types/printsWorks';
+import type { ContentType } from '../../../../types/contents';
 import type { RelatedPeronsType } from '../../../../types/relatedPersons';
 import type { RelatedLinksType } from '../../../../types/relatedLinks';
 import type { PublisherType } from '../../../../types/publisher';
@@ -14,7 +14,7 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
-import { getPrint, getPrintWorks, getAllRelatedPersons, getAllRelatedLinks, getAllPublishers, getAllBrands, getAllSeries, getAllPersons, getAllWorks } from '$lib/common';
+import { getPrint, getContents as getConents, getAllRelatedPersons, getAllRelatedLinks, getAllPublishers, getAllBrands, getAllSeries, getAllPersons, getAllWorks } from '$lib/common';
 
 export const load: PageServerLoad = async ({ params }) => {
     const dbPath = env["LIBMANDB_PATH"] ?? "";
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ params }) => {
     try {
 		return {
       print: await getPrint(db, Number(params.id)) as PrintType,
-      printWorks: await getPrintWorks(db, Number(params.id)) as PrintsWorksType[],
+      contents: await getConents(db, Number(params.id)) as ContentType[],
       relatedPersons: await getAllRelatedPersons(db, "PRINT", Number(params.id)) as RelatedPeronsType[],
       relatedLinks: await getAllRelatedLinks(db, "PRINT", Number(params.id)) as RelatedLinksType[],
       publishers: await getAllPublishers(db) as PublisherType[],

@@ -1,7 +1,8 @@
-export type PrintsWorksType = {
+export type ContentType = {
     printId: number | null;
     orderNo: number | null;
     workId: number | null;
+    title: string;
     subTitle: string;
     pageNo: number | null;
     publishType: string;

@@ -4,7 +4,7 @@
     import type { BrandType } from "../types/brand";
     import type { SeriesType } from "../types/series";
 	import type { WorkType } from "../types/work";
-    import type { PrintsWorksType } from "../types/printsWorks";
+    import type { ContentType } from "../types/contents";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { PostDataType } from "../routes/api/prints/+server";
@@ -12,12 +12,12 @@
 
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
-	import PrintWorksEditor from "./PrintWorksEditor.svelte";
+	import ContentEditor from "./ContentEditor.svelte";
 	import type { PersonType } from "../types/person";
 
     type PropsType = {
         print: PrintType;
-        printWorks: PrintsWorksType[];
+        contents: ContentType[];
         relatedPersons: RelatedPeronsType[];
         relatedLinks: RelatedLinksType[];
         publishers: PublisherType[];
@@ -29,7 +29,7 @@
         callback: ((result: ResultType<PrintType>) => void) | null
     };
 
-    let { print, printWorks, relatedPersons, relatedLinks, publishers, brands, series, persons, works, worksRelatedPersons, callback } : PropsType = $props();
+    let { print, contents, relatedPersons, relatedLinks, publishers, brands, series, persons, works, worksRelatedPersons, callback } : PropsType = $props();
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
@@ -45,7 +45,6 @@
 
     const workIds = worksRelatedPersons.filter(x => relatedPersons.findIndex(z => x.personId == z.personId) >= 0).map(x => x.relatedId as number);
     let filterdWorks: WorkType[] = $state(works.filter(x => workIds.includes(x.id as number)));
-    $inspect(filterdWorks);
 
      // 更新用APIの呼出
      const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
@@ -92,9 +91,10 @@
                     alt: x.alt,
                     description: x.description
                 })),
-                works: printWorks.filter(x => x.workId != null).map(x => ({
+                contents: contents.filter(x => x.title != null && x.title != "").map(x => ({
                     orderNo: x.orderNo as number,
-                    workId: x.workId as number,
+                    workId: x.workId,
+                    titile: x.title,
                     subTitle: x.subTitle,
                     pageNo: x.pageNo,
                     publishType: x.publishType,
@@ -166,8 +166,8 @@
     }
 
     // 収録作品が変更された
-    const onChangePrintWorks = (wks: PrintsWorksType[]) => {
-        printWorks = wks;
+    const onChangeContents = (cnt: ContentType[]) => {
+        contents = cnt;
     }
 </script>
 
@@ -233,7 +233,7 @@
         </div>
         <div class="contents-container">
             <div>Contents</div>
-            <PrintWorksEditor printId={print.id} {printWorks} {relatedPersons} {persons} {works} {worksRelatedPersons} {filterdWorks} callback={onChangePrintWorks}></PrintWorksEditor>
+            <ContentEditor printId={print.id} {contents} {relatedPersons} {persons} {works} {worksRelatedPersons} {filterdWorks} callback={onChangeContents}></ContentEditor>
         </div>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />

@@ -38,7 +38,7 @@ type RelationLinkDetailType = {
     description: string;
 };
 
-type PrintWorksDetailType = {
+type ContentDetailType = {
     orderNo: number;
     workId: number;
     title: string;
@@ -62,7 +62,7 @@ type PrintDetailType = {
     ownedType: string; 
     relatedPersons: RelatedPersonDetailType[];
     relatedLinks: RelationLinkDetailType[];
-    works: PrintWorksDetailType[];
+    contents: ContentDetailType[];
 };
 
 // 出版物を取得する
@@ -88,10 +88,11 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 "FROM related_links as r " +
                 "WHERE r.relatedType = 'PRINT' AND  r.relatedId = ?", [row.id]
             );
-            const works = await getAllRows<PrintWorksDetailType>(db,
-                "SELECT pw.orderNo, pw.workId, wk.title, pw.subTitle, pw.description, pw.pageNo FROM prints_works as pw " +
-                "JOIN works as wk ON wk.id = pw.workId " +
-                "WHERE pw.printId = ? ORDER BY pw.orderNo", [row.id]
+            const contents = await getAllRows<ContentDetailType>(db,
+                "SELECT ct.orderNo, ct.workId, CASE WHEN ct.workId IS null THEN ct.title ELSE wk.title END as title, " +
+                "ct.subTitle, ct.description, ct.pageNo FROM contents as ct " +
+                "JOIN works as wk ON wk.id = ct.workId " +
+                "WHERE ct.printId = ? ORDER BY ct.orderNo", [row.id]
             );
             const print: PrintDetailType = {
                 id: row.id,
@@ -108,7 +109,7 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 ownedType: row.ownedType,                            
                 relatedPersons,
                 relatedLinks,
-                works
+                contents
             };
             ok(print);
         } catch (error) {

@@ -32,9 +32,10 @@ export type PostDataType = {
         alt: string;
         description: string;
     }[];
-    works: {
+    contents: {
         orderNo: number;
-        workId: number;
+        workId: number | null;
+        titile: string;
         subTitle: string;
         pageNo: number | null;
         publishType: string;
@@ -76,12 +77,12 @@ const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<Pr
                 "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
                 ["PRINT", printId, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
         }
-        for (const work of postData.works) {
+        for (const content of postData.contents) {
             await runSql(db,
-                "INSERT INTO prints_works (printId, orderNo, workId, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [printId, work.orderNo, work.workId, work.subTitle, work.pageNo, work.publishType, work.serializationStatus, 
-                    work.color, work.firstPublished, work.description
+                "INSERT INTO contents (printId, orderNo, workId, titile, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [printId, content.orderNo, content.workId, content.titile, content.subTitle, content.pageNo, content.publishType, content.serializationStatus, 
+                    content.color, content.firstPublished, content.description
                 ]);
         }
         ok(cretaePostData(printId as number, postData));
@@ -110,13 +111,13 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
                 "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
                 ["PRINT", putData.id, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
         }
-        await runSql(db, "DELETE FROM prints_works WHERE printId = ?", [putData.id]);
-        for (const work of putData.works) {
+        await runSql(db, "DELETE FROM contents WHERE printId = ?", [putData.id]);
+        for (const content of putData.contents) {
             await runSql(db,
-                "INSERT INTO prints_works (printId, orderNo, workId, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) " +
+                "INSERT INTO contents (printId, orderNo, workId, title, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [putData.id, work.orderNo, work.workId, work.subTitle, work.pageNo, work.publishType, work.serializationStatus, 
-                    work.color, work.firstPublished, work.description
+                [putData.id, content.orderNo, content.workId, content.titile, content.subTitle, content.pageNo, content.publishType, content.serializationStatus, 
+                    content.color, content.firstPublished, content.description
                 ]);
         }
         ok(cretaePostData(putData.id as number, putData));    

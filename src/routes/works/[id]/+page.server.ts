@@ -103,8 +103,8 @@ const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Err
         );
         const prints: PrintDisplayType[] = await getAllRows(db,
             "SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, bk.publicationDate, bk.printType " +
-            "FROM prints_works as pw " +
-            "JOIN prints as bk on bk.id = pw.printId " +
+            "FROM contents as ct " +
+            "JOIN prints as bk on bk.id = ct.printId " +
             "LEFT JOIN series as sr on sr.id = bk.seriesId " +
             "LEFT JOIN publishers as pb ON pb.id = bk.publisherId " +
             "LEFT JOIN brands as br ON br.id = bk.brandId " +

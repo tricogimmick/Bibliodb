@@ -4,7 +4,7 @@ import type { SeriesType } from '../types/series';
 import type { PersonType } from '../types/person';
 import type { WorkType } from '../types/work';
 import type { PrintType } from '../types/print';
-import type { PrintsWorksType } from '../types/printsWorks';
+import type { ContentType } from '../types/contents';
 import type { RelatedPeronsType } from '../types/relatedPersons';
 import type { RelatedLinksType } from '../types/relatedLinks';
 import type { RelatedSeriesType } from '../types/relatedSeries';
@@ -170,8 +170,8 @@ export const getPrint = (db: pkg.Database, id: number) => new Promise<PrintType|
 });
 
 // 出版物・作品を全て取得
-export const getPrintWorks = (db: pkg.Database, printId: number) => new Promise<PrintsWorksType[]|Error>((ok, ng) => {
-    db.all<PrintsWorksType>("SELECT * FROM prints_works WHERE printId = ?", [printId], (err, rows) => {
+export const getContents = (db: pkg.Database, printId: number) => new Promise<ContentType[]|Error>((ok, ng) => {
+    db.all<ContentType>("SELECT * FROM contents WHERE printId = ?", [printId], (err, rows) => {
         if (err) {
             ng(err);
         } else {

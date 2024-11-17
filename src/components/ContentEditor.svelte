@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { PrintsWorksType } from "../types/printsWorks";
+    import type { ContentType } from "../types/contents";
 	import type { PersonType } from "../types/person";
 	import type { WorkType } from "../types/work";
     import type { RelatedPeronsType } from "../types/relatedPersons";
@@ -8,18 +8,19 @@
 
     type PropsType = {
         printId: number | null;
-        printWorks: PrintsWorksType[];
+        contents: ContentType[];
         relatedPersons: RelatedPeronsType[];
         persons: PersonType[];
         works: WorkType[];
         worksRelatedPersons: RelatedPeronsType[];
         filterdWorks: WorkType[];
-        callback: (works: PrintsWorksType[]) => void
+        callback: (contents: ContentType[]) => void
     }
 
     type ItemType = {
         orderNo: number;
         workId: number | null;
+        existWork: boolean;
         title: string;
         subTitle: string;
         pageNo: number | null;
@@ -30,14 +31,14 @@
         description: string;        
     }
 
-    let { printId, printWorks, relatedPersons, persons, works, worksRelatedPersons, filterdWorks, callback } : PropsType = $props();
-    $inspect(filterdWorks);
+    let { printId, contents, relatedPersons, persons, works, worksRelatedPersons, filterdWorks, callback } : PropsType = $props();
 
-    if (printWorks.length === 0) {
-        printWorks.push({
+    if (contents.length === 0) {
+        contents.push({
             printId,
             orderNo: 1,
             workId: null,
+            title: "",
             subTitle: "",
             pageNo: null,
             publishType: "",
@@ -48,10 +49,11 @@
         });
     }
 
-    let _items: ItemType[] = printWorks.map((x, i) => ({
+    let _items: ItemType[] = contents.map((x, i) => ({
         orderNo: i + 1,
         workId: x.workId,
-        title: works.find(z => z.id === x.workId)?.title ?? "",
+        existWork: x.workId != null ? true : false,
+        title: x.workId != null ? works.find(z => z.id === x.workId)?.title ?? "" : x.title,
         subTitle: x.subTitle,
         pageNo: x.pageNo,
         publishType: x.publishType,
@@ -69,6 +71,7 @@
         const item = items.find(x => x.orderNo === orderNo);
         if (item) {
             item.workId = work.id;
+            item.existWork = true;
             item.title = work.index;
             callCallback();
         }
@@ -77,6 +80,7 @@
     const newItem: (oderNo: number) => ItemType = (orderNo: number) => ({
         orderNo,
         workId: null,
+        existWork: false,
         title: "",
         subTitle: "",
         pageNo: null,
@@ -89,10 +93,11 @@
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: PrintsWorksType[] = items.filter(x => x.workId != null).map(x => ({
+        const t: ContentType[] = items.filter(x => x.workId != null).map(x => ({
             printId,
             orderNo: x.orderNo,
             workId: x.workId,
+            title: x.title,
             subTitle: x.subTitle,
             pageNo: x.pageNo,
             publishType: x.publishType,
@@ -115,6 +120,7 @@
             const t = items.map(x => ({
                 orderNo: x.orderNo > orderNo ? x.orderNo + 1 : x.orderNo,
                 workId: x.workId,
+                existWork: x.existWork,
                 title: x.title,
                 subTitle: x.subTitle,
                 pageNo: x.pageNo,
@@ -139,6 +145,7 @@
             items = items.filter(x => x.orderNo != orderNo).map(x => ({  
                 orderNo: x.orderNo > orderNo ? x.orderNo -1 : x.orderNo,
                 workId: x.workId,
+                existWork: x.existWork,
                 title: x.title,
                 subTitle: x.subTitle,
                 pageNo: x.pageNo,
@@ -161,15 +168,15 @@
         if (field.value != null && field.value != "") {
             const work = works.find(x => x.index === field.value);
             if (work == null) {
-                field.setCustomValidity("作品が存在しません")
                 item.workId = null;
+                item.existWork = false;
             } else {
-                field.setCustomValidity("")
                 item.workId = work.id;
+                item.existWork = true;
             }
         } else {
-            field.setCustomValidity("")
             item.workId = null;
+            item.existWork = false;
         }
         callCallback();
     }
@@ -208,6 +215,7 @@
         <div class="table-works-row" data-order-no={item.orderNo}>
             <div class="table-works-column">{item.orderNo}</div>
             <div class="table-works-column">
+                <input type="checkbox" name="existWork" bind:checked={item.existWork} onchange={callCallback} />
                 <input type="text" name="title" bind:value={item.title} list="A3F6CC9A-A102-4723-85EE-B395582ED634" onchange={onChangeTitle} />
                 <button onclick={onClickSearchButton}>検索</button>
             </div>
@@ -288,9 +296,9 @@
         grid-column: 2 / 7;
         grid-row: 1;
         padding: 0.3rem 0 0 0.3rem;
-        > input {
+        > input[type="text"] {
             min-width: none;
-            width: 26rem;
+            width: 23rem;
         }
     }
     .table-works-column:nth-child(3) {
