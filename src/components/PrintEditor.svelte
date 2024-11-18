@@ -31,6 +31,8 @@
 
     let { print, contents, relatedPersons, relatedLinks, publishers, brands, series, persons, works, worksRelatedPersons, callback } : PropsType = $props();
 
+    $inspect(contents);
+
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
     let printType = $state(print.printType);
@@ -79,7 +81,7 @@
                 seriesId: series.find(x => x.index === seriesName)?.id ?? null,
                 description,
                 ownedType,
-                relatedPersons: relatedPersons.map(x => ({
+                relatedPersons: relatedPersons.filter(x => x.personId != null).map(x => ({
                     orderNo: x.orderNo as number,
                     personId: x.personId as number,
                     role: x.role,

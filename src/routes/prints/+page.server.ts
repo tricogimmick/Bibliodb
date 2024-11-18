@@ -24,22 +24,22 @@ type PrintListType = {
 };
 
 const getPrints = (db: pkg.Database) => new Promise<PrintListType[]|Error>((ok, ng) => {
-	db.serialize(() => {
-		db.all<QueryResultType>(
-			"SELECT p.id, p.seriesId, s.title as seriesName, p.title, a.name as relatedPersonName FROM prints as p " +
-			"LEFT JOIN series as s on s.id = p.seriesId " + 
-			"LEFT JOIN related_persons as r ON r.relatedType = 'PRINT' AND r.relatedId = p.id " + 
-			"LEFT JOIN persons as a ON a.id = r.personId ORDER BY s.title, p.title",
-			(err, rows) => {
-				if (err) {
-					ng()
-				} else {
-					const prints: PrintListType[] = [];
-					rows.forEach(r => {
-						const print = prints.find(x => x.id === r.id);
-						if (print) {
-							print.relatedPersons.push({ name: r.relatedPersonName });
-						} else {
+	db.all<QueryResultType>(
+		"SELECT p.id, p.seriesId, s.title as seriesName, p.title, a.name as relatedPersonName FROM prints as p " +
+		"LEFT JOIN series as s on s.id = p.seriesId " + 
+		"LEFT JOIN related_persons as r ON r.relatedType = 'PRINT' AND r.relatedId = p.id " + 
+		"LEFT JOIN persons as a ON a.id = r.personId ORDER BY s.title, p.title",
+		(err, rows) => {
+			if (err) {
+				ng()
+			} else {
+				const prints: PrintListType[] = [];
+				rows.forEach(r => {
+					const print = prints.find(x => x.id === r.id);
+					if (print) {
+						print.relatedPersons.push({ name: r.relatedPersonName });
+					} else {
+						if (r.relatedPersonName != null) {
 							prints.push({
 								id: r.id,
 								seriesId: r.seriesId,
@@ -47,12 +47,20 @@ const getPrints = (db: pkg.Database) => new Promise<PrintListType[]|Error>((ok, 
 								title: r.title,
 								relatedPersons: [ { name: r.relatedPersonName }]
 							})
+						} else {
+							prints.push({
+								id: r.id,
+								seriesId: r.seriesId,
+								seriesName: r.seriesName,
+								title: r.title,
+								relatedPersons: []
+							})
 						}
-					})
-					ok(prints);
-				}
-			});
-	});
+					}
+				})
+				ok(prints);
+			}
+		});
 });
 
 export const load: PageServerLoad = async ({ params }) => {

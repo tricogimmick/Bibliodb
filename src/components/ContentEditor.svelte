@@ -93,7 +93,7 @@
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: ContentType[] = items.filter(x => x.workId != null).map(x => ({
+        const t: ContentType[] = items.filter(x => x.title != null).map(x => ({
             printId,
             orderNo: x.orderNo,
             workId: x.workId,

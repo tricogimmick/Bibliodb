@@ -5,6 +5,7 @@
 
     const { data }: { data: PageData } = $props();
     const printData = data.print;
+    $inspect(printData);
 
     const bookImage = printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "カバー");
     const extelanLink = printData.relatedLinks.filter(x => x.linkType === "LINK");
@@ -97,12 +98,16 @@
             </tr>
         </thead>
         <tbody>
-            {#each printData.works as work (work.orderNo)}
+            {#each printData.contents as content (content.orderNo)}
                 <tr>
-                    <td>{work.orderNo}</td>
-                    <td><a href="/works/{work.workId}">{work.title}</a>{#if work.subTitle }<br>{work.subTitle}{/if}</td>
-                    <td>{work.description}</td>
-                    <td>{work.pageNo}</td>
+                    <td>{content.orderNo}</td>
+                    {#if content.workId }
+                    <td><a href="/works/{content.workId}">{content.title}</a>{#if content.subTitle }<br>{content.subTitle}{/if}</td>
+                    {:else }
+                    <td>{content.title}{#if content.subTitle }<br>{content.subTitle}{/if}</td>
+                    {/if}
+                    <td>{content.description}</td>
+                    <td>{content.pageNo}</td>
                 </tr>
             {/each}
         </tbody>
@@ -129,6 +134,7 @@
         td {
             border-bottom: 1px solid gray;
             padding: 0.2rem 0.5rem;
+            vertical-align: top;
         }
         td:nth-child(1) {
             width: 1.5rem;
@@ -147,6 +153,11 @@
             width: 3rem;
             text-align: right;
         }
+    }
+    .images {
+        display: flex;
+        gap: 1rem 0.5rem;
+        margin-bottom: 1rem;
     }
     .button-container {
         margin-top: 1rem;

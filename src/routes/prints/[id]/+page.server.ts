@@ -91,7 +91,7 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
             const contents = await getAllRows<ContentDetailType>(db,
                 "SELECT ct.orderNo, ct.workId, CASE WHEN ct.workId IS null THEN ct.title ELSE wk.title END as title, " +
                 "ct.subTitle, ct.description, ct.pageNo FROM contents as ct " +
-                "JOIN works as wk ON wk.id = ct.workId " +
+                "LEFT JOIN works as wk ON wk.id = ct.workId " +
                 "WHERE ct.printId = ? ORDER BY ct.orderNo", [row.id]
             );
             const print: PrintDetailType = {

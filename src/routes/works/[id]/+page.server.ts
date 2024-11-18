@@ -108,7 +108,7 @@ const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Err
             "LEFT JOIN series as sr on sr.id = bk.seriesId " +
             "LEFT JOIN publishers as pb ON pb.id = bk.publisherId " +
             "LEFT JOIN brands as br ON br.id = bk.brandId " +
-            "WHERE pw.workId = ? " +
+            "WHERE ct.workId = ? " +
             "ORDER BY bk.publicationDate",
             [work.id]
         );

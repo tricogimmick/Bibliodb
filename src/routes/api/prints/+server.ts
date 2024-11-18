@@ -115,7 +115,7 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
         for (const content of putData.contents) {
             await runSql(db,
                 "INSERT INTO contents (printId, orderNo, workId, title, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [putData.id, content.orderNo, content.workId, content.titile, content.subTitle, content.pageNo, content.publishType, content.serializationStatus, 
                     content.color, content.firstPublished, content.description
                 ]);
