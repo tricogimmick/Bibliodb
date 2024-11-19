@@ -1,13 +1,14 @@
 import type { RequestHandler } from './$types';
 import type { WorkType } from '../../../types/work';
 import type { ResultType } from '../../../types/result';
+import type { TagType } from '../../../types/tag';
 
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
-import { getAllRows, runSql } from '$lib/common';
+import { getRow, getAllRows, runSql } from '$lib/common';
 
 export type PostDataType = {
     id: number | null;
@@ -37,6 +38,7 @@ export type PostDataType = {
         seriesId: number;
         description: string;
     }[],
+    tags: string[]
 };
 
 const createWork = (id: number, postData: PostDataType) => ({
@@ -77,6 +79,14 @@ const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<Res
                 "INSERT INTO related_series (relatedType, relatedId, seriesId, description) VALUES (?, ?, ?, ?)",
                 ["WORK", workId, relatedSeries.seriesId, relatedSeries.description]);
         }
+        for (const tag of postData.tags) {
+            const tagData = await getRow<TagType>(db, "SELECT * FROM tags WHERE tag = ?", [tag]);
+            let tagId = tagData?.id;
+            if (tagId == null) {
+                tagId = await runSql(db, "INSERT INTO tags (tag) VALUES (?)", [tag]);
+            }
+            await runSql(db, "INSERT INTO related_tags (relatedType, relatedId, tagId)", ["WORK", workId, tagId]);
+        }
         ok({ ok: true, data: createWork(workId as number, postData) });
     } catch (e: any) {
         ng({ ok: false, data: (e as Error).message });
@@ -108,6 +118,15 @@ const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<Resu
             await runSql(db,
                 "INSERT INTO related_series (relatedType, relatedId, seriesId, description) VALUES (?, ?, ?, ?)",
                 ["WORK", putData.id, relatedSeries.seriesId, relatedSeries.description]);
+        }
+        await runSql(db, "DELETE FROM related_tags WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id]);
+        for (const tag of putData.tags) {
+            const tagData = await getRow<TagType>(db, "SELECT * FROM tags WHERE tag = ?", [tag]);
+            let tagId = tagData?.id;
+            if (tagId == null) {
+                tagId = await runSql(db, "INSERT INTO tags (tag) VALUES (?)", [tag]);
+            }
+            await runSql(db, "INSERT INTO related_tags (relatedType, relatedId, tagId) VALUES (?, ?, ?) ", ["WORK", putData.id, tagId]);
         }
         ok({ ok: true, data: createWork(putData.id as number, putData)});
     } catch (e: any) {

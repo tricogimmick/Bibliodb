@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ContentType } from "../types/contents";
+    import type { ContentType } from "../types/content";
 	import type { PersonType } from "../types/person";
 	import type { WorkType } from "../types/work";
     import type { RelatedPeronsType } from "../types/relatedPersons";

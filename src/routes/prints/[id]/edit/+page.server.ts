@@ -1,6 +1,6 @@
 import type { PageServerLoad } from '../$types';
 import type { PrintType } from '../../../../types/print';
-import type { ContentType } from '../../../../types/contents';
+import type { ContentType } from '../../../../types/content';
 import type { RelatedPeronsType } from '../../../../types/relatedPersons';
 import type { RelatedLinksType } from '../../../../types/relatedLinks';
 import type { PublisherType } from '../../../../types/publisher';

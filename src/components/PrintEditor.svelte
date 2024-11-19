@@ -4,7 +4,7 @@
     import type { BrandType } from "../types/brand";
     import type { SeriesType } from "../types/series";
 	import type { WorkType } from "../types/work";
-    import type { ContentType } from "../types/contents";
+    import type { ContentType } from "../types/content";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { PostDataType } from "../routes/api/prints/+server";
@@ -30,8 +30,6 @@
     };
 
     let { print, contents, relatedPersons, relatedLinks, publishers, brands, series, persons, works, worksRelatedPersons, callback } : PropsType = $props();
-
-    $inspect(contents);
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);

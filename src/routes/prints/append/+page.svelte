@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { PrintType } from '../../../types/print';
-    import type { ContentType } from '../../../types/contents';
+    import type { ContentType } from '../../../types/content';
     import type { RelatedPeronsType } from '../../../types/relatedPersons';
     import type { RelatedLinksType } from '../../../types/relatedLinks';
     import type { ResultType } from '../../../types/result';

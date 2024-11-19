@@ -4,7 +4,7 @@ import type { SeriesType } from '../types/series';
 import type { PersonType } from '../types/person';
 import type { WorkType } from '../types/work';
 import type { PrintType } from '../types/print';
-import type { ContentType } from '../types/contents';
+import type { ContentType } from '../types/content';
 import type { RelatedPeronsType } from '../types/relatedPersons';
 import type { RelatedLinksType } from '../types/relatedLinks';
 import type { RelatedSeriesType } from '../types/relatedSeries';
@@ -12,7 +12,7 @@ import type { ResultType } from '../types/result';
 import pkg from 'sqlite3';
 
 // SQLの実行
-export const runSql = (db: pkg.Database, sql: string, params: any) =>  new Promise((ok, ng) => {
+export const runSql = (db: pkg.Database, sql: string, params: any) =>  new Promise<number>((ok, ng) => {
     db.run(sql, params, function(error) {
         if (error) {
             ng(error);
@@ -216,3 +216,22 @@ export const getAllRelatedSeries = (db: pkg.Database, relatedType: string, relat
         }
     });
 });
+
+// 関連タグを全て取得
+type tagDisplayType = {
+    tag: string;
+}
+export const getAllRelatedTags = (db: pkg.Database, relatedType: string, relatedId: number ) => new Promise<string[]|Error>((ok, ng) => {
+    db.all<tagDisplayType>(
+        "SELECT t.tag FROM related_tags as r " +
+        "JOIN tags as t ON t.id = r.tagId WHERE r.relatedType = ? AND relatedId = ?",
+        [relatedType, relatedId],
+        (err, rows) => {
+            if (err) {
+                ng(err);
+            } else {
+                ok(rows.map(x => x.tag));
+            }
+        }
+    )
+})

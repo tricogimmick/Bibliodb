@@ -38,6 +38,7 @@
     const relatedPersons: RelatedPeronsType[] = [rp];
     const relatedLinks: RelatedLinksType[] = [];
     const relatedSeries: RelatedSeriesType[] = [];
+    const tags: string[] = [];
 
     const onSubmit = (result: ResultType<WorkType>) => {
         if (result.ok) {
@@ -50,7 +51,7 @@
 </script>
 
 <h2>Work - Append</h2>
-<WorkEditor {work} {relatedPersons} {relatedLinks} {relatedSeries} {...data} callback={onSubmit}></WorkEditor>
+<WorkEditor {work} {relatedPersons} {relatedLinks} {relatedSeries} {tags} {...data} callback={onSubmit}></WorkEditor>
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>

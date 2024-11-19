@@ -8,7 +8,7 @@ import type { RelatedSeriesType } from '../../../../types/relatedSeries';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getWork, getAllRelatedPersons, getAllRelatedLinks, getAllRelatedSeries, getAllPersons, getAllSeries } from '$lib/common';
+import { getWork, getAllRelatedPersons, getAllRelatedLinks, getAllRelatedSeries, getAllPersons, getAllSeries, getAllRelatedTags } from '$lib/common';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
@@ -21,6 +21,7 @@ export const load: PageServerLoad = async ({ params }) => {
       relatedPersons: await getAllRelatedPersons(db, "WORK", Number(params.id)) as RelatedPeronsType[],
       relatedLinks: await getAllRelatedLinks(db, "WORK", Number(params.id)) as RelatedLinksType[], 
       relatedSeries: await getAllRelatedSeries(db, "WORK", Number(params.id)) as RelatedSeriesType[],
+      tags: await getAllRelatedTags(db, "WORK", Number(params.id)) as string[],
       persons: await getAllPersons(db) as PersonType[],
       series: await getAllSeries(db) as SeriesType[]
     };

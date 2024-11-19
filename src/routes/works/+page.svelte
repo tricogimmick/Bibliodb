@@ -9,8 +9,6 @@
     let searchKey = $state("");
     let contentType = $state("");
 
-    $inspect(allWorks);
-
     const onClickAppendWork = (e: Event) => goto("/works/append");
 
     const contentUpdate = () => {

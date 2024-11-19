@@ -24,10 +24,12 @@
         <label for="index">シリーズ名</label>
         <span class="data-value">{data.series.title} {#if data.series.index != data.series.title}({data.series.index}){/if}</span>
     </div>
+    {#if data.series.originalTitle }
     <div class="input-field">
         <label for="originalTitle">原題</label>
         <span class="data-value">{data.series.originalTitle} </span>
     </div>
+    {/if}
     <div class="input-field">
         <label for="seriesType">種別</label>
         <span class="data-value">{data.series.seriesType} </span>

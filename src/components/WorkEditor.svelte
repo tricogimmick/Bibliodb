@@ -11,19 +11,20 @@
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
     import RelatedSeriesEditor from "./RelatedSeriesEditor.svelte";
+    import TagEditor from "./TagEditor.svelte";
 
     type PropsType = {
         work: WorkType,
         relatedPersons: RelatedPeronsType[],
         relatedLinks: RelatedLinksType[],
         relatedSeries: RelatedSeriesType[],
+        tags: string[],
         persons: PersonType[],
         series: SeriesType[],
         callback: ((result: ResultType<WorkType>) => void) | null
     };
 
-    let { work, relatedPersons, relatedLinks, relatedSeries, persons, series, callback } : PropsType = $props();
-    $inspect(relatedSeries);
+    let { work, relatedPersons, relatedLinks, relatedSeries, tags, persons, series, callback } : PropsType = $props();
 
     let index = $state(work.index);
     let title = $state(work.title);
@@ -86,7 +87,8 @@
                 relatedSeries: relatedSeries.filter(x => x.seriesId != null).map(x => ({
                     seriesId: x.seriesId as number,
                     description: x.description
-                }))
+                })),
+                tags
             };
             const result = await callApi(postData, work.id != null ? "PUT" : "POST");
             callback?.(result);
@@ -113,6 +115,11 @@
     // 関連シリーズが変更された
     const onChangeRelationSeries = (rs: RelatedSeriesType[]) => {
         relatedSeries = rs;
+    }
+
+    // タグが変更された
+    const onChangeTags = (newTags: string[]) => {
+        tags = newTags;
     }
 
 </script>
@@ -170,6 +177,7 @@
             <label for="note">補記</label>
             <textarea name="note" bind:value={note} rows="5" cols="80" ></textarea>
         </div>      
+        <TagEditor {tags} callback={onChangeTags}></TagEditor>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />
         </div>

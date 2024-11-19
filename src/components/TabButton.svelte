@@ -1,7 +1,4 @@
 <script lang="ts">
-	import type { HtmlTagDescriptor } from "vite";
-
-
     type TabButtonType = {
         id: string;
         caption: string;

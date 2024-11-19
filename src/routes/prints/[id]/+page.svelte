@@ -5,7 +5,6 @@
 
     const { data }: { data: PageData } = $props();
     const printData = data.print;
-    $inspect(printData);
 
     const bookImage = printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "カバー");
     const extelanLink = printData.relatedLinks.filter(x => x.linkType === "LINK");
