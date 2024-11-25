@@ -39,6 +39,7 @@
             <option value="雑誌">雑誌</option>
             <option value="新聞">新聞</option>
             <option value="WEB">WEB</option>
+            <option value="作品">作品</option>
         </select>
     </div>
 </div>

@@ -6,7 +6,7 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
-import { getRow, getAllRows } from '$lib/common';
+import { getRow, getAllRows, getAllRelatedTags } from '$lib/common';
 
 type RelatedPersonDisplayType = {
     orderNo: number;
@@ -27,6 +27,7 @@ type RelatedSeriesDisplayType = {
     seriesId: number;
     seriesTitle: string;
     description: string;
+    isMedia: number;
 };
 
 type PrintDisplayType = {
@@ -54,12 +55,13 @@ type WorkDetailType = {
     relatedPersons: RelatedPersonDisplayType[],
     relatedLinks: RelationLinkDisplayType[],
     relatedSeries: RelatedSeriesDisplayType[],
-    prints: PrintDisplayType[]
+    prints: PrintDisplayType[],
+    tags: string[]
 }
 
 // 作品情報を生成する
 const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDisplayType[], relatedLinks: RelationLinkDisplayType[], 
-                          relatedSeries: RelatedSeriesDisplayType[], prints: PrintDisplayType[]) => ({
+                          relatedSeries: RelatedSeriesDisplayType[], prints: PrintDisplayType[], tags: string[]) => ({
         id: work.id,
         index: work.index,
         title: work.title,
@@ -74,7 +76,8 @@ const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDisplayTy
         relatedPersons,
         relatedLinks,
         relatedSeries,
-        prints
+        prints,
+        tags
 });
 
 // 作品を取得する
@@ -95,7 +98,7 @@ const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Err
             [work.id]
         );
         const relatedSeries: RelatedSeriesDisplayType[] = await getAllRows(db,
-            "SELECT r.seriesId, s.title as seriesTitle, r.description " +
+            "SELECT r.seriesId, s.title as seriesTitle, r.description, r.isMedia " +
             "FROM related_series as r " +
             "JOIN series as s ON s.id = r.seriesId " +
             "WHERE r.relatedType = 'WORK' AND r.relatedId = ?", 
@@ -112,7 +115,8 @@ const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Err
             "ORDER BY bk.publicationDate",
             [work.id]
         );
-        ok(createWorkDetail(work, relatedPersons, relatedLinks, relatedSeries, prints));
+        const tags: string[] = await getAllRelatedTags(db, "WORK", work.id as number) as string[];
+        ok(createWorkDetail(work, relatedPersons, relatedLinks, relatedSeries, prints, tags));
     } catch (e: any) {
         ng(e);
     }

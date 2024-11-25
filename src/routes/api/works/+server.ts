@@ -34,7 +34,11 @@ export type PostDataType = {
         alt: string;
         description: string;
     }[],
-    relatedSeries: {
+    publishedMedia: {
+        seriesId: number;
+        description: string;
+    }[],
+    seriesTitles: {
         seriesId: number;
         description: string;
     }[],
@@ -74,10 +78,15 @@ const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<Res
                 "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
                 ["WORK", workId, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
         }
-        for (const relatedSeries of postData.relatedSeries) {
+        for (const relatedSeries of postData.publishedMedia) {
             await runSql(db,
-                "INSERT INTO related_series (relatedType, relatedId, seriesId, description) VALUES (?, ?, ?, ?)",
-                ["WORK", workId, relatedSeries.seriesId, relatedSeries.description]);
+                "INSERT INTO related_series (relatedType, relatedId, seriesId, isMedia, description) VALUES (?, ?, ?, ?, ?)",
+                ["WORK", workId, relatedSeries.seriesId, 1, relatedSeries.description]);
+        }
+        for (const relatedSeries of postData.seriesTitles) {
+            await runSql(db,
+                "INSERT INTO related_series (relatedType, relatedId, seriesId, isMedia, description) VALUES (?, ?, ?, ?, ?)",
+                ["WORK", workId, relatedSeries.seriesId, 0, relatedSeries.description]);
         }
         for (const tag of postData.tags) {
             const tagData = await getRow<TagType>(db, "SELECT * FROM tags WHERE tag = ?", [tag]);
@@ -85,7 +94,7 @@ const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<Res
             if (tagId == null) {
                 tagId = await runSql(db, "INSERT INTO tags (tag) VALUES (?)", [tag]);
             }
-            await runSql(db, "INSERT INTO related_tags (relatedType, relatedId, tagId)", ["WORK", workId, tagId]);
+            await runSql(db, "INSERT INTO related_tags (relatedType, relatedId, tagId)　VALUES (?, ?, ?) ", ["WORK", workId, tagId]);
         }
         ok({ ok: true, data: createWork(workId as number, postData) });
     } catch (e: any) {
@@ -114,10 +123,15 @@ const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<Resu
                 ["WORK", putData.id, relatedLink.linkType, relatedLink.url, relatedLink.alt, relatedLink.description]);
         }
         await runSql(db, "DELETE FROM related_series WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id]);
-        for (const relatedSeries of putData.relatedSeries) {
+        for (const relatedSeries of putData.publishedMedia) {
             await runSql(db,
-                "INSERT INTO related_series (relatedType, relatedId, seriesId, description) VALUES (?, ?, ?, ?)",
-                ["WORK", putData.id, relatedSeries.seriesId, relatedSeries.description]);
+                "INSERT INTO related_series (relatedType, relatedId, seriesId, isMedia, description) VALUES (?, ?, ?, ?, ?)",
+                ["WORK", putData.id, relatedSeries.seriesId, 1, relatedSeries.description]);
+        }
+        for (const relatedSeries of putData.seriesTitles) {
+            await runSql(db,
+                "INSERT INTO related_series (relatedType, relatedId, seriesId, isMedia, description) VALUES (?, ?, ?, ?, ?)",
+                ["WORK", putData.id, relatedSeries.seriesId, 0, relatedSeries.description]);
         }
         await runSql(db, "DELETE FROM related_tags WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id]);
         for (const tag of putData.tags) {

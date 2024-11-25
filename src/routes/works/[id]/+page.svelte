@@ -43,6 +43,16 @@
         <span class="data-value">{workData.originalTitle}</span>
     </div>
     {/if}
+    {#each workData.relatedSeries.filter(x => x.isMedia == 0) as relatedSeries, i }
+    <div class="input-field">
+        {#if i == 0}
+        <label for="">シリーズ</label>
+        {:else}
+        <label for="">&nbsp</label>
+        {/if}
+        <span class="data-value">{relatedSeries.seriesTitle} {relatedSeries.description}</span>
+    </div>              
+    {/each}
     <div class="input-field">
         <label for="contentType">種別</label>
         <span class="data-value">{workData.contentType}</span>
@@ -51,7 +61,7 @@
         <label for="">著作者</label>
         <span class="data-value">{@html relatedPersons}</span>
     </div>              
-    {#each workData.relatedSeries as relatedSeries, i }
+    {#each workData.relatedSeries.filter(x => x.isMedia == 1) as relatedSeries, i }
     <div class="input-field">
         {#if i == 0}
         <label for="">掲載誌</label>
@@ -93,6 +103,14 @@
         <label for="note">補記</label>
         <div class="data-content">{@html noteHtml}</div>
     </div>      
+    <div class="input-field">
+        <label for="note">タグ</label>
+        <div class="data-content">
+            {#each workData.tags as tag (tag)}
+                <span class="tag-chip">{tag}</span>
+            {/each}
+        </div>
+    </div>      
 </div>
 <div class="featured-prints">
     <h4>掲載書籍・雑誌</h4>
@@ -122,6 +140,12 @@
 </div>
 
 <style>
+    .tag-chip {
+        display: inline-block;
+        margin-right: 0.2rem;
+        padding: 0.1rem 0.5rem;
+        border: 1px solid gray;
+    }
     .container {
         margin-bottom: 1rem;
         .cell {

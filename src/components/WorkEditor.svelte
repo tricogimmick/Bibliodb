@@ -26,6 +26,13 @@
 
     let { work, relatedPersons, relatedLinks, relatedSeries, tags, persons, series, callback } : PropsType = $props();
 
+    let publishedMedia = $state(relatedSeries.filter(x => x.isMedia == 1));
+    let seriesTitles = $state(relatedSeries.filter(x => x.isMedia != 1));
+
+    let seriesOfMedia = $state(series.filter(x => x.seriesType != "叢書" && x.seriesType != "作品"));
+    let seriesOfWorks = $state(series.filter(x => x.seriesType == "作品"));
+
+
     let index = $state(work.index);
     let title = $state(work.title);
     let variantTitles = $state(work.variantTitles);
@@ -37,6 +44,7 @@
     let seqNo = $state(work.seqNo);
     let finishedReading = $state(work.finishedReading);
     let buttonCaption = $derived(work.id == null || work.id == 0 ? "登　録" : "更　新")
+
 
      // 更新用APIの呼出
      const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
@@ -84,7 +92,11 @@
                     alt: x.alt,
                     description: x.description
                 })),
-                relatedSeries: relatedSeries.filter(x => x.seriesId != null).map(x => ({
+                publishedMedia: publishedMedia.filter(x => x.seriesId != null).map(x => ({
+                    seriesId: x.seriesId as number,
+                    description: x.description
+                })),
+                seriesTitles: seriesTitles.filter(x => x.seriesId != null).map(x => ({
                     seriesId: x.seriesId as number,
                     description: x.description
                 })),
@@ -112,9 +124,13 @@
         relatedLinks = rl;
     }
 
-    // 関連シリーズが変更された
-    const onChangeRelationSeries = (rs: RelatedSeriesType[]) => {
-        relatedSeries = rs;
+    // 掲載誌が変更された
+    const onChangePublishedMedia = (rs: RelatedSeriesType[]) => {
+        publishedMedia = rs;
+    }
+
+    const onChangeSeriesTitles = (rs: RelatedSeriesType[]) => {
+        seriesTitles = rs;
     }
 
     // タグが変更された
@@ -142,6 +158,7 @@
             <label for="variantTitles">別名</label>
             <input name="variantTitles" type="text" bind:value={variantTitles} />
         </div>
+        <RelatedSeriesEditor label="シリーズ" relatedType="WORK" relatedId={work.id} relatedSeries={seriesTitles} series={seriesOfWorks} callback={onChangeSeriesTitles}></RelatedSeriesEditor>
         <div class="input-field">
             <label for="contentType">種別</label>
             <select name="contentType" bind:value={contentType}>
@@ -155,7 +172,7 @@
             </select>
         </div>
         <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
-        <RelatedSeriesEditor relatedType="WORK" relatedId={work.id} {relatedSeries} {series} callback={onChangeRelationSeries}></RelatedSeriesEditor>
+        <RelatedSeriesEditor label="掲載誌" relatedType="WORK" relatedId={work.id} relatedSeries={publishedMedia} series={seriesOfMedia} callback={onChangePublishedMedia}></RelatedSeriesEditor>
         <div class="input-field">
             <label for="publishYear">発表年</label>
             <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/><span>年</span>

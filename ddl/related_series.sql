@@ -6,6 +6,8 @@ CREATE TABLE related_series (
   , relatedId INTEGER NOT NULL
   -- シリーズID
   , seriesId INTEGER NOT NULL
+  -- メディア or 作品
+  , isMedia INTEGER
   -- 解説
   , description TEXT
   -- PK
