@@ -21,6 +21,11 @@ select {
         display: inline-block;
         width: 5rem;
     }
+    > label.continue {
+        padding-left: 2rem;
+        padding-right: 0.5rem;
+        width: unset;
+    }
     input {
         min-width: 15rem;
     }
@@ -42,6 +47,11 @@ select {
         > p {
             margin-top: 0;
         }
+    }
+    span.suffix {
+        margin-left: 0.5rem;
+        margin-right: 1rem;
+        padding-top: 0.1rem;
     }
 }
 .button-container {

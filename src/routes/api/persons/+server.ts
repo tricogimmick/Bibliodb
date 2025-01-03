@@ -44,7 +44,7 @@ const updatePerson = (db: pkg.Database, person: PersonType) => new Promise<Perso
 
 export const POST: RequestHandler = async ({ request }) => {
 	const person : PersonType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await appendPerson(db, person) as PersonType;
@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const person : PersonType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await updatePerson(db, person) as PersonType;
@@ -71,7 +71,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 };
 
 export const GET: RequestHandler = async ({ url }) => {
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await getAllPersons(db);

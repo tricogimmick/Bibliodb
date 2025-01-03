@@ -20,8 +20,10 @@ export type PostDataType = {
     description: string;
     note: string;
     publicationYear: number | null;
+    publicationEndYear: number | null;
     seqNo: number | null;
     finishedReading: string;
+    status: string;
     relatedPersons: {
         orderNo: number;
         personId: number;
@@ -55,18 +57,21 @@ const createWork = (id: number, postData: PostDataType) => ({
     description: postData.description,
     note: postData.note,
     publicationYear: postData.publicationYear,
+    publicationEndYear: postData.publicationEndYear,
     seqNo: postData.seqNo,
-    finishedReading: postData.finishedReading
+    finishedReading: postData.finishedReading,
+    status: postData.status
 });
 
 // 作品の追加
 const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<ResultType<WorkType>>(async (ok, ng) => {
     try {
         const workId = await runSql(db,
-            "INSERT INTO works ([index], title, variantTitles, originalTitle, contentType, description, note, publicationYear, seqNo, finishedReading) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO works ([index], title, variantTitles, originalTitle, contentType, description, note, " +
+            "publicationYear, publicationEndYear, seqNo, finishedReading, status) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [ postData.index, postData.title, postData.variantTitles, postData.originalTitle, postData.contentType, postData.description, postData.note, 
-              postData.publicationYear, postData.seqNo, postData.finishedReading ]
+              postData.publicationYear, postData.publicationEndYear, postData.seqNo, postData.finishedReading, postData.status ]
         );
         for (const relatedPerson of postData.relatedPersons) {
             await runSql(db,
@@ -94,7 +99,7 @@ const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<Res
             if (tagId == null) {
                 tagId = await runSql(db, "INSERT INTO tags (tag) VALUES (?)", [tag]);
             }
-            await runSql(db, "INSERT INTO related_tags (relatedType, relatedId, tagId)　VALUES (?, ?, ?) ", ["WORK", workId, tagId]);
+            await runSql(db, "INSERT INTO related_tags (relatedType, relatedId, tagId) VALUES (?, ?, ?) ", ["WORK", workId, tagId]);
         }
         ok({ ok: true, data: createWork(workId as number, postData) });
     } catch (e: any) {
@@ -107,9 +112,9 @@ const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<Resu
     try {
         await runSql(db,
             "UPDATE works SET [index] = ?, title = ?, variantTitles = ?, originalTitle = ?, contentType = ?, description = ?, note = ?, " +
-            "publicationYear = ?, seqNo = ?, finishedReading = ? WHERE id = ?",
+            "publicationYear = ?, publicationEndYear = ?, seqNo = ?, finishedReading = ?, status = ? WHERE id = ?",
             [ putData.index, putData.title, putData.variantTitles, putData.originalTitle, putData.contentType, putData.description, putData.note, 
-              putData.publicationYear, putData.seqNo, putData.finishedReading, putData.id ]);
+              putData.publicationYear, putData.publicationEndYear, putData.seqNo, putData.finishedReading, putData.status, putData.id ]);
         await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id]);
         for (const relatedPerson of putData.relatedPersons) {
             await runSql(db,
@@ -168,7 +173,7 @@ const getWorks = (db: pkg.Database, personId: number|null) => new Promise<WorkTy
 
 export const POST: RequestHandler = async ({ request }) => {
 	const postData : PostDataType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await appendWork(db, postData);
@@ -180,7 +185,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const putData : PostDataType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await updateWork(db, putData);
@@ -193,7 +198,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 export const GET: RequestHandler = async ({ url }) => {
     const pid = url.searchParams.get('pid') ?? null;
     const personId = pid ? Number(pid) : null;
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await getWorks(db, personId);

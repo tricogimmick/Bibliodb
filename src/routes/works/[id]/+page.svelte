@@ -73,7 +73,11 @@
     {/each}
     <div class="input-field">
         <label for="publicationYear">発表年</label>
-        <span class="data-value">{workData.publicationYear}</span>
+        {#if workData.publicationEndYear != null}
+        <span class="data-value">{workData.publicationYear} 〜 {workData.publicationEndYear} {workData.status}</span>
+        {:else}
+        <span class="data-value">{workData.publicationYear} {workData.status}</span>
+        {/if}
     </div>      
     <div class="input-field">
         <label for="description">解説</label>

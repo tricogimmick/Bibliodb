@@ -26,6 +26,11 @@ export type PostDataType = {
         role: string;
         description: string;
     }[];
+    relatedWorks: {
+        subType: string;
+        workId: number;
+        description: string;
+    }[];
     relatedLinks: {
         linkType: "IMG" | "LINK";
         url: string;
@@ -72,6 +77,11 @@ const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<Pr
                 "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
                 ["PRINT", printId, relatedPerson.orderNo, relatedPerson.personId, relatedPerson.role, relatedPerson.description]);
         }
+        for (const relatedWork of postData.relatedWorks) {
+            await runSql(db, 
+                "INSERT INTO related_works (relatedType, subType, relatedId, workId, description) VALUES (?, ?, ?, ?, ?)",
+                ["PRINT", relatedWork.subType, printId, relatedWork.workId, relatedWork.description]);
+        }
         for (const relatedLink of postData.relatedLinks) {
             await runSql(db,
                 "INSERT INTO related_links (relatedType, relatedId, linkType, url, alt, description) VALUES (?, ?, ?, ?, ?, ?)",
@@ -105,6 +115,12 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
                     "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
                     ["PRINT", putData.id, author.orderNo, author.personId, author.role, author.description]);
         }    
+        await runSql(db, "DELETE FROM related_works WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
+        for (const relatedWork of putData.relatedWorks) {
+            await runSql(db, 
+                "INSERT INTO related_works (relatedType, subType, relatedId, workId, description) VALUES (?, ?, ?, ?, ?)",
+                ["PRINT", relatedWork.subType, putData.id, relatedWork.workId, relatedWork.description]);
+        }
         await runSql(db, "DELETE FROM related_links WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
         for (const relatedLink of putData.relatedLinks) {
             await runSql(db,
@@ -128,7 +144,7 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
 
 export const POST: RequestHandler = async ({ request }) => {
 	const postData : PostDataType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await appendPrint(db, postData);
@@ -140,7 +156,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const putData : PostDataType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await updatePrint(db, putData);

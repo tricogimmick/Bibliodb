@@ -50,8 +50,10 @@ type WorkDetailType = {
     description: string;
     note: string;
     publicationYear: number | null;
+    publicationEndYear:  number | null;
     seqNo: number | null;
     finishedReading: string;
+    status: string;
     relatedPersons: RelatedPersonDisplayType[],
     relatedLinks: RelationLinkDisplayType[],
     relatedSeries: RelatedSeriesDisplayType[],
@@ -71,8 +73,10 @@ const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDisplayTy
         description: work.description,
         note: work.note,
         publicationYear: work.publicationYear,
+        publicationEndYear: work.publicationEndYear,
         seqNo: work.seqNo,
         finishedReading: work.finishedReading,
+        status: work.status,
         relatedPersons,
         relatedLinks,
         relatedSeries,
@@ -123,7 +127,7 @@ const getWork = (db: pkg.Database, id: number) => new Promise<WorkDetailType|Err
 });
 
 export const load: PageServerLoad = async ({ params }) => {
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);    
     try {
 		return {

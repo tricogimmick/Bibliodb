@@ -39,7 +39,7 @@ const updatePublisher = (db: pkg.Database, publisher: PublisherType) => new Prom
 
 export const POST: RequestHandler = async ({ request }) => {
 	const person : PublisherType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await appendPublisher(db, person);
@@ -53,7 +53,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const person : PublisherType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await updatePublisher(db, person);
@@ -66,7 +66,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 };
 
 export const GET: RequestHandler = async ({ url }) => {
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await getAllPublishers(db);

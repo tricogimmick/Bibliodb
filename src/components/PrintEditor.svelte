@@ -7,12 +7,14 @@
     import type { ContentType } from "../types/content";
     import type { RelatedPeronsType } from "../types/relatedPersons";
     import type { RelatedLinksType } from "../types/relatedLinks";
+	import type { RelatedWorksType } from "../types/relatedWorks";
     import type { PostDataType } from "../routes/api/prints/+server";
     import type { ResultType } from "../types/result";
 
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
 	import ContentEditor from "./ContentEditor.svelte";
+    import RelatedWorksEditor from "./RelatedWorksEditor.svelte";
 	import type { PersonType } from "../types/person";
 
     type PropsType = {
@@ -20,6 +22,7 @@
         contents: ContentType[];
         relatedPersons: RelatedPeronsType[];
         relatedLinks: RelatedLinksType[];
+        relatedWorks: RelatedWorksType[];
         publishers: PublisherType[];
         brands: BrandType[];
         persons: PersonType[];
@@ -29,7 +32,7 @@
         callback: ((result: ResultType<PrintType>) => void) | null
     };
 
-    let { print, contents, relatedPersons, relatedLinks, publishers, brands, series, persons, works, worksRelatedPersons, callback } : PropsType = $props();
+    let { print, contents, relatedPersons, relatedLinks, relatedWorks, publishers, brands, series, persons, works, worksRelatedPersons, callback } : PropsType = $props();
 
     let title = $state(print.title);
     let originalTitle = $state(print.originalTitle);
@@ -43,8 +46,17 @@
     let ownedType = $state(print.ownedType);
     let buttonCaption = $derived(print.id == null || print.id == 0 ? "登　録" : "更　新")
 
-    const workIds = worksRelatedPersons.filter(x => relatedPersons.findIndex(z => x.personId == z.personId) >= 0).map(x => x.relatedId as number);
-    let filterdWorks: WorkType[] = $state(works.filter(x => workIds.includes(x.id as number)));
+
+    let _filterdWorks: WorkType[];
+    if (relatedPersons?.length > 0) {
+        const workIds = worksRelatedPersons.filter(x => relatedPersons.findIndex(z => x.personId == z.personId) >= 0).map(x => x.relatedId as number);
+        _filterdWorks = works.filter(x => workIds.includes(x.id as number));
+    } else {
+        _filterdWorks = works;
+    }
+    console.log(`worksRelatedPersons:${worksRelatedPersons.length}`);
+    console.log(`_filterdWorks:${_filterdWorks.length}`);
+    let filterdWorks: WorkType[] = $state(_filterdWorks);
 
      // 更新用APIの呼出
      const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
@@ -84,6 +96,11 @@
                     personId: x.personId as number,
                     role: x.role,
                     description: x.description
+                })),
+                relatedWorks: relatedWorks.filter(x => x.workId != null).map(x => ({
+                    subType: x.subType,
+                    workId: x.workId as number,
+                    description: x.description 
                 })),
                 relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
                     linkType: x.linkType,
@@ -169,6 +186,11 @@
     const onChangeContents = (cnt: ContentType[]) => {
         contents = cnt;
     }
+
+    // 関連作品が変更された
+    const onChangeRelatedWorks = (rw: RelatedWorksType[]) => {
+        relatedWorks = rw;
+    }
 </script>
 
 <div>
@@ -218,6 +240,7 @@
             <label for="issueNumber">号数</label>
             <input name="issueNumber" type="number" bind:value={issueNumber}  />
         </div>              
+        <RelatedWorksEditor label="表紙" relatedType="PRINT" subType="COVER" relatedId={print.id} {relatedWorks} {works} callback={onChangeRelatedWorks}></RelatedWorksEditor>
         <div class="input-field">
             <label for="description">解説</label>
             <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>

@@ -52,7 +52,7 @@ const getWorks = (db: pkg.Database) => new Promise<WorkListType[]|Error>((ok, ng
 });
 
 export const load: PageServerLoad = async ({ params }) => {
-	const dbPath = env["LIBMANDB_PATH"] ?? "";
+	const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
 	try {
 		return {

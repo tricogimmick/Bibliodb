@@ -22,8 +22,10 @@
         description: "",
         note: "",
         publicationYear: null,
+        publicationEndYear: null,
         seqNo: null,
-        finishedReading: ""
+        finishedReading: "",
+        status: ""
     };
 
     const rp: RelatedPeronsType = {

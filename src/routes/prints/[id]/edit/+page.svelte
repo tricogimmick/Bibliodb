@@ -9,7 +9,7 @@
     const { data }: { data: PageData } = $props();
     const onSubmit = (result: ResultType<PrintType>) => {
         if (result.ok) {
-            goto("/prints");
+            goto(`/prints/${data.print.id}`);
         } else {
             alert("データの登録に失敗しました。");
         }

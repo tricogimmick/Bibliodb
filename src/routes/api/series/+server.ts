@@ -44,7 +44,7 @@ const updateSeries = (db: pkg.Database, series: SeriesType) => new Promise<Serie
 
 export const POST: RequestHandler = async ({ request }) => {
 	const series : SeriesType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await appendSeries(db, series);
@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const series : SeriesType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await updateSeries(db, series);
@@ -71,7 +71,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 };
 
 export const GET: RequestHandler = async ({ url }) => {
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await getAllSeries(db);

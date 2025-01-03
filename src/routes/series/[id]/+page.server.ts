@@ -29,7 +29,7 @@ type SeriesDisplayType = {
 };
 
 export const load: PageServerLoad = async ({ params }) => {
-	const dbPath = env["LIBMANDB_PATH"] ?? "";
+	const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
 	try {
 		const seriesId = Number(params.id);

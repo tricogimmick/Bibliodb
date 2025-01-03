@@ -41,8 +41,10 @@
     let description = $state(work.description);
     let note = $state(work.note);
     let publicationYear = $state(work.publicationYear);
+    let publicationEndYear = $state(work.publicationEndYear);
     let seqNo = $state(work.seqNo);
     let finishedReading = $state(work.finishedReading);
+    let status = $state(work.status);
     let buttonCaption = $derived(work.id == null || work.id == 0 ? "登　録" : "更　新")
 
 
@@ -78,8 +80,10 @@
                 description,
                 note,
                 publicationYear,
+                publicationEndYear,
                 seqNo,
                 finishedReading,
+                status,
                 relatedPersons: relatedPersons.map((x, i) => ({
                     orderNo: i + 1,
                     personId: x.personId as number,
@@ -149,10 +153,8 @@
         <div class="input-field">
             <label for="title">題名</label>
             <input name="title" type="text" bind:value={title} required />
-            <span>
-                <label for="originalTitle">原題</label>
-                <input name="originalTitle" type="text" bind:value={originalTitle} />
-            </span>
+            <label for="originalTitle" class="continue">原題</label>
+            <input name="originalTitle" type="text" bind:value={originalTitle} />
         </div>
         <div class="input-field">
             <label for="variantTitles">別名</label>
@@ -174,12 +176,17 @@
         <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
         <RelatedSeriesEditor label="掲載誌" relatedType="WORK" relatedId={work.id} relatedSeries={publishedMedia} series={seriesOfMedia} callback={onChangePublishedMedia}></RelatedSeriesEditor>
         <div class="input-field">
-            <label for="publishYear">発表年</label>
-            <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/><span>年</span>
-            <span>
-                <label for="seqNo">連番</label>
-                <input name="seqNo" type="number" bind:value={seqNo} max="99999999" />
-            </span>    
+            <label for="publicationYear">発表年</label>
+            <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/><span class="suffix">年 〜</span>
+            <input name="publicationEndYear" type="number" bind:value={publicationEndYear} min="1800" max="2100"/><span class="suffix">年</span>
+            <select name="status" bind:value={status}>
+                <option value=""></option>
+                <option value="読切">読切</option>
+                <option value="連載中">連載中</option>
+                <option value="完結">完結</option>
+            </select>
+            <label for="seqNo" class="continue">連番</label>
+            <input name="seqNo" type="number" bind:value={seqNo} max="99999999" />
         </div>
         <div class="input-field">
             <label for="description">解説</label>
@@ -207,15 +214,14 @@
         width: 4rem;
         text-align: right;
     }
-    input[name="title"]+span {
-        margin-left: 0.5rem;
+    input[name="publicationEndYear"] {
+        min-width: 4rem;
+        width: 4rem;
+        text-align: right;
     }
-    input[name="publicationYear"]+span {
-        margin-left: 0.5rem;
-        padding-top: 0.1rem;
-    }
-    input[name="publicationYear"]+span+span {
-        margin-left: 1rem;
+    select[name="status"] {
+        width: 10rem;
+        min-width: unset;
     }
     input[name="seqNo"] {
         min-width: unset;

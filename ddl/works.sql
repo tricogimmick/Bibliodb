@@ -17,10 +17,14 @@ CREATE TABLE works (
     -- 付記
     , note TEXT
     -- 発表年
-    , publishYear INTEGER
+    , publicationYear INTEGER
+    -- 発表終了年
+    , publicationEndYear INTEGER
     -- 連番
     , seqNo INTEGER
     -- 読了日
     , finishedReading TEXT
+    -- 状態
+    , status TEXT
 )
 CREATE UNIQUE INDEX works_index ON works(index);

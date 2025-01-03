@@ -23,7 +23,7 @@ type QueryResultType = {
     ownedType: string; 
 }
 
-type RelatedPersonDetailType = {
+type RelatedPersonDisplayType = {
     orderNo: number;
     personId: number;
     personName: string;
@@ -31,23 +31,48 @@ type RelatedPersonDetailType = {
     description: string;
 };
 
-type RelationLinkDetailType = {
+type RelatedWorksDisplayType = {
+    subType: string,
+    workId: number;
+    title: string;
+}
+
+type RelationLinkDisplayType = {
     linkType: "IMG" | "LINK";
     url: string;
     alt: string;
     description: string;
 };
 
-type ContentDetailType = {
+type ContentQueryResultType = {
     orderNo: number;
     workId: number;
     title: string;
     subTitle: string;
     description: string;
     pageNo: number | null;
+    color: number | null;
+    publishType: string;
+    relatedPersonId: number;
+	relatedPersonName: string;
 }
 
-type PrintDetailType = {
+type ContentDisplayType = {
+    orderNo: number;
+    workId: number;
+    title: string;
+    subTitle: string;
+    description: string;
+    pageNo: number | null;
+    color: number | null;
+    publishType: string;
+	relatedPersons: {
+        id: number | null;
+		name: string;
+	}[]
+}
+
+type PrintDisplayType = {
     id: number | null;
     title: string;
     originalTitle: string;
@@ -60,13 +85,14 @@ type PrintDetailType = {
     seriesName: string;
     description: string;   
     ownedType: string; 
-    relatedPersons: RelatedPersonDetailType[];
-    relatedLinks: RelationLinkDetailType[];
-    contents: ContentDetailType[];
+    relatedPersons: RelatedPersonDisplayType[];
+    relatedWorks: RelatedWorksDisplayType[];
+    relatedLinks: RelationLinkDisplayType[];
+    contents: ContentDisplayType[];
 };
 
 // 出版物を取得する
-const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|Error>((ok, ng) => {
+const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDisplayType|Error>((ok, ng) => {
     db.serialize(async () => {
         try {
             const row = await getRow<QueryResultType>(db,
@@ -77,24 +103,52 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 "LEFT JOIN series as s ON s.id = p.seriesId WHERE p.id = ?", 
                 [id]
             );
-            const relatedPersons = await getAllRows<RelatedPersonDetailType>(db,
+            const relatedPersons = await getAllRows<RelatedPersonDisplayType>(db,
                 "SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description " +
                 "FROM related_persons as r " +
                 "JOIN persons as p ON p.id = r.personId " +
                 "WHERE r.relatedType = 'PRINT' AND  r.relatedId = ?", [row.id]
             );
-            const relatedLinks = await getAllRows<RelationLinkDetailType>(db,
+            const relatedWorks = await getAllRows<RelatedWorksDisplayType>(db,
+                "SELECT rw.subType, rw.workId, wk.title " +
+                "FROM related_works as rw JOIN works as wk on wk.id = rw.workId " +
+                "WHERE rw.relatedType = 'PRINT' AND rw.relatedId = ?", [row.id]
+            );
+            const relatedLinks = await getAllRows<RelationLinkDisplayType>(db,
                 "SELECT r.linkType, r.url, r.alt, r.description " +
                 "FROM related_links as r " +
                 "WHERE r.relatedType = 'PRINT' AND  r.relatedId = ?", [row.id]
             );
-            const contents = await getAllRows<ContentDetailType>(db,
+            const contentResults = await getAllRows<ContentQueryResultType>(db,
                 "SELECT ct.orderNo, ct.workId, CASE WHEN ct.workId IS null THEN ct.title ELSE wk.title END as title, " +
-                "ct.subTitle, ct.description, ct.pageNo FROM contents as ct " +
+                "ct.subTitle, ct.description, ct.pageNo, ct.color, ct.publishType, ps.id as relatedPersonId, ps.name as relatedPersonName " +
+                "FROM contents as ct " +
                 "LEFT JOIN works as wk ON wk.id = ct.workId " +
+                "LEFT JOIN related_persons as rp ON rp.relatedType = 'WORK' AND rp.relatedId = wk.id " + 
+                "LEFT JOIN persons as ps ON ps.id = rp.personId " +        
                 "WHERE ct.printId = ? ORDER BY ct.orderNo", [row.id]
             );
-            const print: PrintDetailType = {
+            const contents: ContentDisplayType[] = [];
+            contentResults.forEach(x => {
+                const content = contents.find(c => c.orderNo === x.orderNo);
+                if (content) {
+                    content.relatedPersons.push({ id: x.relatedPersonId, name: x.relatedPersonName });
+                } else {
+                    contents.push({
+                        orderNo: x.orderNo,
+                        workId: x.workId,
+                        title: x.title,
+                        subTitle: x.subTitle,
+                        description: x.description,
+                        pageNo: x.pageNo,
+                        color: x.color,
+                        publishType: x.publishType,
+                        relatedPersons: [{ id: x.relatedPersonId, name: x.relatedPersonName }]
+                    });
+                }
+            })
+
+            const print: PrintDisplayType = {
                 id: row.id,
                 title: row.title,
                 originalTitle: row.originalTitle,
@@ -108,6 +162,7 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
                 description: row.description, 
                 ownedType: row.ownedType,                            
                 relatedPersons,
+                relatedWorks,
                 relatedLinks,
                 contents
             };
@@ -119,11 +174,11 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDetailType|E
 });
 
 export const load: PageServerLoad = async ({ params }) => {
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);    
     try {
 		return {
-			print: await getPrint(db, Number(params.id)) as PrintDetailType
+			print: await getPrint(db, Number(params.id)) as PrintDisplayType
 		};
     } catch (e) {
 		console.log(e);

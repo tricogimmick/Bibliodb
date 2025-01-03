@@ -4,10 +4,12 @@
     import type { ContentType } from '../../../types/content';
     import type { RelatedPeronsType } from '../../../types/relatedPersons';
     import type { RelatedLinksType } from '../../../types/relatedLinks';
+    import type RelatedWorks from '../../../components/RelatedWorksEditor.svelte';
     import type { ResultType } from '../../../types/result';
 
     import { goto } from "$app/navigation";
     import PrintEditor from '../../../components/PrintEditor.svelte';
+	import type { RelatedWorksType } from '../../../types/relatedWorks';
 
     const { data }: { data: PageData } = $props();
 
@@ -28,6 +30,7 @@
     const contents: ContentType[] = [];
     const relatedPersons: RelatedPeronsType[] = [];
     const relatedLinks: RelatedLinksType[] = [];
+    const relatedWorks: RelatedWorksType[] = [];
     
     const onSubmit = (result: ResultType<PrintType>) => {
         if (result.ok) {
@@ -40,7 +43,7 @@
 </script>
 
 <h2>Print - Append</h2>
-<PrintEditor {print} {contents} {relatedPersons} {relatedLinks} {...data} callback={onSubmit}></PrintEditor>
+<PrintEditor {print} {contents} {relatedPersons} {relatedLinks} {relatedWorks} {...data} callback={onSubmit}></PrintEditor>
 <div class="footer">
     <a href="/prints">Back to Print</a>
 </div>

@@ -39,7 +39,9 @@
         updateWorks();
         const dialog = document.getElementById("FBBDB14D-D9F9-42E5-9199-93EE08F37816") as HTMLDialogElement;
         dialog.showModal();
-        (document.querySelector('dialog input[name="filterWord"]') as HTMLInputElement).focus();
+        const input = (document.querySelector('dialog input[name="filterWord"]') as HTMLInputElement);
+        input.focus();
+        input.select();
     }) as EventListenerOrEventListenerObject
 
     // 検索ボタンがクリックされた

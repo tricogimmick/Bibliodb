@@ -40,7 +40,7 @@ const updateBrand = (db: pkg.Database, brand: BrandType) => new Promise<BrandTyp
 
 export const POST: RequestHandler = async ({ request }) => {
 	const brand : BrandType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await appendBrand(db, brand);
@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PUT: RequestHandler = async ({ request }) => {
 	const brand : BrandType = await request.json();
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await updateBrand(db, brand);
@@ -67,7 +67,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 };
 
 export const GET: RequestHandler = async ({ url }) => {
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
         const result = await getAllBrands(db);

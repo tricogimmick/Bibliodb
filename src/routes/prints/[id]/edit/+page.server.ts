@@ -14,17 +14,20 @@ import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
-import { getPrint, getContents as getConents, getAllRelatedPersons, getAllRelatedLinks, getAllPublishers, getAllBrands, getAllSeries, getAllPersons, getAllWorks } from '$lib/common';
+import { getPrint, getContents, getAllRelatedPersons, getAllRelatedLinks, getAllRelatedWorks, 
+         getAllPublishers, getAllBrands, getAllSeries, getAllPersons, getAllWorks } from '$lib/common';
+import type { RelatedWorksType } from '../../../../types/relatedWorks';
 
 export const load: PageServerLoad = async ({ params }) => {
-    const dbPath = env["LIBMANDB_PATH"] ?? "";
+    const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);    
     try {
 		return {
       print: await getPrint(db, Number(params.id)) as PrintType,
-      contents: await getConents(db, Number(params.id)) as ContentType[],
+      contents: await getContents(db, Number(params.id)) as ContentType[],
       relatedPersons: await getAllRelatedPersons(db, "PRINT", Number(params.id)) as RelatedPeronsType[],
       relatedLinks: await getAllRelatedLinks(db, "PRINT", Number(params.id)) as RelatedLinksType[],
+      relatedWorks: await getAllRelatedWorks(db, "PRINT", "COVER", Number(params.id)) as RelatedWorksType[],
       publishers: await getAllPublishers(db) as PublisherType[],
       brands: await getAllBrands(db) as BrandType[],
       series: await getAllSeries(db) as SeriesType[],

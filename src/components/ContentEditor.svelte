@@ -33,35 +33,38 @@
 
     let { printId, contents, relatedPersons, persons, works, worksRelatedPersons, filterdWorks, callback } : PropsType = $props();
 
-    if (contents.length === 0) {
-        contents.push({
-            printId,
-            orderNo: 1,
-            workId: null,
-            title: "",
-            subTitle: "",
-            pageNo: null,
-            publishType: "",
-            serializationStatus: "",
-            color: 1,
-            firstPublished: 1,
-            description: ""        
-        });
-    }
+    const newItem: (oderNo: number) => ItemType = (orderNo: number) => ({
+        orderNo,
+        workId: null,
+        existWork: false,
+        title: "",
+        subTitle: "",
+        pageNo: null,
+        publishType: "",
+        serializationStatus: "",
+        color: false,
+        firstPublished: true,
+        description: ""        
+    });
 
-    let _items: ItemType[] = contents.map((x, i) => ({
-        orderNo: i + 1,
-        workId: x.workId,
-        existWork: x.workId != null ? true : false,
-        title: x.workId != null ? works.find(z => z.id === x.workId)?.title ?? "" : x.title,
-        subTitle: x.subTitle,
-        pageNo: x.pageNo,
-        publishType: x.publishType,
-        serializationStatus: x.serializationStatus,
-        color: x.color == 1,
-        firstPublished: x.firstPublished == 1,
-        description: x.description        
-    }));
+    let _items: ItemType[];
+    if (contents?.length > 0) {
+        _items = contents.map((x, i) => ({
+            orderNo: i + 1,
+            workId: x.workId,
+            existWork: x.workId != null ? true : false,
+            title: x.workId != null ? works.find(z => z.id === x.workId)?.title ?? "" : x.title,
+            subTitle: x.subTitle,
+            pageNo: x.pageNo,
+            publishType: x.publishType,
+            serializationStatus: x.serializationStatus,
+            color: x.color == 1,
+            firstPublished: x.firstPublished == 1,
+            description: x.description        
+        }));   
+    } else {
+        _items = [newItem(1)];
+    }
     let items = $state(_items);
 
     let targetOrderNo = $state(0);
@@ -76,20 +79,6 @@
             callCallback();
         }
     }
-
-    const newItem: (oderNo: number) => ItemType = (orderNo: number) => ({
-        orderNo,
-        workId: null,
-        existWork: false,
-        title: "",
-        subTitle: "",
-        pageNo: null,
-        publishType: "",
-        serializationStatus: "",
-        color: false,
-        firstPublished: false,
-        description: ""        
-    });
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
@@ -173,6 +162,12 @@
             } else {
                 item.workId = work.id;
                 item.existWork = true;
+                if (work.status === "連載中") {
+                    item.publishType = "連載";
+                    item.serializationStatus = "連載中";
+                } else if (work.status === "読切") {
+                    item.publishType = "読切";
+                }
             }
         } else {
             item.workId = null;

@@ -14,7 +14,7 @@ const {Database} = pkg;
 import { getAllRelatedPersons, getAllPublishers, getAllBrands, getAllSeries, getAllPersons, getAllWorks } from '$lib/common';
 
 export const load: PageServerLoad = async ({ params }) => {
-  const dbPath = env["LIBMANDB_PATH"] ?? "";
+  const dbPath = env["BIBLIODB_PATH"] ?? "";
   const db = new Database(dbPath);    
   try {
     return {

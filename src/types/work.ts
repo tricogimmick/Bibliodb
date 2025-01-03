@@ -8,6 +8,8 @@ export type WorkType = {
     description: string;
     note: string;
     publicationYear: number | null;
+    publicationEndYear: number | null;
     seqNo: number | null;
     finishedReading: string;
+    status: string;
 };

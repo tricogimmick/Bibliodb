@@ -8,6 +8,7 @@ import type { ContentType } from '../types/content';
 import type { RelatedPeronsType } from '../types/relatedPersons';
 import type { RelatedLinksType } from '../types/relatedLinks';
 import type { RelatedSeriesType } from '../types/relatedSeries';
+import type { RelatedWorksType } from '../types/relatedWorks';
 import type { ResultType } from '../types/result';
 import pkg from 'sqlite3';
 
@@ -209,6 +210,17 @@ export const getAllRelatedLinks = (db: pkg.Database, relatedType: string, relate
 // 関連シリーズを全て取得
 export const getAllRelatedSeries = (db: pkg.Database, relatedType: string, relatedId: number ) => new Promise<RelatedSeriesType[]|Error>((ok, ng) => {
     db.all<RelatedSeriesType>("SELECT * FROM related_series WHERE relatedType = ? AND relatedId = ?", [relatedType, relatedId], (err, rows) => {
+        if (err) {
+            ng(err);
+        } else {
+            ok(rows);
+        }
+    });
+});
+
+// 関連作品を全て取得
+export const getAllRelatedWorks = (db: pkg.Database, relatedType: string, subType: string, relatedId: number ) => new Promise<RelatedWorksType[]|Error>((ok, ng) => {
+    db.all<RelatedWorksType>("SELECT * FROM related_works WHERE relatedType = ? AND subType = ? AND relatedId = ?", [relatedType, subType, relatedId], (err, rows) => {
         if (err) {
             ng(err);
         } else {
