@@ -47,6 +47,7 @@ type WorkDetailType = {
     variantTitles: string;
     originalTitle: string;
     contentType: string;
+    synopsis: string;
     description: string;
     note: string;
     publicationYear: number | null;
@@ -70,6 +71,7 @@ const createWorkDetail = (work: WorkType, relatedPersons: RelatedPersonDisplayTy
         variantTitles: work.variantTitles,
         originalTitle: work.originalTitle,
         contentType: work.contentType,
+        synopsis: work.synopsis,
         description: work.description,
         note: work.note,
         publicationYear: work.publicationYear,

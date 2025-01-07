@@ -19,6 +19,7 @@
         variantTitles: "",
         originalTitle: "",
         contentType: "小説",
+        synopsis: "",
         description: "",
         note: "",
         publicationYear: null,

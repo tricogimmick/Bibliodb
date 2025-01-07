@@ -4,11 +4,13 @@
     import { marked } from 'marked';
 
     import TabButton from '../../../components/TabButton.svelte';
+    import ImageViewer from '../../../components/ImageViewer.svelte';
 
 
     const { data }: { data: PageData } = $props();
     const person = data.person;
     const externalLinks = person.relatedLinks.filter(x => x.linkType === "LINK");
+    const image = person.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "肖像");
     const works = person.works;
     const books = person.prints.filter(x => x.printType === "書籍");
 
@@ -42,41 +44,50 @@
 <div class="button-container">
     <button onclick={onClickModifyPerson}>変更</button>
 </div>
-<div>
-    <div class="input-field">
-        <label for="title">氏名</label>
-        <span class="data-value">{person.name} {#if person.index != person.name} ({person.index}){/if}</span>
-    </div>
-    <div class="input-field">
-        <label for="title">よみがな</label>
-        <span class="data-value">{person.kana}</span>
-    </div>
-    {#if person.born }
-    <div class="input-field">
-        <label for="born">生年月日</label>
-        <span class="data-value">{person.born}</span>
-    </div>
-    {/if}
-    {#if person.died }
-    <div class="input-field">
-        <label for="died">没年月日</label>
-        <span class="data-value">{person.died}</span>
-    </div>
-    {/if}
-    <div class="input-field">
-        <label for="description">解説</label>
-        <div class="data-content">{@html descHtml}</div>
-    </div>      
-    {#if externalLinks.length > 0 }
-    <div class="input-field">
-        <label for="ownedType">関連リンク</label>
-        <div>
-            {#each externalLinks as relatedLink, i}
-            <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span><br>
-            {/each}
+<div class="content-container">
+    <div class="contemt-block">
+        {#if image != null}
+        <div class="book-images">
+            <ImageViewer src={image.url} alt={image.alt} height="300px" />
         </div>
-    </div>      
-    {/if}
+        {/if}    
+    </div>
+    <div class="contemt-block">
+        <div class="input-field">
+            <label for="title">氏名</label>
+            <span class="data-value">{person.name} {#if person.index != person.name} ({person.index}){/if}</span>
+        </div>
+        <div class="input-field">
+            <label for="title">よみがな</label>
+            <span class="data-value">{person.kana}</span>
+        </div>
+        {#if person.born }
+        <div class="input-field">
+            <label for="born">生年月日</label>
+            <span class="data-value">{person.born}</span>
+        </div>
+        {/if}
+        {#if person.died }
+        <div class="input-field">
+            <label for="died">没年月日</label>
+            <span class="data-value">{person.died}</span>
+        </div>
+        {/if}
+        <div class="input-field">
+            <label for="description">解説</label>
+            <div class="data-content">{@html descHtml}</div>
+        </div>      
+        {#if externalLinks.length > 0 }
+        <div class="input-field">
+            <label for="ownedType">関連リンク</label>
+            <div>
+                {#each externalLinks as relatedLink, i}
+                <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span><br>
+                {/each}
+            </div>
+        </div>      
+        {/if}
+    </div>
 </div>
 <div class="works-list">
     <TabButton selectedId={selectedPrintType} {buttons} callback={tabButtonsCallBack} ></TabButton>
@@ -128,6 +139,10 @@
 </div>
 
 <style>
+    .content-container {
+        display: flex;
+        gap: 1rem;
+    }
     .works-list {
         margin-top: 2rem;
         margin-bottom: 1rem;

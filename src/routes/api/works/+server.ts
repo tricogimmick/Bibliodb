@@ -17,6 +17,7 @@ export type PostDataType = {
     variantTitles: string;
     originalTitle: string;
     contentType: string;
+    synopsis: string;
     description: string;
     note: string;
     publicationYear: number | null;
@@ -54,6 +55,7 @@ const createWork = (id: number, postData: PostDataType) => ({
     variantTitles: postData.variantTitles,
     originalTitle: postData.originalTitle,
     contentType: postData.contentType,
+    synopsis: postData.synopsis,
     description: postData.description,
     note: postData.note,
     publicationYear: postData.publicationYear,
@@ -67,11 +69,11 @@ const createWork = (id: number, postData: PostDataType) => ({
 const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<ResultType<WorkType>>(async (ok, ng) => {
     try {
         const workId = await runSql(db,
-            "INSERT INTO works ([index], title, variantTitles, originalTitle, contentType, description, note, " +
+            "INSERT INTO works ([index], title, variantTitles, originalTitle, contentType, synopsis, description, note, " +
             "publicationYear, publicationEndYear, seqNo, finishedReading, status) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [ postData.index, postData.title, postData.variantTitles, postData.originalTitle, postData.contentType, postData.description, postData.note, 
-              postData.publicationYear, postData.publicationEndYear, postData.seqNo, postData.finishedReading, postData.status ]
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [ postData.index, postData.title, postData.variantTitles, postData.originalTitle, postData.contentType, postData.synopsis, postData.description, 
+              postData.note, postData.publicationYear, postData.publicationEndYear, postData.seqNo, postData.finishedReading, postData.status ]
         );
         for (const relatedPerson of postData.relatedPersons) {
             await runSql(db,
@@ -111,9 +113,9 @@ const appendWork = (db: pkg.Database, postData: PostDataType) => new Promise<Res
 const updateWork = (db: pkg.Database, putData: PostDataType) => new Promise<ResultType<WorkType>>(async (ok, ng) => {
     try {
         await runSql(db,
-            "UPDATE works SET [index] = ?, title = ?, variantTitles = ?, originalTitle = ?, contentType = ?, description = ?, note = ?, " +
+            "UPDATE works SET [index] = ?, title = ?, variantTitles = ?, originalTitle = ?, contentType = ?, synopsis = ?, description = ?, note = ?, " +
             "publicationYear = ?, publicationEndYear = ?, seqNo = ?, finishedReading = ?, status = ? WHERE id = ?",
-            [ putData.index, putData.title, putData.variantTitles, putData.originalTitle, putData.contentType, putData.description, putData.note, 
+            [ putData.index, putData.title, putData.variantTitles, putData.originalTitle, putData.contentType, putData.synopsis, putData.description, putData.note, 
               putData.publicationYear, putData.publicationEndYear, putData.seqNo, putData.finishedReading, putData.status, putData.id ]);
         await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'WORK' AND relatedId = ?", [putData.id]);
         for (const relatedPerson of putData.relatedPersons) {

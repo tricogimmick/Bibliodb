@@ -10,6 +10,7 @@
     const externalLinks = workData.relatedLinks.filter(x => x.linkType === "LINK");
     const relatedPersons = workData.relatedPersons.map(x => `<a href="/persons/${x.personId}" >${x.personName}</a> ${x.role.replace("者", "")}`).join(" / ");
 
+    const synopsisHtml = workData.synopsis != null ? marked.parse(workData.synopsis): "";
     const descHtml = workData.description != null ? marked.parse(workData.description): "";
     const noteHtml = workData.note != null ? marked.parse(workData.note) : "";
     
@@ -79,10 +80,18 @@
         <span class="data-value">{workData.publicationYear} {workData.status}</span>
         {/if}
     </div>      
+    {#if synopsisHtml != ""}
+    <div class="input-field">
+        <label for="description">あらすじ</label>
+        <div class="data-content">{@html synopsisHtml}</div>
+    </div>      
+    {/if}
+    {#if descHtml != ""}
     <div class="input-field">
         <label for="description">解説</label>
         <div class="data-content">{@html descHtml}</div>
     </div>      
+    {/if}
     {#if workData.seqNo != null}
     <div class="input-field">
         <label for="seqNo">連番</label>
@@ -103,10 +112,12 @@
         <label for="finishedReading">読了日</label>
         <span class="data-value">{workData.finishedReading}</span>
     </div>      
+    {#if noteHtml != ""}
     <div class="input-field">
         <label for="note">補記</label>
         <div class="data-content">{@html noteHtml}</div>
     </div>      
+    {/if}
     <div class="input-field">
         <label for="note">タグ</label>
         <div class="data-content">

@@ -38,6 +38,7 @@
     let variantTitles = $state(work.variantTitles);
     let originalTitle = $state(work.originalTitle);
     let contentType = $state(work.contentType);
+    let synopsis = $state(work.synopsis);
     let description = $state(work.description);
     let note = $state(work.note);
     let publicationYear = $state(work.publicationYear);
@@ -77,6 +78,7 @@
                 variantTitles,
                 originalTitle,
                 contentType,
+                synopsis,
                 description,
                 note,
                 publicationYear,
@@ -188,6 +190,10 @@
             <label for="seqNo" class="continue">連番</label>
             <input name="seqNo" type="number" bind:value={seqNo} max="99999999" />
         </div>
+        <div class="input-field">
+            <label for="description">あらすじ</label>
+            <textarea name="description" bind:value={synopsis} rows="5" cols="80" ></textarea>
+        </div>      
         <div class="input-field">
             <label for="description">解説</label>
             <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>
