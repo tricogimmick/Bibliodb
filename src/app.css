@@ -43,8 +43,12 @@ select {
     textarea {
         width: 35rem;
     }
+    .data-value {
+        max-width: 30rem;
+    }
     .data-content {
-        > p {
+        max-width: 30rem;
+        > p:first-child {
             margin-top: 0;
         }
     }
