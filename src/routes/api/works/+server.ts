@@ -29,22 +29,22 @@ export type PostDataType = {
         personId: number;
         role: string;
         description: string;
-    }[],
+    }[];
     relatedLinks: {
         linkType: "IMG" | "LINK";
         url: string;
         alt: string;
         description: string;
-    }[],
+    }[];
     publishedMedia: {
         seriesId: number;
         description: string;
-    }[],
+    }[];
     seriesTitles: {
         seriesId: number;
         description: string;
-    }[],
-    tags: string[]
+    }[];
+    tags: string[];
 };
 
 const createWork = (id: number, postData: PostDataType) => ({

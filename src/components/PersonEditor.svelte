@@ -1,13 +1,19 @@
 <script lang="ts">
     import type { PersonType } from '../types/person';
     import type { ResultType } from '../types/result';
+    import type { RelatedLinksType } from "../types/relatedLinks";
+    import type { PostDataType } from "../routes/api/persons/+server";
+
+
+    import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
  
     type PropsType = {
         person: PersonType;
+        relatedLinks: RelatedLinksType[],
         callback: (result: ResultType<PersonType>) => void | null;
     }
 
-    let { person, callback }: PropsType = $props();
+    let { person, relatedLinks, callback }: PropsType = $props();
     let index = $state(person.index);
     let name = $state(person.name);
     let kana = $state(person.kana);
@@ -21,11 +27,16 @@
         name = index;
     }
 
+    // 関連リンクが変更された
+    const onChangeRelationLinks = (rl: RelatedLinksType[]) => {
+        relatedLinks = rl;
+    }
+
     // 更新用APIの呼出
-    const callApi = async (person: PersonType, method: "POST" | "PUT") => {
+    const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
         const response = await fetch('/api/persons', {
             method: method,
-            body: JSON.stringify(person),
+            body: JSON.stringify(postData),
             headers: {
                 'content-type': 'application/json'
             }
@@ -43,7 +54,22 @@
         e.stopImmediatePropagation();
         e.preventDefault();
         try {
-            const result: ResultType<PersonType> = await callApi({ id: person.id, index, name, kana, born, died, description }, person.id != null ? "PUT" : "POST");
+            const postData: PostDataType = { 
+                id: person.id, 
+                index, 
+                name, 
+                kana, 
+                born, 
+                died, 
+                description,
+                relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
+                    linkType: x.linkType,
+                    url: x.url,
+                    alt: x.alt,
+                    description: x.description
+                }))
+            };
+            const result: ResultType<PersonType> = await callApi(postData, person.id != null ? "PUT" : "POST");
             callback?.(result);
         } catch (e: any) {
             callback?.({ ok: false, data: (e as Error).message });
@@ -77,6 +103,7 @@
             <label for="description">解説</label>
             <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>
         </div>      
+        <RelatedLinkEditor relatedType="PERSON" relatedId={person.id} {relatedLinks} callback={onChangeRelationLinks}></RelatedLinkEditor>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />
         </div>

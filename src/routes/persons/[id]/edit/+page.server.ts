@@ -1,9 +1,11 @@
 import type { PageServerLoad } from '../$types';
+import type { RelatedLinksType } from '../../../../types/relatedLinks';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getPerson } from '$lib/common';
+import { getPerson, getAllRelatedLinks } from '$lib/common';
 import pkg from 'sqlite3';
+import type { PersonType } from '../../../../types/person';
 const {Database} = pkg;
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -11,7 +13,8 @@ export const load: PageServerLoad = async ({ params }) => {
     const db = new Database(dbPath);
 	try {
 		return {
-			persons: await getPerson(db, Number(params.id))
+			person: await getPerson(db, Number(params.id)) as PersonType,
+			relatedLinks: await getAllRelatedLinks(db, "PERSON", Number(params.id)) as RelatedLinksType[], 
 		};
 	} catch (e) {
 		console.log(e);

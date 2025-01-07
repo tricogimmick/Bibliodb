@@ -100,8 +100,10 @@
 
 <div>
     <datalist id="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C">
+        <option>Wikipedia</option>
         <option>青空文庫</option>
         <option>国立国会図書館デジタルコレクション</option>
+        <option>Amazon</option>
         <option>表紙</option>
         <option>カバー</option>
         <option>目次</option>

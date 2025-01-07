@@ -7,11 +7,10 @@
     import PersonEditor from '../../../../components/PersonEditor.svelte';
 
     const { data }: { data: PageData } = $props();
-    const person = data.persons as PersonType;
 
     const onSubmit = (result: ResultType<PersonType>) => {
         if (result.ok) {
-            goto("/persons");
+            goto(`/persons/${data.person.id}`);
         } else {
             alert(`Error! (${result.data})`);
         }
@@ -19,7 +18,7 @@
 </script>
 
 <h2>Person - Edit</h2>
-<PersonEditor {person} callback={onSubmit}></PersonEditor>
+<PersonEditor {...data} callback={onSubmit}></PersonEditor>
 <div class="footer">
-    <a href="/persons/{person.id}">Back to Person</a>
+    <a href="/persons/{data.person.id}">Back to Person</a>
 </div>

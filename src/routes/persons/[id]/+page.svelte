@@ -1,14 +1,19 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import { goto } from "$app/navigation";
+    import { marked } from 'marked';
 
     import TabButton from '../../../components/TabButton.svelte';
 
+
     const { data }: { data: PageData } = $props();
     const person = data.person;
+    const externalLinks = person.relatedLinks.filter(x => x.linkType === "LINK");
     const works = person.works;
     const books = person.prints.filter(x => x.printType === "書籍");
 
+    const descHtml = person.description != null ? marked.parse(person.description): "";
+ 
     let selectedPrintType = $state("work");
     let buttons = [
         { id: "work", caption: "作品リスト" },
@@ -60,8 +65,18 @@
     {/if}
     <div class="input-field">
         <label for="description">解説</label>
-        <span class="data-value">{person.description}</span>
+        <div class="data-content">{@html descHtml}</div>
     </div>      
+    {#if externalLinks.length > 0 }
+    <div class="input-field">
+        <label for="ownedType">関連リンク</label>
+        <div>
+            {#each externalLinks as relatedLink, i}
+            <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span><br>
+            {/each}
+        </div>
+    </div>      
+    {/if}
 </div>
 <div class="works-list">
     <TabButton selectedId={selectedPrintType} {buttons} callback={tabButtonsCallBack} ></TabButton>
@@ -114,7 +129,7 @@
 
 <style>
     .works-list {
-        margin-top: 1rem;
+        margin-top: 2rem;
         margin-bottom: 1rem;
     }
     .container {

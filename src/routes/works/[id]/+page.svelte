@@ -7,7 +7,7 @@
     const { data }: { data: PageData } = $props();
     const workData = data.work;
 
-    const extelanLink = workData.relatedLinks.filter(x => x.linkType === "LINK");
+    const externalLinks = workData.relatedLinks.filter(x => x.linkType === "LINK");
     const relatedPersons = workData.relatedPersons.map(x => `<a href="/persons/${x.personId}" >${x.personName}</a> ${x.role.replace("者", "")}`).join(" / ");
 
     const descHtml = workData.description != null ? marked.parse(workData.description): "";
@@ -89,11 +89,11 @@
         <span class="data-value">{workData.seqNo}</span>
     </div>  
     {/if}    
-    {#if extelanLink.length > 0 }
+    {#if externalLinks.length > 0 }
     <div class="input-field">
         <label for="ownedType">関連リンク</label>
         <div>
-            {#each extelanLink as relatedLink, i}
+            {#each externalLinks as relatedLink, i}
             <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span><br>
             {/each}
         </div>

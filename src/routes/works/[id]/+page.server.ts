@@ -54,11 +54,11 @@ type WorkDetailType = {
     seqNo: number | null;
     finishedReading: string;
     status: string;
-    relatedPersons: RelatedPersonDisplayType[],
-    relatedLinks: RelationLinkDisplayType[],
-    relatedSeries: RelatedSeriesDisplayType[],
-    prints: PrintDisplayType[],
-    tags: string[]
+    relatedPersons: RelatedPersonDisplayType[];
+    relatedLinks: RelationLinkDisplayType[];
+    relatedSeries: RelatedSeriesDisplayType[];
+    prints: PrintDisplayType[];
+    tags: string[];
 }
 
 // 作品情報を生成する
