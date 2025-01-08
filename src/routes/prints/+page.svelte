@@ -33,7 +33,7 @@
     <div>Total: {prints.length.toLocaleString()}件</div>
     {#each prints as p (p.id)}
         {#if p.relatedPersons.length > 0 }
-        <span><a href="/prints/{p.id}">{#if p.seriesName }{p.seriesName}&nbsp;{/if}{p.title} - {p.relatedPersons.length}（{p.relatedPersons.map(x => x.name).join(",")}）</a></span>
+        <span><a href="/prints/{p.id}">{#if p.seriesName }{p.seriesName}&nbsp;{/if}{p.title}（{p.relatedPersons.map(x => x.name).join(",")}）</a></span>
         {:else}
         <span><a href="/prints/{p.id}">{#if p.seriesName }{p.seriesName}&nbsp;{/if}{p.title}</a></span>
         {/if}

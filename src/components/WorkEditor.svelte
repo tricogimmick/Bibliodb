@@ -204,7 +204,7 @@
             <input name="finishedReading" type="date" bind:value={finishedReading} />
         </div>      
         <div class="input-field">
-            <label for="note">補記</label>
+            <label for="note">Note</label>
             <textarea name="note" bind:value={note} rows="5" cols="80" ></textarea>
         </div>      
         <TagEditor {tags} callback={onChangeTags}></TagEditor>

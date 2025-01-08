@@ -20,6 +20,10 @@ CREATE TABLE prints (
     , seriesId INTEGER
     -- 説明
     , description TEXT
+    -- 目次
+    , toc TEXT
+    -- メモ
+    , note TEXT
     -- 所有種別
     , ownedType TEXT
 )

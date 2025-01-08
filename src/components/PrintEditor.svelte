@@ -43,6 +43,8 @@
     let issueNumber = $state(print.issueNumber);
     let seriesName = $state(series.find(x => x.id === print.seriesId)?.index ?? "");
     let description = $state(print.description);
+    let toc = $state(print.toc);
+    let note = $state(print.note);
     let ownedType = $state(print.ownedType);
     let buttonCaption = $derived(print.id == null || print.id == 0 ? "登　録" : "更　新")
 
@@ -54,8 +56,6 @@
     } else {
         _filterdWorks = works;
     }
-    console.log(`worksRelatedPersons:${worksRelatedPersons.length}`);
-    console.log(`_filterdWorks:${_filterdWorks.length}`);
     let filterdWorks: WorkType[] = $state(_filterdWorks);
 
      // 更新用APIの呼出
@@ -90,6 +90,8 @@
                 issueNumber,
                 seriesId: series.find(x => x.index === seriesName)?.id ?? null,
                 description,
+                toc,
+                note,
                 ownedType,
                 relatedPersons: relatedPersons.filter(x => x.personId != null).map(x => ({
                     orderNo: x.orderNo as number,
@@ -241,10 +243,6 @@
             <input name="issueNumber" type="number" bind:value={issueNumber}  />
         </div>              
         <RelatedWorksEditor label="表紙" relatedType="PRINT" subType="COVER" relatedId={print.id} {relatedWorks} {works} callback={onChangeRelatedWorks}></RelatedWorksEditor>
-        <div class="input-field">
-            <label for="description">解説</label>
-            <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>
-        </div>      
         <RelatedLinkEditor relatedType="PRINT" relatedId={print.id} {relatedLinks} callback={onChangeRelationLinks}></RelatedLinkEditor>
         <div class="input-field">
             <label for="ownedType">所有種別</label>
@@ -254,6 +252,18 @@
                 <option value="PDF">PDF</option>
             </select>
         </div>
+        <div class="input-field">
+            <label for="description">解説</label>
+            <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>
+        </div>      
+        <div class="input-field">
+            <label for="toc">目次</label>
+            <textarea name="toc" bind:value={toc} rows="5" cols="80" ></textarea>
+        </div>      
+        <div class="input-field">
+            <label for="note">Note</label>
+            <textarea name="note" bind:value={note} rows="5" cols="80" ></textarea>
+        </div>      
         <div class="contents-container">
             <div>Contents</div>
             <ContentEditor printId={print.id} {contents} {relatedPersons} {persons} {works} {worksRelatedPersons} {filterdWorks} callback={onChangeContents}></ContentEditor>

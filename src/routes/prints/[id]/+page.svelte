@@ -3,6 +3,7 @@
 
     import { goto } from "$app/navigation";
     import ImageViewer from '../../../components/ImageViewer.svelte';
+	import { marked } from 'marked';
 
     const { data }: { data: PageData } = $props();
     const printData = data.print;
@@ -21,93 +22,108 @@
 </script>
 
 
-<h2>Prints - Details</h2>
+<h2>{#if printData.seriesName}{printData.seriesName}&nbsp;{/if}{printData.title}</h2>
 <div class="button-container">
     <button class="modify-button" onclick={onclickModifyPrint}>変更</button>
 </div>
-<div class="content-container">
-    <div class="contemt-block">
-        {#if bookImage != null}
+<div class="data-container">
+    {#if bookImage != null}
+    <div class="content-block">
         <div class="book-images">
             <ImageViewer src={bookImage.url} alt={bookImage.alt} height="300px" />
         </div>
-        {/if}    
     </div>
+    {/if}    
     <div class="content-block">
         {#if printData.seriesName}
-        <div class="input-field">
-            <label for="seriesName">シリーズ</label>
+        <div class="display-field">
+            <span class="data-label">シリーズ</span>
             <span class="data-value"><a href="/series/{printData.seriesId}">{printData.seriesName}</a></span>
         </div>      
         {/if}
-        <div class="input-field">
-            <label for="title">題名</label>
+        <div class="display-field">
+            <span class="data-label">題名</span>
             <span class="data-value">{printData.title}</span>
         </div>
         {#if printData.originalTitle != null &&  printData.originalTitle != ""}
-        <div class="input-field">
-            <label for="originalTitle">原題</label>
+        <div class="display-field">
+            <span class="data-label">原題</span>
             <span class="data-value">{printData.originalTitle}</span>
         </div>
         {/if}
-        <div class="input-field">
-            <label for="printType">出版種別</label>
+        <div class="display-field">
+            <span class="data-label">出版種別</span>
             <span class="data-value">{printData.printType}</span>
         </div>
         {#each printData.relatedPersons as relatedPerson, i (relatedPerson.orderNo)}
-        <div class="input-field">
+        <div class="display-field">
             {#if i == 0}
-            <label for="">著作者</label>
+            <span class="data-label">著作者</span>
             {:else}
-            <label for="">&nbsp</label>
+            <span class="data-label">&nbsp</span>
             {/if}
             <span class="data-value"><a href="/persons/{relatedPerson.personId}">{relatedPerson.personName}</a> {relatedPerson.role.replace("者", "")}</span>
         </div>              
         {/each}
-        <div class="input-field">
-            <label for="publisherName">出版社</label>
+        <div class="display-field">
+            <span class="data-label">出版社</span>
             <span class="data-value">{printData.publisherName}{#if printData.brandName}&nbsp;({printData.brandName}){/if}</span>
         </div>      
-        <div class="input-field">
-            <label for="publicationDate">発行日</label>
+        <div class="display-field">
+            <span class="data-label">発行日</span>
             <span class="data-value">{printData.publicationDate}</span>
         </div>      
         {#if printData.issueNumber}
-        <div class="input-field">
-            <label for="issueNumber">号数</label>
+        <div class="display-field">
+            <span class="data-label">号数</span>
             <span class="data-value">{printData.issueNumber}</span>
         </div>      
         {/if}
         {#each coverWorks as coverWork, i (coverWork.workId)}
-        <div class="input-field">
+        <div class="display-field">
             {#if i == 0}
-            <label for="">表紙</label>
+            <span class="data-label">表紙</span>
             {:else}
-            <label for="">&nbsp</label>
+            <span class="data-label">&nbsp</span>
             {/if}
             <span class="data-value"><a href="/works/{coverWork.workId}">{coverWork.title}</a></span>
         </div>              
         {/each}
-        <div class="input-field">
-            <label for="description">解説</label>
-            <span class="data-value">{printData.description}</span>
-        </div>      
-        <div class="input-field">
-            <label for="ownedType">所有種別</label>
+        <div class="display-field">
+            <span class="data-label">所有種別</span>
             <span class="data-value">{printData.ownedType}</span>
         </div>      
-        <div class="input-field">
-            <label for="ownedType">関連リンク</label>
-            <div>
+        <div class="display-field">
+            <span class="data-label">関連リンク</span>
+            <div class="data-value-block">
                 {#each extelanLink as relatedLink, i}
-                <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span>
+                <a href={relatedLink.url} target="_blank">{relatedLink.alt}</a><br>
                 {/each}
             </div>
         </div> 
     </div>
 </div>
+{#if printData.description != null && printData.description != ""}
+<h4>解　説</h4>
+<div class="text-container">
+    {@html marked.parse(printData.description)}
+</div>
+{/if}
+{#if printData.note != null && printData.note != ""}
+<h4>Note</h4>
+<div class="text-container">
+    {@html marked.parse(printData.note)}
+</div>
+{/if}
+{#if printData.toc != null && printData.toc != ""}
+<h4>目　次</h4>
+<div class="text-container">
+    {@html marked.parse(printData.toc)}
+</div>
+{/if}
+{#if printData.contents.length > 0}
 <h4>Contents</h4>
-<table class="contents-table">
+<table class="table-container">
     <thead>
         <tr>
             <th>No</th><th>C</th><th>種</th><th>タイトル</th><th>作者</th><th>備考</th><th>頁</th>
@@ -131,33 +147,21 @@
         {/each}
     </tbody>
 </table>     
+{/if}
+{#if images.length > 0}
 <h4>Images</h4>
-<div class="images">
+<div class="image-container">
     {#each images as img }
         <div><ImageViewer src={img.url} alt={img.alt} height="200px" /></div>
     {/each}
 </div>
+{/if}
 <div class="footer">
     <a href="/prints">Back to Prints</a>
 </div>
 
 <style>
-    .content-container {
-        display: flex;
-        gap: 1rem 2rem;
-    }
-    .contents-table {
-        border-collapse: collapse;
-        th {
-            border-bottom: 1px solid gray;
-            padding: 0.2rem 0.5rem;
-            text-align: left;
-        }
-        td {
-            border-bottom: 1px solid gray;
-            padding: 0.2rem 0.5rem;
-            vertical-align: top;
-        }
+    .table-container {
         td:nth-child(1) {
             width: 1.5rem;
             text-align: right;
@@ -186,11 +190,6 @@
             width: 3rem;
             text-align: right;
         }
-    }
-    .images {
-        display: flex;
-        gap: 1rem 0.5rem;
-        margin-bottom: 1rem;
     }
     .button-container {
         margin-top: 1rem;

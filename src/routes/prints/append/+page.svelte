@@ -23,7 +23,9 @@
         publicationDate: "",
         issueNumber: null,
         seriesId: null,
-        description: "",   
+        description: "",  
+        toc: "",
+        note: "", 
         ownedType: "" 
     };
 
