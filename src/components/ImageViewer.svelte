@@ -3,8 +3,9 @@
         src: string;
         alt: string;
         height: string;
+        width: string;
     }
-    let { src, alt, height } : PropsType = $props();
+    let { src, alt, height, width } : PropsType = $props();
 
     const onClick = (e: MouseEvent) => {
         const dlg = document.createElement("dialog");
@@ -34,8 +35,10 @@
         dlg.showModal();
     };
 
+    const style = `max-width: ${width}; max-height: ${height};`;
+
 </script>
-<button  onclick={onClick}><img src={src} alt={alt} height={height} /></button>
+<button  onclick={onClick}><img src={src} alt={alt} style={style} /></button>
 
 <style>
     button {

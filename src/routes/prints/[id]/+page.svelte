@@ -30,7 +30,7 @@
     {#if bookImage != null}
     <div class="content-block">
         <div class="book-images">
-            <ImageViewer src={bookImage.url} alt={bookImage.alt} height="300px" />
+            <ImageViewer src={bookImage.url} alt={bookImage.alt} height="300px" width="300px" />
         </div>
     </div>
     {/if}    
@@ -152,7 +152,7 @@
 <h4>Images</h4>
 <div class="image-container">
     {#each images as img }
-        <div><ImageViewer src={img.url} alt={img.alt} height="200px" /></div>
+        <div><ImageViewer src={img.url} alt={img.alt} height="200px" width="400px" /></div>
     {/each}
 </div>
 {/if}

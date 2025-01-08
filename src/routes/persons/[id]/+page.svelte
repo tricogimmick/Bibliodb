@@ -48,7 +48,7 @@
     <div class="contemt-block">
         {#if image != null}
         <div class="book-images">
-            <ImageViewer src={image.url} alt={image.alt} height="300px" />
+            <ImageViewer src={image.url} alt={image.alt} height="300px" width="300px" />
         </div>
         {/if}    
     </div>
