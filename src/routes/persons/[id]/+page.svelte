@@ -13,6 +13,7 @@
     const image = person.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "肖像");
     const works = person.works;
     const books = person.prints.filter(x => x.printType === "書籍");
+    const movies = person.movies;
 
     const descHtml = person.description != null ? marked.parse(person.description): "";
  
@@ -20,13 +21,19 @@
     let buttons = [
         { id: "work", caption: "作品リスト" },
         { id: "book", caption: "書籍リスト"},
-        { id: "magazine", caption: "雑誌リスト"}
+        { id: "movie", caption: "映画リスト"}
     ];
 
     const onClickModifyPerson = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
         goto(`/persons/${person.id}/edit`)
+    }
+
+    const onClickAddPerson = (e: Event) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        goto(`/persons/append`)
     }
 
     const onClickAppendWork = (e: Event) => {
@@ -43,6 +50,7 @@
 <h2>Person - Details</h2>
 <div class="button-container">
     <button onclick={onClickModifyPerson}>変更</button>
+    <button onclick={onClickAddPerson}>追加</button>
 </div>
 <div class="content-container">
     <div class="contemt-block">
@@ -132,7 +140,26 @@
             {/each}        
         </div>
     </div>
-{/if}
+    {:else if selectedPrintType === "movie"}
+    <div class="container books">
+        <div class="header">
+            <div class="cell">No</div>
+            <div class="cell">タイトル</div>
+            <div class="cell">国</div>
+            <div class="cell">公開年</div>
+        </div>
+        <div class="body">
+            {#each movies as movie, i (movie.id) }
+                <div class="row">
+                    <div class="cell">{i + 1}</div>
+                    <div class="cell"><a href="/movies/{movie.id}">{movie.title}</a></div>
+                    <div class="cell">{movie.country}</div>
+                    <div class="cell">{movie.releaseYear}</div>
+                </div>
+            {/each}        
+        </div>
+    </div>
+    {/if}
 </div>
 <div class="footer">
     <a href="/persons">Back to Persons</a>

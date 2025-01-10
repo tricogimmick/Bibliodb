@@ -32,6 +32,13 @@ type PrintDisplayType = {
     printType: string;
 }
 
+type MovieDisplayType = {
+    id: number;
+    title: string;
+    country: string;
+    releaseYear: string;
+}
+
 type PersonDisplayType = {
     id: number;
     index: string;
@@ -43,22 +50,8 @@ type PersonDisplayType = {
     relatedLinks: RelationLinkDisplayType[];
     works: WorkDisplayType[];
     prints: PrintDisplayType[];
+    movies: MovieDisplayType[];
 }
-
-const getWorksSql = "SELECT wk.id, wk.title, wk.publicationYear, wk.contentType " +
-                    "FROM related_persons as rp " +
-                    "JOIN works as wk ON wk.id = rp.relatedId " +
-                    "WHERE rp.relatedType = 'WORK' and rp.personId = ? " +
-                    "ORDER BY wk.publicationYear, wk.seqNo"
-
-const getPrintsSql = "SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, bk.publicationDate, bk.printType " +
-                    "FROM related_persons as rp " +
-                    "JOIN prints as bk on bk.id = rp.relatedId " +
-                    "LEFT JOIN series as sr on sr.id = bk.seriesId " +
-                    "LEFT JOIN publishers as pb ON pb.id = bk.publisherId " +
-                    "LEFT JOIN brands as br ON br.id = bk.brandId " +
-                    "WHERE rp.personId = ? " +
-                    "ORDER BY bk.publicationDate";
 
 const getPerson = async (db: pkg.Database, personId: number) => {
     const person: PersonType = await getRow(db, "SELECT * FROM persons WHERE id = ?", [personId]);
@@ -74,7 +67,8 @@ const getPerson = async (db: pkg.Database, personId: number) => {
         "JOIN works as wk ON wk.id = rp.relatedId " +
         "WHERE rp.relatedType = 'WORK' and rp.personId = ? " +
         "ORDER BY wk.publicationYear, wk.seqNo",
-        [personId]);
+        [personId]
+    );
     const prints: PrintDisplayType[] = await getAllRows(db, 
         "SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, bk.publicationDate, bk.printType " +
         "FROM related_persons as rp " +
@@ -84,8 +78,17 @@ const getPerson = async (db: pkg.Database, personId: number) => {
         "LEFT JOIN brands as br ON br.id = bk.brandId " +
         "WHERE rp.personId = ? " +
         "ORDER BY bk.publicationDate", 
-        [personId]);
-    const result: PersonDisplayType = {
+        [personId]
+    );
+    const movies: MovieDisplayType[] = await getAllRows(db,
+        "SELECT DISTINCT m.id, m.title, m.country, m.releaseYear " +
+        "FROM related_persons as rp " +
+        "JOIN movies as m ON m.id = rp.relatedId " +
+        "WHERE rp.relatedType = 'MOVIE' and rp.personId = ?  " +
+        "ORDER BY m.releaseYear, m.title",
+        [personId]
+    );
+    return {
         id:  person.id as number,
         index: person.index,
         name: person.name,
@@ -95,9 +98,9 @@ const getPerson = async (db: pkg.Database, personId: number) => {
         description: person.description,
         relatedLinks,
         works,
-        prints
-    }
-    return result;
+        prints,
+        movies
+    } as PersonDisplayType;
 }
 
 export const load: PageServerLoad = async ({ params }) => {
