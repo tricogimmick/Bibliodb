@@ -57,7 +57,7 @@
         </div>
         <div class="display-field">
             <span class="data-label">公開年</span>
-            <span class="data-value">{movieData.releaseYear}</span>s
+            <span class="data-value">{movieData.releaseYear}</span>
         </div>
         {#each persons as p, i}
         <div class="display-field">
