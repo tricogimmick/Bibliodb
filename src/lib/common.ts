@@ -11,6 +11,7 @@ import type { RelatedSeriesType } from '../types/relatedSeries';
 import type { RelatedWorksType } from '../types/relatedWorks';
 import type { ResultType } from '../types/result';
 import pkg from 'sqlite3';
+import type { MovieType } from '../types/movie';
 
 // SQLの実行
 export const runSql = (db: pkg.Database, sql: string, params: any) =>  new Promise<number>((ok, ng) => {
@@ -158,7 +159,6 @@ export const getAllWorks = (db: pkg.Database) => new Promise<WorkType[]|Error>((
     });
 });
 
-
 // 出版物を取得
 export const getPrint = (db: pkg.Database, id: number) => new Promise<PrintType|Error>((ok, ng) => {
     db.get<PrintType>("SELECT * FROM prints WHERE id = ?", [id], (err, row) => {
@@ -180,6 +180,18 @@ export const getContents = (db: pkg.Database, printId: number) => new Promise<Co
         }
     });
 });
+
+// 映画を取得
+export const getMovie = (db: pkg.Database, id: number) => new Promise<MovieType|Error>((ok, ng) => {
+    db.get<MovieType>("SELECT * FROM movies WHERE id = ?", [id], (err, row) => {
+        if (err) {
+            ng(err);
+        } else {
+            ok(row);
+        }
+    });
+});
+
 
 // 関連人物を全て取得
 export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number|null ) => new Promise<RelatedPeronsType[]|Error>((ok, ng) => {

@@ -186,6 +186,7 @@
                 <option value="読切">読切</option>
                 <option value="連載中">連載中</option>
                 <option value="完結">完結</option>
+                <option value="未完">未完</option>
             </select>
             <label for="seqNo" class="continue">連番</label>
             <input name="seqNo" type="number" bind:value={seqNo} max="99999999" />

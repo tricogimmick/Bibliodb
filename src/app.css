@@ -70,7 +70,7 @@ select {
     align-items: flex-start;
     > span.data-label {
         display: inline-block;
-        width: 5rem;
+        width: 10rem;
     }
     > span.data-value {
         display: inline-block;
@@ -82,7 +82,7 @@ select {
     align-items: flex-start;
     > label {
         display: inline-block;
-        width: 5rem;
+        width: 8rem;
     }
     > label.continue {
         padding-left: 2rem;
