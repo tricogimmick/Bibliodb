@@ -42,6 +42,8 @@
     let publicationDate = $state(print.publicationDate);
     let issueNumber = $state(print.issueNumber);
     let seriesName = $state(series.find(x => x.id === print.seriesId)?.index ?? "");
+    let purchaseDate = $state(print.purchaseDate);
+    let finishedReadingDate = $state(print.finishedReadingDate);
     let description = $state(print.description);
     let toc = $state(print.toc);
     let note = $state(print.note);
@@ -89,6 +91,8 @@
                 publicationDate,
                 issueNumber,
                 seriesId: series.find(x => x.index === seriesName)?.id ?? null,
+                purchaseDate,
+                finishedReadingDate,
                 description,
                 toc,
                 note,
@@ -228,7 +232,7 @@
                 <option value="雑誌">雑誌</option>
             </select>
         </div>
-        <RelatedPersonEditor relatedType="PRINT" relatedId={print.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
+        <RelatedPersonEditor relatedType="PRINT" relatedId={print.id} {relatedPersons} {persons} label=null callback={onChangeRelationPersons}></RelatedPersonEditor>
         <div class="input-field">
             <label for="publisherName">出版社</label>
             <input name="publisherName" type="text" bind:value={publisherName} list="5F8F5F10-8B21-421A-8D9B-B13DAED88B96" required onchange={onChangePublisherName}/>
@@ -252,6 +256,14 @@
                 <option value="PDF">PDF</option>
             </select>
         </div>
+        <div class="input-field">
+            <label for="purchaseDate">購入日</label>
+            <input name="purchaseDate" type="date" bind:value={purchaseDate}  />
+        </div>              
+        <div class="input-field">
+            <label for="finishedReadingDate">読了日</label>
+            <input name="finishedReadingDate" type="date" bind:value={finishedReadingDate}  />
+        </div>              
         <div class="input-field">
             <label for="description">解説</label>
             <textarea name="description" bind:value={description} rows="5" cols="80" ></textarea>

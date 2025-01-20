@@ -89,6 +89,18 @@
             <span class="data-value"><a href="/works/{coverWork.workId}">{coverWork.title}</a></span>
         </div>              
         {/each}
+        {#if printData.purchaseDate}
+        <div class="display-field">
+            <span class="data-label">購入日</span>
+            <span class="data-value">{printData.purchaseDate}</span>
+        </div>      
+        {/if}
+        {#if printData.finishedReadingDate}
+        <div class="display-field">
+            <span class="data-label">読了日</span>
+            <span class="data-value">{printData.finishedReadingDate}</span>
+        </div>      
+        {/if}
         <div class="display-field">
             <span class="data-label">所有種別</span>
             <span class="data-value">{printData.ownedType}</span>

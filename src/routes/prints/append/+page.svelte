@@ -23,6 +23,8 @@
         publicationDate: "",
         issueNumber: null,
         seriesId: null,
+        purchaseDate: "",
+        finishedReadingDate: "",
         description: "",  
         toc: "",
         note: "", 

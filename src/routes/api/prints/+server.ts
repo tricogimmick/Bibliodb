@@ -18,6 +18,8 @@ export type PostDataType = {
     publicationDate: string;
     issueNumber: number | null;
     seriesId: number | null;
+    purchaseDate: string;
+    finishedReadingDate: string;
     description: string;   
     toc: string;
     note: string;
@@ -63,6 +65,8 @@ const cretaePostData = (id: number, postData: PostDataType) => ({
     publicationDate: postData.publicationDate,
     issueNumber: postData.issueNumber,
     seriesId: postData.seriesId,
+    purchaseDate: postData.purchaseDate,
+    finishedReadingDate: postData.finishedReadingDate,
     description: postData.description,
     toc: postData.toc,
     note: postData.note,
@@ -73,10 +77,11 @@ const appendPrint = (db: pkg.Database, postData: PostDataType) => new Promise<Pr
     try {
         const printId = await runSql(db, 
             "INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, issueNumber, seriesId, " +
-            "description, toc, note, ownedType) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "purchaseDate, finishedReadingDate, description, toc, note, ownedType) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [ postData.title , postData.originalTitle, postData.printType, postData.publisherId, postData.brandId, postData.publicationDate, 
-              postData.issueNumber, postData.seriesId, postData.description, postData.toc, postData.note, postData.ownedType ]);
+              postData.issueNumber, postData.seriesId,  postData.purchaseDate, postData.finishedReadingDate, postData.description, postData.toc, 
+              postData.note, postData.ownedType ]);
         for (const relatedPerson of postData.relatedPersons) {
             await runSql(db, 
                 "INSERT INTO related_persons (relatedType, relatedId, orderNo, personId, role, description) VALUES (?, ?, ?, ?, ?, ?)",
@@ -110,9 +115,10 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
     try {
         await runSql(db,
             "UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, " +
-            "issueNumber = ?, seriesId = ?, description = ?, toc = ?, note = ?, ownedType = ? WHERE id = ?",
+            "issueNumber = ?, seriesId = ?, purchaseDate = ?, finishedReadingDate = ?, description = ?, toc = ?, note = ?, ownedType = ? WHERE id = ?",
             [ putData.title , putData.originalTitle, putData.printType, putData.publisherId, putData.brandId, putData.publicationDate, 
-              putData.issueNumber, putData.seriesId, putData.description, putData.toc, putData.note, putData.ownedType, putData.id ]
+              putData.issueNumber, putData.seriesId, putData.purchaseDate, putData.finishedReadingDate, putData.description, putData.toc, 
+              putData.note, putData.ownedType, putData.id ]
         );
         await runSql(db, "DELETE FROM related_persons WHERE relatedType = 'PRINT' AND relatedId = ?", [putData.id]);
         for (const author of putData.relatedPersons) {

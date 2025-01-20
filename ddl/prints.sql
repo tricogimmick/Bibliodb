@@ -18,6 +18,10 @@ CREATE TABLE prints (
     , issueNumber INTEGER 
     -- シリーズ
     , seriesId INTEGER
+    -- 購入日
+    , purchaseDate TEXT
+    -- 読了日
+    , finishedReadingDate TEXT
     -- 説明
     , description TEXT
     -- 目次

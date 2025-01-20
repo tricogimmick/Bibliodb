@@ -110,7 +110,7 @@ select {
         max-width: 30rem;
     }
     .data-content {
-        max-width: 30rem;
+        max-width: 40rem;
         > p:first-child {
             margin-top: 0;
         }

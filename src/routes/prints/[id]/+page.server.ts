@@ -18,6 +18,8 @@ type QueryResultType = {
     publicationDate: string;
     issueNumber: number | null;
     seriesId: number | null;
+    purchaseDate: string;
+    finishedReadingDate: string;    
     seriesName: string;
     description: string;   
     toc: string;
@@ -85,6 +87,8 @@ type PrintDisplayType = {
     issueNumber: number | null;
     seriesId: number | null;
     seriesName: string;
+    purchaseDate: string;
+    finishedReadingDate: string;
     description: string;   
     toc: string;
     note: string;
@@ -100,7 +104,8 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDisplayType|
     try {
         const row = await getRow<QueryResultType>(db,
             "SELECT p.id, p.title, p.originalTitle, p.printType, c.name as publisherName, b.name as brandName, p.publicationDate, " +
-            "p.issueNumber, p.seriesId, s.title as seriesName, p.description, p.toc, p.note, p.ownedType FROM prints as p " +
+            "p.issueNumber, p.seriesId, s.title as seriesName, p.purchaseDate, p.finishedReadingDate, p.description, p.toc, p.note, p.ownedType " +
+            "FROM prints as p " +
             "LEFT JOIN publishers as c ON c.id = p.publisherId " +
             "LEFT JOIN brands as b ON b.id = p.brandId " +
             "LEFT JOIN series as s ON s.id = p.seriesId WHERE p.id = ?", 
@@ -162,6 +167,8 @@ const getPrint = (db: pkg.Database, id: number) => new Promise<PrintDisplayType|
             issueNumber: row.issueNumber,
             seriesId: row.seriesId,
             seriesName: row.seriesName,
+            purchaseDate: row.purchaseDate,
+            finishedReadingDate: row.finishedReadingDate,
             description: row.description, 
             toc: row.toc,
             note: row.note,
