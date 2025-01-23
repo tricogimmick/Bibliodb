@@ -8,7 +8,15 @@
     const workData = data.work;
 
     const externalLinks = workData.relatedLinks.filter(x => x.linkType === "LINK");
-    const relatedPersons = workData.relatedPersons.map(x => `<a href="/persons/${x.personId}" >${x.personName}</a> ${x.role.replace("者", "")}`).join(" / ");
+
+    const relatedPersons = new Map<string, string>();
+    workData.relatedPersons.forEach(x => {
+        if (relatedPersons.has(x.role)) {
+            relatedPersons.set(x.role, `${relatedPersons.get(x.role)} / <a href="/persons/${x.personId}" >${x.personName}</a>`);
+        } else {
+            relatedPersons.set(x.role, `<a href="/persons/${x.personId}" >${x.personName}</a>`);
+        }
+    }); 
 
     const synopsisHtml = workData.synopsis != null ? marked.parse(workData.synopsis): "";
     const descHtml = workData.description != null ? marked.parse(workData.description): "";
@@ -58,10 +66,12 @@
         <label for="contentType">種別</label>
         <span class="data-value">{workData.contentType}</span>
     </div>
+    {#each relatedPersons as person}
     <div class="input-field">
-        <label for="">著作者</label>
-        <span class="data-value">{@html relatedPersons}</span>
+        <label for="">{person[0]}</label>
+        <span class="data-value">{@html person[1]}</span>
     </div>              
+    {/each}
     {#each workData.relatedSeries.filter(x => x.isMedia == 1) as relatedSeries, i }
     <div class="input-field">
         {#if i == 0}

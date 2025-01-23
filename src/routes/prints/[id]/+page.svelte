@@ -8,6 +8,16 @@
     const { data }: { data: PageData } = $props();
     const printData = data.print;
 
+    const relatedPersons = new Map<string, string>();
+        printData.relatedPersons.forEach(x => {
+        if (relatedPersons.has(x.role)) {
+            relatedPersons.set(x.role, `${relatedPersons.get(x.role)} / <a href="/persons/${x.personId}" >${x.personName}</a>`);
+        } else {
+            relatedPersons.set(x.role, `<a href="/persons/${x.personId}" >${x.personName}</a>`);
+        }
+    }); 
+
+
     const bookImage = printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "カバー");
     const extelanLink = printData.relatedLinks.filter(x => x.linkType === "LINK");
     const images = printData.relatedLinks.filter(x => x.linkType === "IMG");
@@ -55,14 +65,10 @@
             <span class="data-label">出版種別</span>
             <span class="data-value">{printData.printType}</span>
         </div>
-        {#each printData.relatedPersons as relatedPerson, i (relatedPerson.orderNo)}
+        {#each relatedPersons as relatedPerson}
         <div class="display-field">
-            {#if i == 0}
-            <span class="data-label">著作者</span>
-            {:else}
-            <span class="data-label">&nbsp</span>
-            {/if}
-            <span class="data-value"><a href="/persons/{relatedPerson.personId}">{relatedPerson.personName}</a> {relatedPerson.role.replace("者", "")}</span>
+            <span class="data-label">{relatedPerson[0]}</span>
+            <span class="data-value">{@html relatedPerson[1]}</span>
         </div>              
         {/each}
         <div class="display-field">
