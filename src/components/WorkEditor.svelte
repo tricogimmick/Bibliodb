@@ -172,10 +172,11 @@
                 <option value="日記">日記</option>
                 <option value="評論">評論</option>
                 <option value="対談・座談">対談・座談</option>
+                <option value="画集">画集</option>
                 <option value="漫画">漫画</option>
             </select>
         </div>
-        <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons}></RelatedPersonEditor>
+        <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons} label=""></RelatedPersonEditor>
         <RelatedSeriesEditor label="掲載誌" relatedType="WORK" relatedId={work.id} relatedSeries={publishedMedia} series={seriesOfMedia} callback={onChangePublishedMedia}></RelatedSeriesEditor>
         <div class="input-field">
             <label for="publicationYear">発表年</label>
