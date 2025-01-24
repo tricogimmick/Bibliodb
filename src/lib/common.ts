@@ -9,6 +9,7 @@ import type { RelatedPeronsType } from '../types/relatedPersons';
 import type { RelatedLinksType } from '../types/relatedLinks';
 import type { RelatedSeriesType } from '../types/relatedSeries';
 import type { RelatedWorksType } from '../types/relatedWorks';
+import type { BookListType } from '../types/bookList';
 import type { ResultType } from '../types/result';
 import pkg from 'sqlite3';
 import type { MovieType } from '../types/movie';
@@ -192,6 +193,16 @@ export const getMovie = (db: pkg.Database, id: number) => new Promise<MovieType|
     });
 });
 
+// ブックリストを取得
+export const getBookList = (db: pkg.Database, id: number) => new Promise<BookListType|Error>((ok, ng) => {
+    db.get<BookListType>("SELECT * FROM book_lists WHERE id = ?", [id], (err, row) => {
+        if (err) {
+            ng(err);
+        } else {
+            ok(row);
+        }
+    });
+});
 
 // 関連人物を全て取得
 export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number|null ) => new Promise<RelatedPeronsType[]|Error>((ok, ng) => {
@@ -258,4 +269,15 @@ export const getAllRelatedTags = (db: pkg.Database, relatedType: string, related
             }
         }
     )
-})
+});
+
+// 書籍リストを全て取得
+export const getAllBookLists = (db: pkg.Database) => new Promise<BookListType[]|Error>((ok, ng) => {
+    db.all<BookListType>("SELECT * FROM book_lists ORDER BY id", (err, rows) => {
+        if (err) {
+            ng(err);
+        } else {
+            ok(rows);
+        }
+    });
+});

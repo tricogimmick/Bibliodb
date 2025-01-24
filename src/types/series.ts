@@ -6,4 +6,5 @@ export type SeriesType = {
     seriesType: string;
     publisherId: Number | null;
     description: string;
+    bookReviewTarget: Number | null;
 };

@@ -13,6 +13,7 @@
         <li><a href="/works">Works</a></li>
         <li><a href="/prints">Prints</a></li>
         <li><a href="/movies">Movies</a></li>
+        <li><a href="/booklists">Book Lists</a></li>
     </ul>
 </div>
 <div class="page-container">
