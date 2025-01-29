@@ -253,6 +253,7 @@
             <select name="ownedType" bind:value={ownedType}>
                 <option value="">&nbsp;</option>
                 <option value="所有">所有</option>
+                <option value="Kindle">Kindle</option>
                 <option value="PDF">PDF</option>
             </select>
         </div>
