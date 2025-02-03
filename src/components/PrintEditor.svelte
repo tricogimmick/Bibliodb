@@ -232,7 +232,7 @@
                 <option value="雑誌">雑誌</option>
             </select>
         </div>
-        <RelatedPersonEditor relatedType="PRINT" relatedId={print.id} {relatedPersons} {persons} label=null callback={onChangeRelationPersons}></RelatedPersonEditor>
+        <RelatedPersonEditor relatedType="PRINT" relatedId={print.id} {relatedPersons} {persons} label="" callback={onChangeRelationPersons}></RelatedPersonEditor>
         <div class="input-field">
             <label for="publisherName">出版社</label>
             <input name="publisherName" type="text" bind:value={publisherName} list="5F8F5F10-8B21-421A-8D9B-B13DAED88B96" required onchange={onChangePublisherName}/>

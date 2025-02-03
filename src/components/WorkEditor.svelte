@@ -173,6 +173,7 @@
                 <option value="評論">評論</option>
                 <option value="対談・座談">対談・座談</option>
                 <option value="画集">画集</option>
+                <option value="IT">IT</option>
                 <option value="漫画">漫画</option>
             </select>
         </div>
