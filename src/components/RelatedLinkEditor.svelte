@@ -105,7 +105,9 @@
         <option>国立国会図書館デジタルコレクション</option>
         <option>Amazon</option>
         <option>表紙</option>
+        <option>裏表紙</option>
         <option>カバー</option>
+        <option>帯</option>
         <option>目次</option>
         <option>奥付</option>
     </datalist>
