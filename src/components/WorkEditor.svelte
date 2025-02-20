@@ -174,7 +174,9 @@
                 <option value="対談・座談">対談・座談</option>
                 <option value="画集">画集</option>
                 <option value="IT">IT</option>
+                <option value="読み物">読み物</option>
                 <option value="漫画">漫画</option>
+                <option value="その他">その他</option>
             </select>
         </div>
         <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons} label=""></RelatedPersonEditor>
