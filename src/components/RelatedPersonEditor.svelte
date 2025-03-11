@@ -133,6 +133,7 @@
             <option value="翻訳者">翻訳者</option>
             <option value="編者">編者</option>
             <option value="話者">話者</option>
+            <option value="聞き手">聞き手</option>
             <option value="解説">解説</option>
             <option value="原作者">原作者</option>
             <option value="作画">作画</option>
