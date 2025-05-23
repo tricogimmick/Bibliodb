@@ -76,7 +76,7 @@ const getPerson = async (db: pkg.Database, personId: number) => {
         "LEFT JOIN series as sr on sr.id = bk.seriesId " +
         "LEFT JOIN publishers as pb ON pb.id = bk.publisherId " +
         "LEFT JOIN brands as br ON br.id = bk.brandId " +
-        "WHERE rp.personId = ? " +
+        "WHERE rp.relatedType = 'PRINT' and  rp.personId = ? " +
         "ORDER BY bk.publicationDate", 
         [personId]
     );
