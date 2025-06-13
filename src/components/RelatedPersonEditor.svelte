@@ -139,6 +139,7 @@
             <option value="原案">原案</option>
             <option value="作画">作画</option>
             <option value="協力">協力</option>
+            <option value="撮影">撮影</option>
             <option value="監修">監修</option>
             <option value="監督">監督</option>
             <option value="アクション監督">アクション監督</option>
