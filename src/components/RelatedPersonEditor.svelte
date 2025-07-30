@@ -137,7 +137,9 @@
             <option value="解説">解説</option>
             <option value="原作者">原作者</option>
             <option value="原案">原案</option>
+            <option value="キャラクター原案">キャラクター原案</option>
             <option value="作画">作画</option>
+            <option value="漫画">漫画</option>
             <option value="協力">協力</option>
             <option value="撮影">撮影</option>
             <option value="監修">監修</option>
