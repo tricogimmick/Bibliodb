@@ -172,6 +172,7 @@
                 <option value="日記">日記</option>
                 <option value="評論">評論</option>
                 <option value="対談・座談">対談・座談</option>
+                <option value="インタビュー">インタビュー</option>
                 <option value="画集">画集</option>
                 <option value="IT">IT</option>
                 <option value="読み物">読み物</option>
