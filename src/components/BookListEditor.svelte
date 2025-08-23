@@ -46,12 +46,12 @@
                 id: bookList.id,
                 dataType,
                 seriesId: series.find(x => x.index === seriesName)?.id ?? null,
-                issue,
-                title,
-                authors,
-                publisher,
-                url,
-                description
+                issue: issue?.trim(),
+                title: title?.trim(),
+                authors: authors?.trim(),
+                publisher: publisher?.trim(),
+                url: url?.trim(),
+                description: description?.trim()
             };
             const result = await callApi(postData, bookList.id != null ? "PUT" : "POST");
             console.log(result);
