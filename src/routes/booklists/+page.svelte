@@ -6,9 +6,12 @@
     let { data }: { data: PageData } = $props();
     const series = Array.isArray(data.series) ? data.series.filter(x => x.bookReviewTarget == 1) : [];
     const allBookLists = Array.isArray(data.bookLists) ? data.bookLists : [];
+    const allIssues = [... new Set(allBookLists.map(x => x.issue))];
     let bookList = $state(allBookLists);
+    let issues = $state(allIssues);
     let searchKey = $state("");
     let seriesId = $state("0");
+    let issue = $state("");
 
     const onClickAppendBookList = (e: Event) => goto("/booklists/append");
 
@@ -20,6 +23,15 @@
                 allBookLists.filter(x => x.seriesId === Number(seriesId) && (x.title.includes(searchKey) || x.authors.includes(searchKey) || x.publisher.includes(searchKey))) : 
                 allBookLists.filter(x => x.title.includes(searchKey) || x.authors.includes(searchKey) || x.publisher.includes(searchKey));
         }
+        const newIssues = [... new Set(bookList.map(x => x.issue))];
+        if (issue != "") {
+            if (newIssues.find(x => x === issue)) {
+                bookList = bookList.filter(x => x.issue === issue);
+            } else {
+                issue = "";
+            }
+        }
+        issues = newIssues;
     }
 </script>
 
@@ -38,6 +50,15 @@
             <option value="0">全て</option>
             {#each series as series}
             <option value={series.id}>{series.index}</option>
+            {/each}
+        </select>
+    </div>
+    <div class="input-field">
+        <label for="search-key">号数 : </label>
+        <select name="issue" bind:value={issue} onchange={updateBookList}>
+            <option value="">全て</option>
+            {#each issues as issue}
+            <option value={issue}>{issue}</option>
             {/each}
         </select>
     </div>
