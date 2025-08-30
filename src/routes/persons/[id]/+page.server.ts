@@ -30,6 +30,7 @@ type PrintDisplayType = {
     brand: string;
     publicationDate: string;
     printType: string;
+    ownedType: string;
 }
 
 type MovieDisplayType = {
@@ -70,7 +71,7 @@ const getPerson = async (db: pkg.Database, personId: number) => {
         [personId]
     );
     const prints: PrintDisplayType[] = await getAllRows(db, 
-        "SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, bk.publicationDate, bk.printType " +
+        "SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, bk.publicationDate, bk.printType, bk.ownedType " +
         "FROM related_persons as rp " +
         "JOIN prints as bk on bk.id = rp.relatedId " +
         "LEFT JOIN series as sr on sr.id = bk.seriesId " +

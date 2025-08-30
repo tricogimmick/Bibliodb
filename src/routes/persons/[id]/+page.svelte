@@ -128,6 +128,7 @@
             <div class="cell">タイトル</div>
             <div class="cell">出版社</div>
             <div class="cell">発行日</div>
+            <div class="cell">所有</div>
         </div>
         <div class="body">
             {#each books as book, i (book.id) }
@@ -136,6 +137,7 @@
                     <div class="cell"><a href="/prints/{book.id}">{#if book.series}{book.series}&nbsp{/if}{book.title}</a></div>
                     <div class="cell">{book.publisher}{#if book.brand} ({book.brand}){/if}</div>
                     <div class="cell">{book.publicationDate}</div>
+                    <div class="cell">{book.ownedType}</div>
                 </div>
             {/each}        
         </div>

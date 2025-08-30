@@ -146,6 +146,7 @@
             <div class="cell">出版社</div>
             <div class="cell">発行日</div>
             <div class="cell">種別</div>
+            <div class="cell">所有</div>
         </div>
         <div class="body">
             {#each workData.prints as print, i (print.id) }
@@ -155,6 +156,7 @@
                     <div class="cell">{print.publisher}{#if print.brand} ({print.brand}){/if}</div>
                     <div class="cell">{print.publicationDate}</div>
                     <div class="cell">{print.printType}</div>
+                    <div class="cell">{print.ownedType}</div>
                 </div>
             {/each}        
         </div>
