@@ -4,6 +4,7 @@
     import type { ResultType } from '../../../types/result';
 
     import { goto } from "$app/navigation";
+    import { page } from '$app/stores';
     import BookListEditor from '../../../components/BookListEditor.svelte';
 
     const { data }: { data: PageData } = $props();

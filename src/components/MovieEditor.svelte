@@ -123,6 +123,7 @@
         <option value=”Netflix”></option>
         <option value="Amazon Prime Video"></option>
         <option value="U-Next"></option>
+        <option value="YouTube"></option>
         <option value="映画館"></option>
     </datalist>
     <form onsubmit={onSubmit}>

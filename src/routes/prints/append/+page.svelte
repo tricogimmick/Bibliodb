@@ -38,7 +38,8 @@
     
     const onSubmit = (result: ResultType<PrintType>) => {
         if (result.ok) {
-            goto("/prints");
+            const print = result.data as PrintType;
+            goto(`/prints/${print.id ?? ""}`);
         } else {
             alert("データの登録に失敗しました。");
         }

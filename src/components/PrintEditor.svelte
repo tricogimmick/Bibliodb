@@ -254,6 +254,8 @@
                 <option value="">&nbsp;</option>
                 <option value="所有">所有</option>
                 <option value="Kindle">Kindle</option>
+                <option value="Kindle Unlimited">Kindle Unlimited</option>
+                <option value="図書館">図書館</option>
                 <option value="PDF">PDF</option>
             </select>
         </div>
