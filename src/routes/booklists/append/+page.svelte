@@ -13,6 +13,7 @@
         id: null,
         dataType: "review",
         seriesId: null,
+        year: null,
         issue: "",
         title: "",
         authors: "",

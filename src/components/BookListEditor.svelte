@@ -13,6 +13,7 @@
 
     let dataType = $state(bookList.dataType);
     let seriesName = $state(series.find(x => x.id === bookList.seriesId)?.index ?? "");
+    let year = $state(bookList.year);
     let issue = $state(bookList.issue);
     let title = $state(bookList.title);
     let authors = $state(bookList.authors);
@@ -46,6 +47,7 @@
                 id: bookList.id,
                 dataType,
                 seriesId: series.find(x => x.index === seriesName)?.id ?? null,
+                year: year,
                 issue: issue?.trim(),
                 title: title?.trim(),
                 authors: authors?.trim(),
@@ -95,6 +97,10 @@
             <label for="seriesName">シリーズ</label>
             <input name="seriesName" type="text" bind:value={seriesName} list="5993da0e-bad7-40e7-95ba-c8ba4edcbc36" onchange={onChangeSeriesName} />
         </div>              
+        <div class="input-field">
+            <label for="issue">対象年</label>
+            <input name="issue" type="number" bind:value={year} required />
+        </div>
         <div class="input-field">
             <label for="issue">号数</label>
             <input name="issue" type="text" bind:value={issue} required />

@@ -2,6 +2,7 @@ export type BookListType = {
     id: number | null;
     dataType: string;
     seriesId: number | null;
+    year: number | null;
     issue: string;
     title: string;
     authors: string;

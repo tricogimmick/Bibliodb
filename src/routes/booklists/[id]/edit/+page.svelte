@@ -17,7 +17,7 @@
 
 </script>
 
-<h2>Print - Edit</h2>
+<h2>Book List - Edit</h2>
 <BookListEditor {...data} callback={onSubmit}></BookListEditor>
 <div class="footer">
     <a href="/booklists">Back to Book List</a>
