@@ -131,6 +131,7 @@
             <option value="作者">作者</option>
             <option value="著者">著者</option>
             <option value="翻訳者">翻訳者</option>
+            <option value="編著">編著</option>
             <option value="編者">編者</option>
             <option value="話者">話者</option>
             <option value="聞き手">聞き手</option>
