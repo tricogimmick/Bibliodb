@@ -147,6 +147,7 @@
             <div class="cell">発行日</div>
             <div class="cell">種別</div>
             <div class="cell">所有</div>
+            <div class="cell">掲載順</div>
         </div>
         <div class="body">
             {#each workData.prints as print, i (print.id) }
@@ -156,7 +157,8 @@
                     <div class="cell">{print.publisher}{#if print.brand} ({print.brand}){/if}</div>
                     <div class="cell">{print.publicationDate}</div>
                     <div class="cell">{print.printType}</div>
-                    <div class="cell">{print.ownedType}</div>
+                    <div class="cell">{print.ownedType == null || print.ownedType == "" ? "未所有" : print.ownedType}</div>
+                    <div class="cell">{print.orderNo}</div>
                 </div>
             {/each}        
         </div>
