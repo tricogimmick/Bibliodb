@@ -2,12 +2,15 @@
     import type { PageData } from './$types';
 
     import { goto } from "$app/navigation";
+    import ImageViewer from '../../../components/ImageViewer.svelte';
     import { marked } from 'marked';
 
     const { data }: { data: PageData } = $props();
     const workData = data.work;
 
     const externalLinks = workData.relatedLinks.filter(x => x.linkType === "LINK");
+    const images = workData.relatedLinks.filter(x => x.linkType === "IMG");
+
 
     const relatedPersons = new Map<string, string>();
     workData.relatedPersons.forEach(x => {
@@ -137,6 +140,14 @@
         </div>
     </div>      
 </div>
+{#if images.length > 0}
+<h4>Images</h4>
+<div class="image-container">
+    {#each images as img }
+        <div><ImageViewer src={img.url} alt={img.alt} height="200px" width="400px" /></div>
+    {/each}
+</div>
+{/if}
 <div class="featured-prints">
     <h4>掲載書籍・雑誌</h4>
     <div class="container">

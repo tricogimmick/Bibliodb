@@ -104,12 +104,18 @@
         <option>青空文庫</option>
         <option>国立国会図書館デジタルコレクション</option>
         <option>Amazon</option>
+        <option>マガポケ</option>
+        <option>ヤンマガWeb</option>
+        <option>コミックDAYS</option>
+        <option>サンデーうぇぶり</option>
         <option>表紙</option>
         <option>裏表紙</option>
         <option>カバー</option>
         <option>帯</option>
+        <option>扉</option>
         <option>目次</option>
         <option>奥付</option>
+        <option>エンディング</option>
     </datalist>
 </div>
 {#each items as item, i (item.orderNo)}
