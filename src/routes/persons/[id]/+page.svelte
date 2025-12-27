@@ -134,7 +134,7 @@
             {#each books as book, i (book.id) }
                 <div class="row">
                     <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{book.id}">{#if book.series}{book.series}&nbsp{/if}{book.title}</a></div>
+                    <div class="cell"><a href="/prints/{book.id}">{book.title}</a></div>
                     <div class="cell">{book.publisher}{#if book.brand} ({book.brand}){/if}</div>
                     <div class="cell">{book.publicationDate}</div>
                     <div class="cell">{book.ownedType}</div>

@@ -164,7 +164,7 @@
             {#each workData.prints as print, i (print.id) }
                 <div class="row">
                     <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{print.id}">{#if print.series}{print.series}&nbsp{/if}{print.title}</a></div>
+                    <div class="cell"><a href="/prints/{print.id}">{#if print.series && print.printType == "雑誌"}{print.series}&nbsp{/if}{print.title}</a></div>
                     <div class="cell">{print.publisher}{#if print.brand} ({print.brand}){/if}</div>
                     <div class="cell">{print.publicationDate}</div>
                     <div class="cell">{print.printType}</div>
