@@ -25,6 +25,8 @@
     const descHtml = workData.description != null ? marked.parse(workData.description): "";
     const noteHtml = workData.note != null ? marked.parse(workData.note) : "";
     
+    const onClickAppendWork = (e: Event) => goto("/works/append");
+
     const onClickModifyWork = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -37,6 +39,7 @@
 <h2>Work - Details</h2>
 <div class="button-container">
     <button onclick={onClickModifyWork}>変更</button>
+    <button onclick={onClickAppendWork}>追　加</button>
 </div>
 <div>
     <div class="input-field">

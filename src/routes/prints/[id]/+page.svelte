@@ -23,6 +23,7 @@
     const images = printData.relatedLinks.filter(x => x.linkType === "IMG");
     const coverWorks = printData.relatedWorks.filter(x => x.subType === "COVER");
 
+    const onClickAppendPrint = (e: Event) => goto("/prints/append");
     const onclickModifyPrint = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -35,6 +36,7 @@
 <h2>{#if printData.seriesName}{printData.seriesName}&nbsp;{/if}{printData.title}</h2>
 <div class="button-container">
     <button class="modify-button" onclick={onclickModifyPrint}>変更</button>
+    <button onclick={onClickAppendPrint}>追　加</button>
 </div>
 <div class="data-container">
     {#if bookImage != null}
