@@ -130,6 +130,7 @@
         <select name="role" bind:value={item.role} onchange={callCallback}>
             <option value="作者">作者</option>
             <option value="著者">著者</option>
+            <option value="画">画</option>
             <option value="翻訳者">翻訳者</option>
             <option value="編著">編著</option>
             <option value="編者">編者</option>
