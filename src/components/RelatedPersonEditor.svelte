@@ -141,6 +141,7 @@
             <option value="原作者">原作者</option>
             <option value="原案">原案</option>
             <option value="キャラクター原案">キャラクター原案</option>
+            <option value="イラスト">イラスト</option>
             <option value="作画">作画</option>
             <option value="漫画">漫画</option>
             <option value="協力">協力</option>
