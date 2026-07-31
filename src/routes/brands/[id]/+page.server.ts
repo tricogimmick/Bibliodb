@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getBrand } from '$lib/common';
+import * as BrandModel from '../../../models/brand';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ params }) => {
     const db = new Database(dbPath);
 	try {
 		return {
-			brand: await getBrand(db, Number(params.id))
+			brand: await BrandModel.get(db, Number(params.id))
 		};
 	} catch (e) {
 		console.log(e);
