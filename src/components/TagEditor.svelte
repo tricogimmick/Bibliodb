@@ -20,13 +20,17 @@
     const onKeyPressNewTag = (e: KeyboardEvent) => {
         if (e.key == "Enter") {
             e.preventDefault();
-            console.log(e)
-            if (tags.includes(newTag) || newTag === "") {
-                newTag = "";                
+            const trimmed = newTag.trim();
+            if (trimmed === "") {
+                newTag = "";
+                return;
+            }
+            if (tags.includes(trimmed)) {
+                newTag = "";
                 alert("タグが重複しています")
             } else {
-                callback?.([...tags, newTag]);
-                newTag = "";                
+                callback?.([...tags, trimmed]);
+                newTag = "";
             }
         }
     }
