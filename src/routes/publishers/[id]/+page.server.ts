@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getPublisher } from '$lib/common';
+import * as PublisherModel from '../../../models/publishers';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ params }) => {
     const db = new Database(dbPath);
 	try {
 		return {
-			publisher: await getPublisher(db, Number(params.id))
+			publisher: await PublisherModel.get(db, Number(params.id))
 		};
 	} catch (e) {
 		console.log(e);

@@ -7,7 +7,7 @@
     import PublisherEditor from '../../../components/PublisherEditor.svelte';
 
     const { data }: { data: PageData } = $props();
-    const publisher : PublisherType = data.publisher as PublisherType;
+    const publisher : PublisherType = data.publisher;
 
     const onSubmit = (result: ResultType<PublisherType>) => {
         if (result.ok) {
