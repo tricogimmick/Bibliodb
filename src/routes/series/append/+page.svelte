@@ -4,19 +4,12 @@
     import type { ResultType } from '../../../types/result';
  
     import { goto } from "$app/navigation";
+    import { createSeriesType } from '../../../types/series';
     import SeriesEditor from '../../../components/SeriesEditor.svelte';
 
     const { data }: { data: PageData } = $props();
 
-    const series: SeriesType = {
-        id: null,
-        index: "",
-        title: "",
-        originalTitle: "",
-        seriesType: "叢書",
-        publisherId: null,
-        description: ""
-    };
+    const series: SeriesType = createSeriesType();
 
     const onSubmit = (result: ResultType<SeriesType>) => {
         if (result.ok) {

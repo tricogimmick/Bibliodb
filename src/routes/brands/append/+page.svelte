@@ -3,13 +3,10 @@
 	import type { ResultType } from '../../../types/result';
 
 	import { goto } from '$app/navigation';
+	import { createBrandType } from '../../../types/brand';
 	import BrandEditor from '../../../components/BrandEditor.svelte';
 
-	let brand: BrandType = {
-		id: null,
-		name: '',
-		description: ''
-	};
+	let brand: BrandType = createBrandType();
 
 	const onSubmit = (result: ResultType<BrandType>) => {
 		if (result.ok) {

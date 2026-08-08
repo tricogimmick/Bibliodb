@@ -3,10 +3,10 @@
 	import type { ResultType } from '../../../types/result';
 
 	import { goto } from '$app/navigation';
+	import { createPublisherType } from '../../../types/publisher';
 	import PublisherEditor from '../../../components/PublisherEditor.svelte';
 
-	let publisher: PublisherType = { id: null, name: '', description: '' };
-
+	let publisher: PublisherType = createPublisherType();
 	const onSubmit = (result: ResultType<PublisherType>) => {
 		if (result.ok) {
 			goto('/publishers');
