@@ -1,11 +1,6 @@
 import pkg from 'sqlite3';
 import type { BrandType } from '../types/brand';
 
-// ブランドを作成する
-export function create(name: string = '', description: string = '') {
-    return { id: null, name, description } as BrandType;
-}
-
 // ブランドを取得する
 export function get(db: pkg.Database, id: number) {
     return new Promise<BrandType>((resolve, reject) => {

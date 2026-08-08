@@ -1,11 +1,6 @@
 import pkg from 'sqlite3';
 import type { PublisherType } from '../types/publisher';
 
-// 出版社を作成する
-export function create(name: string = '', description: string = '') {
-    return { id: null, name, description } as PublisherType;
-}
-
 // 出版社を取得する
 export function get(db: pkg.Database, id: number) {
     return new Promise<PublisherType>((resolve, reject) => {

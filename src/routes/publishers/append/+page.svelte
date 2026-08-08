@@ -3,10 +3,9 @@
 	import type { ResultType } from '../../../types/result';
 
 	import { goto } from '$app/navigation';
-	import * as PublisherModel from '../../../models/publishers';
 	import PublisherEditor from '../../../components/PublisherEditor.svelte';
 
-	let publisher: PublisherType = PublisherModel.create();
+	let publisher: PublisherType = { id: null, name: '', description: '' };
 
 	const onSubmit = (result: ResultType<PublisherType>) => {
 		if (result.ok) {
