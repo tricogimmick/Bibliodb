@@ -7,3 +7,11 @@ export type PersonType = {
     died: string;
     description: string;
 };
+
+export type RelatedPersonType = {
+    orderNo: number;
+    personId: number;
+    personName: string;
+    role: string;
+    description: string;
+}

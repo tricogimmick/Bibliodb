@@ -1,3 +1,7 @@
+import type { PublisherType } from "./publisher";
+import type { BrandType } from "./brand";
+import type { SeriesType } from "./series";
+
 export type PrintType = {
     id: number | null;
     title: string;
@@ -10,10 +14,15 @@ export type PrintType = {
     seriesId: number | null;
     purchaseDate: string;
     finishedReadingDate: string;
-    description: string;   
+    description: string;
     toc: string;
     note: string;
-    ownedType: string; 
+    ownedType: string;
+
+    // ここから下は関連情報
+    publisher: PublisherType | null;
+    brand: BrandType | null;
+    series: SeriesType | null;
 }
 
 export type PrintViewType = {
