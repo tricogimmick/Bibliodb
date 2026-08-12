@@ -20,7 +20,7 @@
 
 <h2>Publishers</h2>
 <div class="button-container">
-    <button onclick={onClickAppendPublishers}>追　加</button>
+    <button onclick={onClickAppendPublishers}>ADD</button>
 </div>
 <div class="condition-container">
     <div class="input-field">

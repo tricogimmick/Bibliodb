@@ -1,13 +1,14 @@
 <script lang="ts">
 	import type { PublisherType } from '../../../types/publisher';
-	import type { ResultType } from '../../../types/result';
 
 	import { goto } from '$app/navigation';
 	import { createPublisherType } from '../../../types/publisher';
 	import PublisherEditor from '../../../components/PublisherEditor.svelte';
+	import { callApi } from '../../../lib/client';
 
 	let publisher: PublisherType = createPublisherType();
-	const onSubmit = (result: ResultType<PublisherType>) => {
+	const onSubmit = async (data: PublisherType) => {
+		const result = await callApi('/api/publishers', 'POST', data);
 		if (result.ok) {
 			goto('/publishers');
 		} else {
