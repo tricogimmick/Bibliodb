@@ -10,9 +10,9 @@ import type { RelatedLinksType } from '../types/relatedLinks';
 import type { RelatedSeriesType } from '../types/relatedSeries';
 import type { RelatedWorksType } from '../types/relatedWorks';
 import type { BookListType } from '../types/bookList';
-import type { ResultType } from '../types/result';
-import pkg from 'sqlite3';
 import type { MovieType } from '../types/movie';
+
+import pkg from 'sqlite3';
 
 // SQLの実行
 export const runSql = (db: pkg.Database, sql: string, params: any) =>  new Promise<number>((ok, ng) => {

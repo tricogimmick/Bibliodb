@@ -1,7 +1,10 @@
 <script lang="ts">
     import type { SeriesType } from "../types/series";
-    import type { PublisherType } from "../types/publisher";
+    import { createPublisherType, type PublisherType } from "../types/publisher";
     import type { ResultType } from "../types/result";
+
+    import { callApi } from "../lib/client";
+    import { confirmDialog } from "../lib/client"
 
     type PropsType = {
         series: SeriesType;
@@ -15,39 +18,13 @@
     let index = $state(series.index);
     let originalTitle = $state(series.originalTitle);
     let seriesType = $state(series.seriesType);
-    let publisherName = $state(publishers.find(x => x.id == series.publisherId)?.name);
+    let publisherName = $state(publishers.find(x => x.id == series.publisherId)?.name ?? '');
     let description = $state(series.description);
-    let buttonCaption = $derived(series.id == null || series.id == 0 ? "登　録" : "更　新")
+    let buttonCaption = $derived(series.id == null || series.id == 0 ? '登　録' : '更　新')
 
     // INDEXが変更された
     const onChangeIndex = (e: Event) => {
         title = index;
-    }
-
-    // 出版社が変更された
-    const onChangePublisherName = (e: Event) => {
-        const field = e.target as HTMLInputElement;
-        if (publishers.find(x => x.name === publisherName) == null) {
-            field.setCustomValidity("出版社が存在しません")
-        } else {
-            field.setCustomValidity("")
-        }
-    }
-
-     // 更新用APIの呼出
-     const callApi = async (postData: SeriesType, method: "POST" | "PUT") => {
-        const response = await fetch('/api/series', {
-            method: method,
-            body: JSON.stringify(postData),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json() as ResultType<SeriesType>;
-        } else {
-            throw new Error(`Fetch Error (${response.status})`)
-        }
     }
 
     // FOMRがサブミットされた
@@ -55,6 +32,17 @@
         console.log("onSubmit()");
         e.stopImmediatePropagation();
         e.preventDefault();
+        let publisher = publishers.find(x => x.name === publisherName) ?? null;
+        if (publisher == null) {
+            const confirmed = await confirmDialog('出版社が存在しません', `出版社「${publisherName}」を登録しますか？`);
+            if (!confirmed) {
+                const field = document.querySelector<HTMLInputElement>('input[name="publisherName"]');
+                if (field) {
+                    field.focus();
+                }
+            }
+            publisher = createPublisherType(null, publisherName);
+        }
         try {
             const postData: SeriesType = {
                 id: series.id,
@@ -62,10 +50,12 @@
                 title,
                 originalTitle,
                 seriesType,
-                publisherId: publishers.find(x => x.name === publisherName)?.id ?? null,
-                description 
+                publisherId: publisher?.id ?? null,
+                description,
+                bookReviewTarget: 0,
+                publisher
             };
-            const result = await callApi(postData, series.id != null ? "PUT" : "POST");
+            const result = await callApi('/api/series', series.id != null ? "PUT" : "POST", postData);
             callback?.(result);
         } catch (e: any) {
             callback?.({ ok: false, data: (e as Error).message });
@@ -104,7 +94,7 @@
         </div>
         <div class="input-field">
             <label for="publisherName">出版社</label>
-            <input name="publisherName" type="text" bind:value={publisherName} list="C201555D-CE95-4182-909E-FF1BA4EA3351" onchange={onChangePublisherName}  />
+            <input name="publisherName" type="text" bind:value={publisherName} list="C201555D-CE95-4182-909E-FF1BA4EA3351"  />
         </div>
         <div class="input-field">
             <label for="description">解説</label>

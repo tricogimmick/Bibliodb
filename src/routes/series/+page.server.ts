@@ -3,7 +3,7 @@ import type { SeriesType } from '../../types/series';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getAllSeries } from '$lib/common';
+import * as SeriesModel from '../../models/series';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params }) => {
     const db = new Database(dbPath);
 	try {
 		return {
-			series: await getAllSeries(db)
+			series: await SeriesModel.getAll(db)
 		};
 	} catch (e) {
 		console.log(e);

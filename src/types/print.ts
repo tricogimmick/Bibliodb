@@ -15,3 +15,13 @@ export type PrintType = {
     note: string;
     ownedType: string; 
 }
+
+export type PrintViewType = {
+    id: number;
+    title: string;
+    publisher: string;
+    brand: string;
+    publicationDate: string;
+    issueNumber: number | null;
+    printType: string;
+}    

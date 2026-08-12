@@ -1,10 +1,12 @@
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import { getAllPublishers, getSeries } from '$lib/common';
-import pkg from 'sqlite3';
 import type { SeriesType } from '../../../../types/series';
 import type { PublisherType } from '../../../../types/publisher';
+
+import { error } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+import * as SeriesModel from '../../../../models/series';
+import * as PublisherModel from '../../../../models/publishers';
+import pkg from 'sqlite3';
 const {Database} = pkg;
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -12,8 +14,8 @@ export const load: PageServerLoad = async ({ params }) => {
     const db = new Database(dbPath);
 	try {
 		return {
-			series: await getSeries(db, Number(params.id)) as SeriesType,
-			publishers: await getAllPublishers(db) as PublisherType[]
+			series: await SeriesModel.get(db, Number(params.id)),
+			publishers: await PublisherModel.getAll(db)
 		};
 	} catch (e) {
 		console.log(e);

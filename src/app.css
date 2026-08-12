@@ -121,3 +121,32 @@ select {
         padding-top: 0.1rem;
     }
 }
+dialog {
+    padding: 0;
+    border: 1px solid gray;
+    box-shadow: 0 0 10px gray;
+    > .dialog-header {
+        margin: 0;
+        padding: 0.5rem 1rem;
+        background-color: black;
+        color: lightgray;
+        font-weight: bold;
+        text-align: center;
+    }
+    > form {
+        margin: 0;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem 0;
+        > menu {
+            > button {
+                min-width: 8rem;
+                padding: 0.2rem 1rem;
+                border: 1px solid gray;
+                background-color: white;
+                color: black;
+            }
+        }
+    }
+}
