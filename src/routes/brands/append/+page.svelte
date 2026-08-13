@@ -1,14 +1,15 @@
 <script lang="ts">
 	import type { BrandType } from '../../../types/brand';
-	import type { ResultType } from '../../../types/result';
 
 	import { goto } from '$app/navigation';
 	import { createBrandType } from '../../../types/brand';
 	import BrandEditor from '../../../components/BrandEditor.svelte';
+	import { callApi } from '../../../lib/client';
 
 	let brand: BrandType = createBrandType();
 
-	const onSubmit = (result: ResultType<BrandType>) => {
+	const onSubmit = async (data: BrandType) => {
+		const result = await callApi('/api/brands', 'POST', data);
 		if (result.ok) {
 			goto('/brands');
 		} else {

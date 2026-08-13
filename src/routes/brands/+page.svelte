@@ -20,7 +20,7 @@
 
 <h2>Brands</h2>
 <div class="button-container">
-    <button onclick={onClickAppendBrand}>追　加</button>
+    <button onclick={onClickAppendBrand}>ADD</button>
 </div>
 <div class="condition-container">
     <div class="input-field">
