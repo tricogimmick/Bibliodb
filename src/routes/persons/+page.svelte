@@ -20,7 +20,7 @@
 
 <h2>Persons</h2>
 <div class="button-container">
-    <button onclick={onClickAppendPerson}>追　加</button>
+    <button onclick={onClickAppendPerson}>ADD</button>
 </div>
 <div class="condition-container">
     <div class="input-field">

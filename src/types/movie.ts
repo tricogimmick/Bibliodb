@@ -10,3 +10,10 @@ export type MovieType = {
     viewingDate: string;
     viewingMethod: string;
 };
+
+export type MovieListViewItemType = {
+    id: number;
+    title: string;
+    country: string;
+    releaseYear: string;
+}

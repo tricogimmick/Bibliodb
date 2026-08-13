@@ -1,26 +1,24 @@
 <script lang="ts">
     import type { PersonType } from '../types/person';
-    import type { ResultType } from '../types/result';
-    import type { RelatedLinksType } from "../types/relatedLinks";
-    import type { PostDataType } from "../routes/api/persons/+server";
-
+    import type { RelatedLinkType } from "../types/relatedLink";
 
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
  
     type PropsType = {
         person: PersonType;
-        relatedLinks: RelatedLinksType[],
-        callback: (result: ResultType<PersonType>) => void | null;
+        callback: ((result: PersonType) => void | Promise<void>) | null;
     }
 
-    let { person, relatedLinks, callback }: PropsType = $props();
+    let { person, callback }: PropsType = $props();
     let index = $state(person.index);
     let name = $state(person.name);
     let kana = $state(person.kana);
     let born = $state(person.born);
     let died = $state(person.died);
     let description = $state(person.description);
-    let buttonCaption = $derived(person.id == null || person.id == 0 ? "登　録" : "更　新");
+    let buttonCaption = $derived(person.id == null || person.id == 0 ? "ADD" : "UPDATE");
+
+    let relatedLinks = $state(person.relatedLinks ?? []);
  
     // INDEXが変更された
     const onChangeIndex = (e: Event) => {
@@ -28,52 +26,33 @@
     }
 
     // 関連リンクが変更された
-    const onChangeRelationLinks = (rl: RelatedLinksType[]) => {
+    const onChangeRelationLinks = (rl: RelatedLinkType[]) => {
         relatedLinks = rl;
-    }
-
-    // 更新用APIの呼出
-    const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
-        const response = await fetch('/api/persons', {
-            method: method,
-            body: JSON.stringify(postData),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json() as ResultType<PersonType>;
-        } else {
-            throw new Error(`Fetch Error (${response.status})`)
-        }
     }
 
     // FOMRがサブミットされた
     const onSubmit = async (e: Event)  => {
-        console.log("onSubmit()");
         e.stopImmediatePropagation();
         e.preventDefault();
-        try {
-            const postData: PostDataType = { 
-                id: person.id, 
-                index, 
-                name, 
-                kana, 
-                born, 
-                died, 
-                description,
-                relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
-                    linkType: x.linkType,
-                    url: x.url,
-                    alt: x.alt,
-                    description: x.description
-                }))
-            };
-            const result: ResultType<PersonType> = await callApi(postData, person.id != null ? "PUT" : "POST");
-            callback?.(result);
-        } catch (e: any) {
-            callback?.({ ok: false, data: (e as Error).message });
-        }
+        const data: PersonType = { 
+            id: person.id, 
+            index, 
+            name, 
+            kana, 
+            born, 
+            died, 
+            description,
+            relatedLinks: relatedLinks?.filter(x => x.url != null && x.url != "").map<RelatedLinkType>(x => ({
+                id: x.id,
+                relatedType: x.relatedType,
+                relatedId: x.relatedId,
+                linkType: x.linkType,
+                url: x.url,
+                alt: x.alt,
+                description: x.description
+            })) ?? null
+        };
+        callback?.(data);
     }
 </script>
 

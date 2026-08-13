@@ -34,3 +34,15 @@ export type PrintViewType = {
     issueNumber: number | null;
     printType: string;
 }    
+
+export type PrintListViewItemType = {
+    id: number;
+    series: string;
+    title: string;
+    publisher: string;
+    brand: string;
+    publicationDate: string;
+    printType: string;
+    ownedType: string;
+    issueNumber: number | null;
+}

@@ -14,6 +14,7 @@ export type SeriesType = {
     publisher: PublisherType|null;
 };
 
+// シリーズの作成する
 export function createSeriesType(id: number | null = null, index: string = '', seriesType: string = '', publisherId: number | null = null): SeriesType {
     return {
         id,

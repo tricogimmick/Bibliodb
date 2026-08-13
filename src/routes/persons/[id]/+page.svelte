@@ -9,11 +9,11 @@
 
     const { data }: { data: PageData } = $props();
     const person = data.person;
-    const externalLinks = person.relatedLinks.filter(x => x.linkType === "LINK");
-    const image = person.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "肖像");
-    const works = person.works;
-    const books = person.prints.filter(x => x.printType === "書籍");
-    const movies = person.movies;
+    const externalLinks = person.relatedLinks?.filter(x => x.linkType === "LINK") ?? [];
+    const image = person.relatedLinks?.find(x => x.linkType === "IMG" && x.alt === "肖像") ?? null;
+    const works = data.works;
+    const books = data.prints.filter(x => x.printType === "書籍");
+    const movies = data.movies;
 
     const descHtml = person.description != null ? marked.parse(person.description): "";
  

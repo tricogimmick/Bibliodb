@@ -1,4 +1,4 @@
-export type RelatedLinksType = {
+export type RelatedLinkType = {
     id: number | null;
     relatedType: string;
     relatedId: number | null;

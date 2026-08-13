@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { RelatedLinksType } from "../types/relatedLinks";
+    import type { RelatedLinkType } from "../types/relatedLink";
 
     type PropsType = {
         relatedType: string;
         relatedId: number | null;
-        relatedLinks: RelatedLinksType[];
-        callback: (links: RelatedLinksType[]) => void
+        relatedLinks: RelatedLinkType[];
+        callback: (links: RelatedLinkType[]) => void
     }
     type ItemType = {
         orderNo: number;
@@ -17,27 +17,6 @@
 
     let { relatedType, relatedId, relatedLinks, callback } : PropsType = $props();
 
-    if (relatedLinks.length === 0) {
-        relatedLinks.push({
-            id: null,
-            relatedType: relatedType,
-            relatedId: relatedId,
-            linkType: relatedType === "PRINT" ? "IMG" : "LINK",
-            url: "",
-            alt: "",
-            description: ""
-        });
-    }
-
-    let _items: ItemType[] = relatedLinks.map((x, i) => ({
-        orderNo: i + 1,
-        linkType: x.linkType,
-        url: x.url,
-        alt: x.alt,
-        description: x.description
-    }));
-    let items = $state(_items);
-
     const newRelatedLink: (orderNo: number) => ItemType = (orderNo: number) => ({
         orderNo,
         linkType: "IMG",
@@ -46,8 +25,20 @@
         description: ""
     });
 
+    let _items: ItemType[] = relatedLinks.map((x, i) => ({
+        orderNo: i + 1,
+        linkType: x.linkType,
+        url: x.url,
+        alt: x.alt,
+        description: x.description
+    }));
+    if (_items.length == 0) {
+        _items.push(newRelatedLink(1));
+    }
+    let items = $state(_items);
+
     const callCallback = () => {
-        const t: RelatedLinksType[] = items.map(x => ({
+        const t: RelatedLinkType[] = items.map<RelatedLinkType>(x => ({
             id: null,
             relatedType,
             relatedId,
@@ -132,8 +123,8 @@
         </select>
         <input name="url" type="url" bind:value={item.url} onchange={callCallback}/><br>
         <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} list="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C"/>
-        <button onclick={onClickAddButton}>追加</button>               
-        <button onclick={onClickDeleteButton}>削除</button>               
+        <button onclick={onClickAddButton}>ADD</button>               
+        <button onclick={onClickDeleteButton}>DEL</button>               
     </div>
 </div>
 {/each}

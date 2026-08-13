@@ -14,3 +14,10 @@ export type WorkType = {
     finishedReading: string;
     status: string;
 };
+
+export type WorkListViewItemType = {
+    id: number;
+    title: string;
+    publicationYear: number;
+    contentType: string;    
+}

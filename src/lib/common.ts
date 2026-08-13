@@ -6,7 +6,7 @@ import type { WorkType } from '../types/work';
 import type { PrintType } from '../types/print';
 import type { ContentType } from '../types/content';
 import type { RelatedPeronsType } from '../types/relatedPersons';
-import type { RelatedLinksType } from '../types/relatedLinks';
+import type { RelatedLinksType } from '../types/relatedLink';
 import type { RelatedSeriesType } from '../types/relatedSeries';
 import type { RelatedWorksType } from '../types/relatedWorks';
 import type { BookListType } from '../types/bookList';
