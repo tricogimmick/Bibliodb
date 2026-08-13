@@ -9,7 +9,7 @@
     type PropsType = {
         series: SeriesType;
         publishers: PublisherType[];
-        callback: ((result: ResultType<SeriesType>) => void) | null;
+        callback: ((data: SeriesType) => void | Promise<void>) | null;
     };
 
     let { series, publishers, callback } : PropsType = $props();
@@ -43,23 +43,17 @@
             }
             publisher = createPublisherType(null, publisherName);
         }
-        try {
-            const postData: SeriesType = {
-                id: series.id,
-                index: index,
-                title,
-                originalTitle,
-                seriesType,
-                publisherId: publisher?.id ?? null,
-                description,
-                bookReviewTarget: 0,
-                publisher
-            };
-            const result = await callApi('/api/series', series.id != null ? "PUT" : "POST", postData);
-            callback?.(result);
-        } catch (e: any) {
-            callback?.({ ok: false, data: (e as Error).message });
-        }
+        callback?.({
+            id: series.id,
+            index: index,
+            title,
+            originalTitle,
+            seriesType,
+            publisherId: publisher?.id ?? null,
+            description,
+            bookReviewTarget: 0,
+            publisher
+        });
     }
 </script>
 

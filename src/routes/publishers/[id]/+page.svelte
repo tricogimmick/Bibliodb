@@ -11,11 +11,20 @@
 	const publisher: PublisherType = data.publisher;
 
 	const onSubmit = async (data: PublisherType) => {
-		const result = await callApi('/api/publishers', 'PUT', data);
-		if (result.ok) {
-			goto('/publishers');
-		} else {
-			alert(`Error! (${result.data})`);
+		try {
+			const result = await callApi('/api/publishers', 'PUT', data);
+			if (result.ok) {
+				goto('/publishers');
+			} else {
+				alert(`Error! (${result.data})`);
+			}
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				alert(`Error: ${e.message}`);
+			} else {
+				alert('Error: Unknown');
+				console.log(e);
+			}
 		}
 	};
 </script>

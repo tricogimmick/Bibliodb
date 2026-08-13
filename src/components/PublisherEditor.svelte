@@ -3,7 +3,7 @@
 
 	type PropsType = {
 		publisher: PublisherType;
-		callback: (data: PublisherType) => Promise<void> | void | null;
+		callback: ((data: PublisherType) => Promise<void> | void) | null;
 	};
 
 	let { publisher, callback }: PropsType = $props();

@@ -73,7 +73,7 @@
     </div>
 {/if}
 <div class="footer">
-    <a href="/series">Back to Series</a>
+    <a href="/series?st={series.seriesType}">Back to Series</a>
 </div>
 
 <style>

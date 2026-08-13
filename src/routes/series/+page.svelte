@@ -1,13 +1,14 @@
 <script lang="ts">
     import type { PageData } from './$types';
-
+    import { page } from '$app/stores';    
     import { goto } from "$app/navigation";
 
     let { data }: { data: PageData } = $props();
     const allSeries = Array.isArray(data.series) ? data.series : [];
-    let series = $state(allSeries.filter(x => x.seriesType === "叢書"))
+    const queryParam = $page.url.searchParams.get('st') ?? '叢書';
+    let series = $state(allSeries.filter(x => x.seriesType === queryParam));
     let searchKey = $state("");
-    let seriesType = $state("叢書")
+    let seriesType = $state(queryParam);
 
     const onClickAppendSeries = (e: Event) => goto("/series/append");
 
@@ -24,7 +25,7 @@
 
 <h2>Series</h2>
 <div class="button-container">
-    <button onclick={onClickAppendSeries}>追　加</button>
+    <button onclick={onClickAppendSeries}>ADD</button>
 </div>
 <div class="condition-container">
     <div class="input-field">

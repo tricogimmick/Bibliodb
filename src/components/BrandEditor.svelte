@@ -4,7 +4,7 @@
  
     type PropsType =  {
         brand: BrandType;
-        callback: (data: BrandType) => Promise<void> | void | null;
+        callback: ((data: BrandType) => Promise<void> | void) | null;
     }
 
     let { brand, callback }: PropsType = $props();
