@@ -1,18 +1,28 @@
 <script lang="ts">
     import type { PageData } from './$types';
     import type { PersonType  } from '../../../../types/person';
-    import type { ResultType } from '../../../../types/result';
 
     import { goto } from "$app/navigation";
     import PersonEditor from '../../../../components/PersonEditor.svelte';
+    import { callApi } from '../../../../lib/client';
 
     const { data }: { data: PageData } = $props();
 
-    const onSubmit = (result: ResultType<PersonType>) => {
-        if (result.ok) {
-            goto(`/persons/${data.person.id}`);
-        } else {
-            alert(`Error! (${result.data})`);
+    const onSubmit = async (data: PersonType) => {
+        try {
+            const result = await callApi('/api/persons', 'PUT', data);
+            if (result.ok) {
+                goto(`/persons/${(result.data as PersonType).id}`);
+            } else {
+                alert(`Error! (${result.data})`);
+            }
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                alert(`Error: ${e.message}`);
+            } else {
+                alert('Error: Unkown');
+                console.log(e);
+            }
         }
     }
 </script>

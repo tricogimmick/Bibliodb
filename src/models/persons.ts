@@ -103,7 +103,7 @@ export async function update(db: pkg.Database, person: PersonType) {
     const [sql, params] = person.id === null
         ? ['INSERT INTO persons ([index], name, kana, born, died, description) VALUES (?, ?, ?, ?, ?, ?)', 
             [person.index, person.name, person.kana, person.born, person.died, person.description]]
-        : ['UPDATE persons SET [index] = ?, name = ?, kana = ?, born = ?, died = ?, description = ? WHERE id = ?"', 
+        : ['UPDATE persons SET [index] = ?, name = ?, kana = ?, born = ?, died = ?, description = ? WHERE id = ?', 
             [person.index, person.name, person.kana, person.born, person.died, person.description, person.id]];
     return new Promise<PersonType>((resolve, reject) => {
         db.run(sql, params, async function (err) {
@@ -115,7 +115,7 @@ export async function update(db: pkg.Database, person: PersonType) {
                 } else {
                     await RelatedLinksModel.deleteAll(db, 'PERSON', person.id);
                 }
-                if (person.relatedLinks != null && person.relatedLinks?.length > 0) {
+                if (person.relatedLinks != null && person.relatedLinks.length > 0) {
                     for (const relatedLink of person.relatedLinks) {
                         await RelatedLinksModel.add(db, 'PERSON', person.id, relatedLink);
                     }
