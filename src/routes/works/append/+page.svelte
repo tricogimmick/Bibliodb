@@ -2,7 +2,7 @@
     import type { PageData } from './$types';
     import type { PersonType } from '../../../types/person';
     import type { WorkType } from '../../../types/work';
-    import type { RelatedPeronsType } from '../../../types/relatedPersons';
+    import type { RelatedPeronType } from '../../../types/relatedPerson';
     import type { RelatedLinksType } from '../../../types/relatedLinks';
     import type { RelatedSeriesType } from '../../../types/relatedSeries';
     import type { ResultType } from '../../../types/result';
@@ -29,7 +29,7 @@
         status: ""
     };
 
-    const rp: RelatedPeronsType = {
+    const rp: RelatedPeronType = {
         relatedType: "WORK",
         relatedId: null,
         orderNo: 1,
@@ -38,7 +38,7 @@
         description: ""
     };
 
-    const relatedPersons: RelatedPeronsType[] = [rp];
+    const relatedPersons: RelatedPeronType[] = [rp];
     const relatedLinks: RelatedLinksType[] = [];
     const relatedSeries: RelatedSeriesType[] = [];
     const tags: string[] = [];

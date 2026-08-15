@@ -5,7 +5,7 @@ import type { PersonType } from '../types/person';
 import type { WorkType } from '../types/work';
 import type { PrintType } from '../types/print';
 import type { ContentType } from '../types/content';
-import type { RelatedPeronsType } from '../types/relatedPersons';
+import type { RelatedPeronType } from '../types/relatedPerson';
 import type { RelatedLinksType } from '../types/relatedLink';
 import type { RelatedSeriesType } from '../types/relatedSeries';
 import type { RelatedWorksType } from '../types/relatedWorks';
@@ -205,12 +205,12 @@ export const getBookList = (db: pkg.Database, id: number) => new Promise<BookLis
 });
 
 // 関連人物を全て取得
-export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number|null ) => new Promise<RelatedPeronsType[]|Error>((ok, ng) => {
+export const getAllRelatedPersons = (db: pkg.Database, relatedType: string, relatedId: number|null ) => new Promise<RelatedPeronType[]|Error>((ok, ng) => {
     const sql = relatedId != null ? 
                 "SELECT * FROM related_persons WHERE relatedType = ? AND relatedId = ?" : 
                 "SELECT * FROM related_persons WHERE relatedType = ?";
     const params = relatedId != null ? [relatedType, relatedId] : [relatedType]
-    db.all<RelatedPeronsType>(sql, params, (err, rows) => {
+    db.all<RelatedPeronType>(sql, params, (err, rows) => {
         if (err) {
             ng(err);
         } else {

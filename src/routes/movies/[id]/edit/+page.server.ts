@@ -1,6 +1,6 @@
 import type { PageServerLoad } from '../$types';
 import type { MovieType } from '../../../../types/movie';
-import type { RelatedPeronsType } from '../../../../types/relatedPersons';
+import type { RelatedPeronType } from '../../../../types/relatedPersons';
 import type { RelatedLinksType } from '../../../../types/relatedLinks';
 import type { SeriesType } from '../../../../types/series';
 import type { PersonType } from '../../../../types/person';
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ params }) => {
     try {
 		return {
       movie: await getMovie(db, Number(params.id)) as MovieType,
-      relatedPersons: await getAllRelatedPersons(db, "MOVIE", Number(params.id)) as RelatedPeronsType[],
+      relatedPersons: await getAllRelatedPersons(db, "MOVIE", Number(params.id)) as RelatedPeronType[],
       relatedLinks: await getAllRelatedLinks(db, "MOVIE", Number(params.id)) as RelatedLinksType[],
       series: await getAllSeries(db) as SeriesType[],
       persons: await getAllPersons(db) as PersonType[]

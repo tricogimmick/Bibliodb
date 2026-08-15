@@ -2,7 +2,7 @@
     import type { PageData } from './$types';
     import type { PrintType } from '../../../types/print';
     import type { ContentType } from '../../../types/content';
-    import type { RelatedPeronsType } from '../../../types/relatedPersons';
+    import type { RelatedPeronType } from '../../../types/relatedPerson';
     import type { RelatedLinksType } from '../../../types/relatedLinks';
     import type RelatedWorks from '../../../components/RelatedWorksEditor.svelte';
     import type { ResultType } from '../../../types/result';
@@ -32,7 +32,7 @@
     };
 
     const contents: ContentType[] = [];
-    const relatedPersons: RelatedPeronsType[] = [];
+    const relatedPersons: RelatedPeronType[] = [];
     const relatedLinks: RelatedLinksType[] = [];
     const relatedWorks: RelatedWorksType[] = [];
     

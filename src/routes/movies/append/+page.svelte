@@ -2,7 +2,7 @@
     import type { PageData } from './$types';
 	import type { MovieType } from '../../../types/movie';
     import type { ContentType } from '../../../types/content';
-    import type { RelatedPeronsType } from '../../../types/relatedPersons';
+    import type { RelatedPeronType } from '../../../types/relatedPerson';
     import type { RelatedLinksType } from '../../../types/relatedLinks';
     import type { ResultType } from '../../../types/result';
 
@@ -24,7 +24,7 @@
         viewingMethod: ""
     };
 
-    const relatedPersons: RelatedPeronsType[] = [];
+    const relatedPersons: RelatedPeronType[] = [];
     const relatedLinks: RelatedLinksType[] = [];
     
     const onSubmit = (result: ResultType<MovieType>) => {

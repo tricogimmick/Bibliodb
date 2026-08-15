@@ -1,5 +1,5 @@
 import type { PageServerLoad } from '../$types';
-import type { RelatedPeronsType } from '../../../types/relatedPersons';
+import type { RelatedPeronType } from '../../../types/relatedPersons';
 import type { SeriesType } from '../../../types/series';
 import type { PersonType } from '../../../types/person';
 

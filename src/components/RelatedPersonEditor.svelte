@@ -1,15 +1,15 @@
 <script lang="ts">
-    import type { RelatedPeronsType } from "../types/relatedPersons";
+    import type { RelatedPeronType } from "../types/relatedPerson";
     import type { PersonType } from "../types/person";
     import type { ResultType } from "../types/result";
 
     type PropsType = {
         relatedType: string;
         relatedId: number | null;
-        relatedPersons: RelatedPeronsType[];
+        relatedPersons: RelatedPeronType[];
         persons: PersonType[];
         label: string;
-        callback: (links: RelatedPeronsType[]) => void;
+        callback: (links: RelatedPeronType[]) => void;
     }
     type ItemType = {
         orderNo: number;
@@ -49,7 +49,7 @@
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: RelatedPeronsType[] = items.filter(x => x.personName != null && x.personName != "").map(x => ({
+        const t: RelatedPeronType[] = items.filter(x => x.personName != null && x.personName != "").map(x => ({
             relatedType,
             relatedId,
             orderNo: x.orderNo,

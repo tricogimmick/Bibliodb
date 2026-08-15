@@ -1,7 +1,7 @@
 import type { PageServerLoad } from '../$types';
 import type { PrintType } from '../../../../types/print';
 import type { ContentType } from '../../../../types/content';
-import type { RelatedPeronsType } from '../../../../types/relatedPersons';
+import type { RelatedPeronType } from '../../../../types/relatedPersons';
 import type { RelatedLinksType } from '../../../../types/relatedLinks';
 import type { PublisherType } from '../../../../types/publisher';
 import type { BrandType } from '../../../../types/brand';
@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		return {
       print: await getPrint(db, Number(params.id)) as PrintType,
       contents: await getContents(db, Number(params.id)) as ContentType[],
-      relatedPersons: await getAllRelatedPersons(db, "PRINT", Number(params.id)) as RelatedPeronsType[],
+      relatedPersons: await getAllRelatedPersons(db, "PRINT", Number(params.id)) as RelatedPeronType[],
       relatedLinks: await getAllRelatedLinks(db, "PRINT", Number(params.id)) as RelatedLinksType[],
       relatedWorks: await getAllRelatedWorks(db, "PRINT", "COVER", Number(params.id)) as RelatedWorksType[],
       publishers: await getAllPublishers(db) as PublisherType[],
@@ -33,7 +33,7 @@ export const load: PageServerLoad = async ({ params }) => {
       series: await getAllSeries(db) as SeriesType[],
       persons: await getAllPersons(db) as PersonType[],
       works: await getAllWorks(db) as WorkType[],
-      worksRelatedPersons: await getAllRelatedPersons(db, "WORK", null) as RelatedPeronsType[]  
+      worksRelatedPersons: await getAllRelatedPersons(db, "WORK", null) as RelatedPeronType[]  
 		};
     } catch (e) {
 		error(500, { message: 'Database Error' });

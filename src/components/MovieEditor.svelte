@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { MovieType } from "../types/movie";
     import type { SeriesType } from "../types/series";
-    import type { RelatedPeronsType } from "../types/relatedPersons";
+    import type { RelatedPeronType } from "../types/relatedPerson";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { PostDataType } from "../routes/api/movies/+server";
     import type { ResultType } from "../types/result";
@@ -12,7 +12,7 @@
 
     type PropsType = {
         movie: MovieType;
-        relatedPersons: RelatedPeronsType[];
+        relatedPersons: RelatedPeronType[];
         relatedLinks: RelatedLinksType[];
         persons: PersonType[];
         series: SeriesType[];
@@ -102,7 +102,7 @@
     }
 
     // 関連人物リンクが変更された
-    const onChangeRelationPersons = async (rp: RelatedPeronsType[]) => {
+    const onChangeRelationPersons = async (rp: RelatedPeronType[]) => {
         relatedPersons = rp;
     }
 

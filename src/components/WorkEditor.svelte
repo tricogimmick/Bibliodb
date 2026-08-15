@@ -2,7 +2,7 @@
     import type { WorkType } from "../types/work";
     import type { PersonType } from "../types/person";
 	import type { SeriesType } from "../types/series";
-    import type { RelatedPeronsType } from "../types/relatedPersons";
+    import type { RelatedPeronType } from "../types/relatedPerson";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { RelatedSeriesType } from "../types/relatedSeries";
     import type { ResultType } from "../types/result";
@@ -15,7 +15,7 @@
 
     type PropsType = {
         work: WorkType,
-        relatedPersons: RelatedPeronsType[],
+        relatedPersons: RelatedPeronType[],
         relatedLinks: RelatedLinksType[],
         relatedSeries: RelatedSeriesType[],
         tags: string[],
@@ -121,7 +121,7 @@
     }
 
     // 関連人物が変更された
-    const onChangeRelationPersons = (rp: RelatedPeronsType[]) => {
+    const onChangeRelationPersons = (rp: RelatedPeronType[]) => {
         relatedPersons = rp;
     }
 

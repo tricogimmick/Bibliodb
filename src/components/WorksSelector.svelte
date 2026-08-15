@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PersonType } from "../types/person";
     import type { WorkType } from "../types/work";
-    import type { RelatedPeronsType } from "../types/relatedPersons";
+    import type { RelatedPeronType } from "../types/relatedPerson";
     import type { WorkSelectorParam } from "$lib/workSelectorLib";
     import { onMount } from "svelte";
 
@@ -9,7 +9,7 @@
         orderNo: number;
         persons: PersonType[];
         works: WorkType[];
-        relatedPersons: RelatedPeronsType[];
+        relatedPersons: RelatedPeronType[];
         callback: (orderNo: number, work: WorkType) => void;
     }
     let { orderNo, persons, works, relatedPersons, callback } : PropsType = $props();
