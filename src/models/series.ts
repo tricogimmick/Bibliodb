@@ -1,5 +1,5 @@
 import pkg from 'sqlite3';
-import type { SeriesType } from '../types/series';
+import type { SeriesType, RelatedSeriesType } from '../types/series';
 import * as PublisherModel from './publishers';
 
 // シリーズを取得する
@@ -57,18 +57,21 @@ export async function update(db: pkg.Database, series: SeriesType) {
     });
 }
 
-// シリーズを削除する
-export function remove(db: pkg.Database, series: SeriesType) {
-    if (series.id === null) {
-        return Promise.reject(new Error('Series ID is null'));
-    }
-    return new Promise<void>((resolve, reject) => {
-        db.run('DELETE FROM series WHERE id = ?', [series.id], (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
+// 関連するシリーズの取得
+export function getRelatedSeries(db: pkg.Database, relatedType: string, relatedId: number) {
+    return new Promise<RelatedSeriesType[]>((resolve, reject) => {
+        db.all<RelatedSeriesType>(
+            'SELECT r.seriesId, s.title as seriesTitle, r.description, r.isMedia ' +
+            'FROM related_series as r ' +
+            'JOIN series as s ON s.id = r.seriesId ' +
+            'WHERE r.relatedType = ? AND r.relatedId = ?',
+            [relatedType, relatedId],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
     });
 }

@@ -1,4 +1,4 @@
-import type { PersonType } from '../types/person';
+import type { PersonType, RelatedPersonType } from '../types/person';
 import type { WorkListViewItemType } from '../types/work'
 import type { PrintListViewItemType } from '../types/print';
 import type { MovieListViewItemType } from '../types/movie';
@@ -22,7 +22,7 @@ export function get(db: pkg.Database, id: number) {
     });
 }
 
-// 全てのシリーズを取得する
+// 全ての人物を取得する
 export function getAll(db: pkg.Database) {
     return new Promise<PersonType[]>((resolve, reject) => {
         db.all<PersonType>('SELECT * FROM persons ORDER BY [index], id', (err, rows) => {
@@ -34,6 +34,30 @@ export function getAll(db: pkg.Database) {
         });
     });
 }
+
+// 関連する人物を取得する
+export function getRelatedPrsons(db: pkg.Database, relatedType: string, relatedId: number) {
+    return new Promise<RelatedPersonType[]>((resolve, reject) => {
+        db.all<RelatedPersonType>(
+            'SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description ' +
+            'FROM related_persons as r ' +
+            'JOIN persons as p ON p.id = r.personId ' +
+            'WHERE r.relatedType = ? AND r.relatedId = ?' +
+            'ORDER by r.orderNo',
+            [relatedType, relatedId],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+    });
+}
+
+
+
+
 
 // 関連作品を取得する
 export async function getRelatedWorks(db: pkg.Database, id: number) {
@@ -101,9 +125,9 @@ export async function getRelatedMovies(db: pkg.Database, id: number) {
 // 人物を更新する
 export async function update(db: pkg.Database, person: PersonType) {
     const [sql, params] = person.id === null
-        ? ['INSERT INTO persons ([index], name, kana, born, died, description) VALUES (?, ?, ?, ?, ?, ?)', 
+        ? ['INSERT INTO persons ([index], name, kana, born, died, description) VALUES (?, ?, ?, ?, ?, ?)',
             [person.index, person.name, person.kana, person.born, person.died, person.description]]
-        : ['UPDATE persons SET [index] = ?, name = ?, kana = ?, born = ?, died = ?, description = ? WHERE id = ?', 
+        : ['UPDATE persons SET [index] = ?, name = ?, kana = ?, born = ?, died = ?, description = ? WHERE id = ?',
             [person.index, person.name, person.kana, person.born, person.died, person.description, person.id]];
     return new Promise<PersonType>((resolve, reject) => {
         db.run(sql, params, async function (err) {

@@ -1,7 +1,6 @@
 <script lang="ts">
-    import type { RelatedSeriesType } from "../types/relatedSeries";
+    import type { RelatedSeriesType } from "../types/series";
     import type { SeriesType } from "../types/series";
-    import type { ResultType } from "../types/result";
 
     type PropsType = {
         label: string;
@@ -44,6 +43,7 @@
             relatedType,
             relatedId,
             seriesId: series.find(z => z.index === x.seriesIndex)?.id ?? null,
+            seriesTitle: series.find(z => z.index === x.seriesIndex)?.title ?? null,
             isMedia: 0,
             description: x.description            
         }));

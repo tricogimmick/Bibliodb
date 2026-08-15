@@ -1,20 +1,20 @@
 import type { PageServerLoad } from './$types';
-import type { PersonType } from '../../../types/person';
-import type { SeriesType } from '../../../types/series';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getAllPersons, getAllSeries } from '$lib/common';
 import pkg from 'sqlite3';
-const {Database} = pkg;
+import { createWork } from '../../../types/work';
+import * as PersonsModel from '../../../models/persons';
+import * as SeriesModel from '../../../models/series';
 
 export const load: PageServerLoad = async ({ params }) => {
   const dbPath = env["BIBLIODB_PATH"] ?? "";
-  const db = new Database(dbPath);    
+  const db = new pkg.Database(dbPath);    
   try {
     return {
-      persons: await getAllPersons(db) as PersonType[],
-      series: await getAllSeries(db) as SeriesType[]
+      work: createWork(),
+      persons: await PersonsModel.getAll(db),
+      series: await SeriesModel.getAll(db)
     };
   } catch (e) {
     console.log(e);

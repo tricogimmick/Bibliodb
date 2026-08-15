@@ -1,15 +1,15 @@
 <script lang="ts">
-    import type { RelatedPeronType } from "../types/relatedPerson";
+    import type { RelatedPersonType } from "../types/person";
     import type { PersonType } from "../types/person";
     import type { ResultType } from "../types/result";
 
     type PropsType = {
         relatedType: string;
         relatedId: number | null;
-        relatedPersons: RelatedPeronType[];
+        relatedPersons: RelatedPersonType[];
         persons: PersonType[];
         label: string;
-        callback: (links: RelatedPeronType[]) => void;
+        callback: (links: RelatedPersonType[]) => void;
     }
     type ItemType = {
         orderNo: number;
@@ -22,12 +22,11 @@
 
     if (relatedPersons.length === 0) {
         relatedPersons.push({
-            relatedType: relatedType,
-            relatedId: null,
             orderNo: 1,
             personId: null,
+            personName: '',
             role: "作者",
-            description: ""
+            description: ''
         });
     }
 
@@ -42,18 +41,18 @@
     // 新たな関連人物を生成
     const newRelatedPerson: (orderNo: number, role: string) => ItemType = (orderNo: number, role: string) => ({
         orderNo,
-        role: role ?? "作者",
-        personName: "",
-        description: ""
+        role: role ?? '作者',
+        personId: null,
+        personName: '',
+        description: ''
     });
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: RelatedPeronType[] = items.filter(x => x.personName != null && x.personName != "").map(x => ({
-            relatedType,
-            relatedId,
+        const t: RelatedPersonType[] = items.filter(x => x.personName != null && x.personName != "").map(x => ({
             orderNo: x.orderNo,
             personId: persons.find(z => z.index === x.personName)?.id ?? null,
+            personName: persons.find(z => z.index === x.personName)?.name ?? '',
             role: x.role,
             description: x.description            
         }));

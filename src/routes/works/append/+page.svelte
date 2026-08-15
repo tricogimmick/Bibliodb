@@ -12,38 +12,7 @@
 
     let { data }: { data: PageData } = $props();
 
-    const work: WorkType = {
-        id: null, 
-        index: "",
-        title: "",
-        variantTitles: "",
-        originalTitle: "",
-        contentType: "小説",
-        synopsis: "",
-        description: "",
-        note: "",
-        publicationYear: null,
-        publicationEndYear: null,
-        seqNo: null,
-        finishedReading: "",
-        status: ""
-    };
-
-    const rp: RelatedPeronType = {
-        relatedType: "WORK",
-        relatedId: null,
-        orderNo: 1,
-        personId: 964,
-        role: "作者",
-        description: ""
-    };
-
-    const relatedPersons: RelatedPeronType[] = [rp];
-    const relatedLinks: RelatedLinksType[] = [];
-    const relatedSeries: RelatedSeriesType[] = [];
-    const tags: string[] = [];
-
-    const onSubmit = (result: ResultType<WorkType>) => {
+    const onSubmit = (data: WorkType) => {
         if (result.ok) {
             const work = result.data as WorkType;
             goto(`/works/${work.id}`);
@@ -54,7 +23,7 @@
 </script>
 
 <h2>Work - Append</h2>
-<WorkEditor {work} {relatedPersons} {relatedLinks} {relatedSeries} {tags} {...data} callback={onSubmit}></WorkEditor>
+<WorkEditor {...data} callback={onSubmit}></WorkEditor>
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>

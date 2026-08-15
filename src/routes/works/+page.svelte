@@ -53,7 +53,7 @@
 <div class="works-container">
     <div>Total: {works.length.toLocaleString()}件</div>
     {#each works as w (w.id)}
-        <span><a href="/works/{w.id}">{w.index}（{w.relatedPersons.map(x => x.name).join(",")}）</a></span>
+        <span><a href="/works/{w.id}">{w.index}</a></span>
     {/each}
 </div>
 <div class="footer">

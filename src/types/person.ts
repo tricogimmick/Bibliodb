@@ -14,7 +14,7 @@ export type PersonType = {
 
 export type RelatedPersonType = {
     orderNo: number;
-    personId: number;
+    personId: number | null;
     personName: string;
     role: string;
     description: string;

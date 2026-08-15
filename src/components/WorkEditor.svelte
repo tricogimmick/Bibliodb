@@ -2,9 +2,9 @@
     import type { WorkType } from "../types/work";
     import type { PersonType } from "../types/person";
 	import type { SeriesType } from "../types/series";
-    import type { RelatedPeronType } from "../types/relatedPerson";
-    import type { RelatedLinksType } from "../types/relatedLinks";
-    import type { RelatedSeriesType } from "../types/relatedSeries";
+    import type { RelatedPersonType } from "../types/person";
+    import type { RelatedLinkType } from "../types/relatedLink";
+    import type { RelatedSeriesType } from "../types/series";
     import type { ResultType } from "../types/result";
     import type { PostDataType } from "../routes/api/works/+server";
 
@@ -15,23 +15,21 @@
 
     type PropsType = {
         work: WorkType,
-        relatedPersons: RelatedPeronType[],
-        relatedLinks: RelatedLinksType[],
-        relatedSeries: RelatedSeriesType[],
-        tags: string[],
         persons: PersonType[],
         series: SeriesType[],
-        callback: ((result: ResultType<WorkType>) => void) | null
+        callback: ((result: WorkType) => void | Promise<void>) | null
     };
 
-    let { work, relatedPersons, relatedLinks, relatedSeries, tags, persons, series, callback } : PropsType = $props();
+    let { work, persons, series, callback } : PropsType = $props();
 
-    let publishedMedia = $state(relatedSeries.filter(x => x.isMedia == 1));
-    let seriesTitles = $state(relatedSeries.filter(x => x.isMedia != 1));
+    let relatedPersons = $state(work.relatedPersons != null ? work.relatedPersons : []);
+    let publishedMedia = $state(work.relatedSeries != null ? work.relatedSeries.filter(x => x.isMedia == 1) : []);
+    let seriesTitles = $state(work.relatedSeries != null ? work.relatedSeries.filter(x => x.isMedia != 1) : []);
+    let relatedLinks = $state(work.relatedLinks != null ? work.relatedLinks : []);
+    let tags = $state(work.tags != null ? work.tags : []);
 
     let seriesOfMedia = $state(series.filter(x => x.seriesType != "叢書" && x.seriesType != "作品"));
     let seriesOfWorks = $state(series.filter(x => x.seriesType == "作品"));
-
 
     let index = $state(work.index);
     let title = $state(work.title);
@@ -46,73 +44,55 @@
     let seqNo = $state(work.seqNo);
     let finishedReading = $state(work.finishedReading);
     let status = $state(work.status);
-    let buttonCaption = $derived(work.id == null || work.id == 0 ? "登　録" : "更　新")
+    let buttonCaption = $derived(work.id == null || work.id == 0 ? "ADD" : "UPDATE")
 
-
-     // 更新用APIの呼出
-     const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
-        const response = await fetch('/api/works', {
-            method: method,
-            body: JSON.stringify(postData),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json() as ResultType<WorkType>;
-        } else {
-            throw new Error(`${response.status} (${response.statusText})`)
-        }
-    }
     // FOMRがサブミットされた
     const onSubmit = async (e: Event)  => {
         console.log("onSubmit()");
         e.stopImmediatePropagation();
         e.preventDefault();
 
-        try {
-            const postData: PostDataType = {
-                id: work.id,
-                index: index,
-                title,
-                variantTitles,
-                originalTitle,
-                contentType,
-                synopsis,
-                description,
-                note,
-                publicationYear,
-                publicationEndYear,
-                seqNo,
-                finishedReading,
-                status,
-                relatedPersons: relatedPersons.map((x, i) => ({
-                    orderNo: i + 1,
-                    personId: x.personId as number,
-                    role: x.role,
-                    description: x.description
-                })),
-                relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
-                    linkType: x.linkType,
-                    url: x.url,
-                    alt: x.alt,
-                    description: x.description
-                })),
-                publishedMedia: publishedMedia.filter(x => x.seriesId != null).map(x => ({
-                    seriesId: x.seriesId as number,
-                    description: x.description
-                })),
-                seriesTitles: seriesTitles.filter(x => x.seriesId != null).map(x => ({
-                    seriesId: x.seriesId as number,
-                    description: x.description
-                })),
-                tags
-            };
-            const result = await callApi(postData, work.id != null ? "PUT" : "POST");
-            callback?.(result);
-        } catch (e: any) {
-            callback?.({ ok: false, data: (e as Error).message });
-        }
+        const relatedSeris = [...publishedMedia, ...seriesTitles];
+        const data: WorkType = {
+            id: work.id,
+            index: index,
+            title,
+            variantTitles,
+            originalTitle,
+            contentType,
+            synopsis,
+            description,
+            note,
+            publicationYear,
+            publicationEndYear,
+            seqNo,
+            finishedReading,
+            status,
+            relatedPersons: relatedPersons.map((x, i) => ({
+                orderNo: i + 1,
+                personId: x.personId as number,
+                personName: x.personName,
+                role: x.role,
+                description: x.description
+            })),
+            relatedSeries: relatedSeris.map(x => ({
+                seriesId: x.seriesId,
+                seriesTitle: x.seriesTitle,
+                description: x.description,
+                isMedia: x.isMedia
+            })),
+            relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
+                id: null,
+                relatedType: x.relatedType,
+                relatedId: x.relatedId,
+                linkType: x.linkType,
+                url: x.url,
+                alt: x.alt,
+                description: x.description                    
+            })),
+            tags
+        };
+        callback?.(data);
     };
 
     // INDEXが変更された
@@ -121,12 +101,12 @@
     }
 
     // 関連人物が変更された
-    const onChangeRelationPersons = (rp: RelatedPeronType[]) => {
+    const onChangeRelationPersons = (rp: RelatedPersonType[]) => {
         relatedPersons = rp;
     }
 
     // 関連リンクが変更された
-    const onChangeRelationLinks = (rl: RelatedLinksType[]) => {
+    const onChangeRelationLinks = (rl: RelatedLinkType[]) => {
         relatedLinks = rl;
     }
 
