@@ -8,7 +8,7 @@ import type { ContentType } from '../types/content';
 import type { RelatedPeronType } from '../types/relatedPerson';
 import type { RelatedLinksType } from '../types/relatedLink';
 import type { RelatedSeriesType } from '../types/relatedSeries';
-import type { RelatedWorksType } from '../types/relatedWorks';
+import type { RelatedWorksType } from '../types/relatedWork';
 import type { BookListType } from '../types/bookList';
 import type { MovieType } from '../types/movie';
 

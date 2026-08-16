@@ -15,11 +15,9 @@ export const load: PageServerLoad = async ({ params }) => {
     const db = new Database(dbPath);
 	try {
 		const seriesId = Number(params.id);
-		const series: SeriesType = await SeriesModel.get(db, seriesId);
-        const relatedPrints: PrintViewType[] = await PrintModel.getRelatedPrintsBySeriesId(db, seriesId);
         return {
-            series,
-            relatedPrints
+            series: await SeriesModel.get(db, seriesId),
+            relatedPrints: await PrintModel.getRelatedPrintsBySeriesId(db, seriesId)
 		};
 	} catch (e) {
 		console.log(e);

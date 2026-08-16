@@ -7,19 +7,22 @@
 
     const { data }: { data: PageData } = $props();
     const workData = data.work;
+    const relatedPrints = data.relatedPrints;
 
-    const externalLinks = workData.relatedLinks.filter(x => x.linkType === "LINK");
-    const images = workData.relatedLinks.filter(x => x.linkType === "IMG");
+    const externalLinks = workData.relatedLinks != null ? workData.relatedLinks.filter(x => x.linkType === "LINK") : [];
+    const images = workData.relatedLinks != null ? workData.relatedLinks.filter(x => x.linkType === "IMG") : [];
 
 
     const relatedPersons = new Map<string, string>();
-    workData.relatedPersons.forEach(x => {
-        if (relatedPersons.has(x.role)) {
-            relatedPersons.set(x.role, `${relatedPersons.get(x.role)} / <a href="/persons/${x.personId}" >${x.personName}</a>`);
-        } else {
-            relatedPersons.set(x.role, `<a href="/persons/${x.personId}" >${x.personName}</a>`);
-        }
-    }); 
+    if (workData.relatedPersons != null && workData.relatedPersons.length > 0) {
+        workData.relatedPersons.forEach(x => {
+            if (relatedPersons.has(x.role)) {
+                relatedPersons.set(x.role, `${relatedPersons.get(x.role)} / <a href="/persons/${x.personId}" >${x.personName}</a>`);
+            } else {
+                relatedPersons.set(x.role, `<a href="/persons/${x.personId}" >${x.personName}</a>`);
+            }
+        }); 
+    }
 
     const synopsisHtml = workData.synopsis != null ? marked.parse(workData.synopsis): "";
     const descHtml = workData.description != null ? marked.parse(workData.description): "";
@@ -38,8 +41,8 @@
 
 <h2>Work - Details</h2>
 <div class="button-container">
-    <button onclick={onClickModifyWork}>変更</button>
-    <button onclick={onClickAppendWork}>追　加</button>
+    <button onclick={onClickModifyWork}>EDIT</button>
+    <button onclick={onClickAppendWork}>ADD</button>
 </div>
 <div>
     <div class="input-field">
@@ -164,7 +167,7 @@
             <div class="cell">掲載順</div>
         </div>
         <div class="body">
-            {#each workData.prints as print, i (print.id) }
+            {#each relatedPrints as print, i (print.id) }
                 <div class="row">
                     <div class="cell">{i + 1}</div>
                     <div class="cell"><a href="/prints/{print.id}">{#if print.series && print.printType == "雑誌"}{print.series}&nbsp{/if}{print.title}</a></div>

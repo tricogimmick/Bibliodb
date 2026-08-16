@@ -14,14 +14,6 @@ export type SeriesType = {
     publisher: PublisherType|null;
 };
 
-// 関連シリーズの型定義
-export type RelatedSeriesType = {
-    seriesId: number;
-    seriesTitle: string;
-    description: string;
-    isMedia: number;
-};
-
 // シリーズの作成する
 export function createSeriesType(id: number | null = null, index: string = '', seriesType: string = '', publisherId: number | null = null): SeriesType {
     return {

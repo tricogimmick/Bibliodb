@@ -12,14 +12,6 @@ export type PersonType = {
     relatedLinks: RelatedLinkType[] | null;
 };
 
-export type RelatedPersonType = {
-    orderNo: number;
-    personId: number | null;
-    personName: string;
-    role: string;
-    description: string;
-}
-
 // 人物情報を作成する
 export function createPersonType() {
     return (

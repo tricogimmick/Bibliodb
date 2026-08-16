@@ -27,12 +27,15 @@ export type PrintType = {
 
 export type PrintViewType = {
     id: number;
+    series: string,
     title: string;
     publisher: string;
     brand: string;
     publicationDate: string;
-    issueNumber: number | null;
     printType: string;
+    ownedType: string;
+    issueNumber: number | null;
+    orderNumber: number | null;
 }    
 
 export type PrintListViewItemType = {
