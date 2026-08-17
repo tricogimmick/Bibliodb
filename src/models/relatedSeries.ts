@@ -27,7 +27,7 @@ export function getAll(db: pkg.Database, relatedType: string, relatedId: number)
 export async function add(db: pkg.Database, relatedType: string,  relatedId: number, relatedSeries: RelatedSeriesType) {
     return new Promise<void>(async (resolve, reject) => {
         try {
-            if (relatedSeries.relatedId == null) {
+            if (relatedSeries.seriesId == null) {
                 const series: SeriesType = {
                     id: null,
                     index: relatedSeries.seriesTitle,

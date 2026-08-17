@@ -12,7 +12,9 @@ export const POST: RequestHandler = async ({ request }) => {
     const db = new pkg.Database(dbPath);
     try {
         const result = await WorksModel.update(db, workData);
-        return json(result);
+        return json({ ok: true, data: result })
+    } catch (e: unknown) {
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
@@ -24,7 +26,9 @@ export const PUT: RequestHandler = async ({ request }) => {
     const db = new pkg.Database(dbPath);
     try {
         const result = await WorksModel.update(db, workData);
-        return json(result)
+        return json({ ok: true, data: result })
+    } catch (e: unknown) {
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
@@ -38,8 +42,8 @@ export const GET: RequestHandler = async ({ url }) => {
     try {
         const result = personId != null ? await WorksModel.getAllByPerson(db, personId) : await WorksModel.getAll(db);
         return json({ ok: true, data: result })
-    } catch (e: any) {
-        return json({ ok: false, data: e })
+    } catch (e: unknown) {
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }

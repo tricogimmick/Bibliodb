@@ -1,29 +1,21 @@
 import type { PageServerLoad } from './$types';
-import type { PersonType } from '../../../../types/person';
-import type { SeriesType } from '../../../../types/series';
-import type { WorkType } from '../../../../types/work';
-import type { RelatedPeronType } from '../../../../types/relatedPersons';
-import type { RelatedLinksType } from '../../../../types/relatedLinks';
-import type { RelatedSeriesType } from '../../../../types/relatedSeries';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import { getWork, getAllRelatedPersons, getAllRelatedLinks, getAllRelatedSeries, getAllPersons, getAllSeries, getAllRelatedTags } from '$lib/common';
 import pkg from 'sqlite3';
-const {Database} = pkg;
+import * as WorksModel from '../../../../models/works'
+import * as PersonsModel from '../../../../models/persons';
+import * as SeriesModel from '../../../../models/series';
 
 export const load: PageServerLoad = async ({ params }) => {
   const dbPath = env["BIBLIODB_PATH"] ?? "";
-  const db = new Database(dbPath);    
+  const db = new pkg.Database(dbPath);    
   try {
+    const workId = Number(params.id);
     return {
-      work: await getWork(db, Number(params.id)) as WorkType,
-      relatedPersons: await getAllRelatedPersons(db, "WORK", Number(params.id)) as RelatedPeronType[],
-      relatedLinks: await getAllRelatedLinks(db, "WORK", Number(params.id)) as RelatedLinksType[], 
-      relatedSeries: await getAllRelatedSeries(db, "WORK", Number(params.id)) as RelatedSeriesType[],
-      tags: await getAllRelatedTags(db, "WORK", Number(params.id)) as string[],
-      persons: await getAllPersons(db) as PersonType[],
-      series: await getAllSeries(db) as SeriesType[]
+      work: await WorksModel.get(db, workId),
+      persons: await PersonsModel.getAll(db),
+      series: await SeriesModel.getAll(db)
     };
   } catch (e) {
     console.log(e);

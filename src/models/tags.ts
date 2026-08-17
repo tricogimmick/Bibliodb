@@ -32,7 +32,7 @@ export function getByTag(db: pkg.Database, tag: string) {
 // 全てのタグを取得する
 export function getAll(db: pkg.Database) {
     return new Promise<TagType[]>((resolve, reject) => {
-        db.all<TagType>('SELECT * FROM たｇｓ ORDER BY name, id', (err, rows) => {
+        db.all<TagType>('SELECT * FROM tags ORDER BY name, id', (err, rows) => {
             if (err) {
                 reject(err);
             } else {

@@ -1,16 +1,10 @@
 import type { WorkType } from '../types/work';
-import type { RelatedPersonType } from '../types/relatedPerson';
-import type { RelatedSeriesType } from '../types/relatedSeries';
 
 import pkg from 'sqlite3';
-import * as PersonsModel from './persons';
-import * as SeriesModel from './series';
 import * as RelatedPersonsModel from './relatedPersons';
 import * as RelatedSeriesModel from './relatedSeries';
 import * as RelatedLinksModel from './relatedLinks';
 import * as RelatedTagsMpdel from './relatedTags';
-
-import * as TagsModel from './tags'
 
 // 全ての作品を取得する
 export function getAll(db: pkg.Database) {

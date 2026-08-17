@@ -2,12 +2,13 @@ import type { RelatedTagType } from '../types/relatedTag';
 
 import pkg from 'sqlite3';
 import * as TagsModel from './tags';
+import type { TagType } from '../types/tag';
 
 // 関連タグを取得する
 export function getAll(db: pkg.Database, relatedType: string, relatedId: number) {
     return new Promise<string[]>((resolve, reject) => {
-        db.all<string>(
-            'SELECT t.tag ' +
+        db.all<TagType>(
+            'SELECT t.* ' +
             'FROM related_tags as r ' +
             'JOIN tags as t ON t.id = r.tagId ' +
             'WHERE r.relatedType = ? AND r.relatedId = ?' +
@@ -17,7 +18,7 @@ export function getAll(db: pkg.Database, relatedType: string, relatedId: number)
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(rows);
+                    resolve(rows.map(x => x.tag));
                 }
             });
     });

@@ -12,7 +12,6 @@
     const externalLinks = workData.relatedLinks != null ? workData.relatedLinks.filter(x => x.linkType === "LINK") : [];
     const images = workData.relatedLinks != null ? workData.relatedLinks.filter(x => x.linkType === "IMG") : [];
 
-
     const relatedPersons = new Map<string, string>();
     if (workData.relatedPersons != null && workData.relatedPersons.length > 0) {
         workData.relatedPersons.forEach(x => {
@@ -41,8 +40,8 @@
 
 <h2>Work - Details</h2>
 <div class="button-container">
-    <button onclick={onClickModifyWork}>EDIT</button>
-    <button onclick={onClickAppendWork}>ADD</button>
+    <button onclick={onClickModifyWork}>編　集</button>
+    <button onclick={onClickAppendWork}>追　加</button>
 </div>
 <div>
     <div class="input-field">

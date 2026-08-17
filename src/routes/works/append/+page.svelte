@@ -10,7 +10,7 @@
 
     const onSubmit = async (data: WorkType) => {
         try {
-            const result = await callApi('/api/work', 'POST', data);
+            const result = await callApi('/api/works', 'POST', data);
             if (result.ok) {
                 const work = result.data as WorkType;
                 goto(`/works/${work.id}`);
