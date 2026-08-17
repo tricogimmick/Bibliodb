@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { RelatedSeriesType } from "../types/series";
+    import type { RelatedSeriesType } from "../types/relatedSeries";
     import type { SeriesType } from "../types/series";
 
     type PropsType = {
@@ -8,23 +8,29 @@
         relatedId: number | null;
         relatedSeries: RelatedSeriesType[];
         series: SeriesType[];
+        isMedia: number;
         callback: (links: RelatedSeriesType[]) => void
     }
     type ItemType = {
         orderNo: number;
+        seriesId: number | null;
         seriesIndex: string;
         description: string;
     }
 
-    let { label, relatedType, relatedId, relatedSeries, series, callback } : PropsType = $props();
+    let { label, relatedType, relatedId, relatedSeries, series, isMedia, callback } : PropsType = $props();
 
-    let _items: ItemType[] = relatedSeries.map((x, i) => ({
-        orderNo: i + 1,
-        seriesIndex: series.find(z => z.id == x.seriesId)?.index ?? "",
-        description: x.description
-    }));
+    let _items: ItemType[] = relatedSeries.map((x, i) => {
+        const s = series.find(z => z.id == x.seriesId);
+        return ({
+            orderNo: i + 1,
+            seriesId: s?.id ?? null,
+            seriesIndex: s?.index ?? '',
+            description: x.description
+        })
+    });
     if (_items.length === 0) {
-        _items.push({ orderNo: 1, seriesIndex: "", description: "" });
+        _items.push({ orderNo: 1, seriesId: null, seriesIndex: '', description: '' });
     }
     let items: ItemType[] = $state(_items);
 
@@ -33,35 +39,29 @@
     // 新たな関連人物を生成
     const newRelatedSeries = (orderNo: number) => ({
         orderNo,
-        seriesIndex: "",
-        description: ""
+        seriesId: null,
+        seriesIndex: '',
+        description: ''
     });
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: RelatedSeriesType[] = items.map(x => ({
-            relatedType,
-            relatedId,
-            seriesId: series.find(z => z.index === x.seriesIndex)?.id ?? null,
-            seriesTitle: series.find(z => z.index === x.seriesIndex)?.title ?? null,
-            isMedia: 0,
-            description: x.description            
-        }));
-        callback?.(t);
+        const data: RelatedSeriesType[] = items.map(x => {
+            const s = series.find(z => z.index === x.seriesIndex);
+            return ({
+                relatedType,
+                relatedId,
+                seriesId: s?.id ?? null,
+                seriesTitle: s != null ? s.title : x.seriesIndex,
+                isMedia,
+                description: x.description            
+            });
+        });
+        callback?.(data);
     }
 
    // 関連シリーズ名が変更された
    const onChangeRelatedSeriesTitle = (e: Event) => {
-        const field = e.target as HTMLInputElement;
-        if (field.value != "") {
-            if (series.find(x => x.index === field.value) == null) {
-                field.setCustomValidity("シリーズが存在しません")
-            } else {
-                field.setCustomValidity("")
-            }
-        } else {
-            field.setCustomValidity("")
-        }
         callCallback();
     }
  
@@ -75,6 +75,7 @@
         } else {
             const t = items.map(x => ({
                 orderNo: x.orderNo > orderNo ? x.orderNo + 1 : x.orderNo,
+                seriesId: x.seriesId,
                 seriesIndex: x.seriesIndex,
                 description: x.description
             }));
@@ -92,6 +93,7 @@
             const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
             items = items.filter(x => x.orderNo != orderNo).map(x => ({  
                 orderNo: x.orderNo > orderNo ? x.orderNo -1 : x.orderNo,
+                seriesId: x.seriesId,
                 seriesIndex: x.seriesIndex,
                 description: x.description
             }));

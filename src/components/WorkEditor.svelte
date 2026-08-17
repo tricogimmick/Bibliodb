@@ -2,16 +2,15 @@
     import type { WorkType } from "../types/work";
     import type { PersonType } from "../types/person";
 	import type { SeriesType } from "../types/series";
-    import type { RelatedPersonType } from "../types/person";
+    import type { RelatedPersonType } from "../types/relatedPerson";
     import type { RelatedLinkType } from "../types/relatedLink";
-    import type { RelatedSeriesType } from "../types/series";
-    import type { ResultType } from "../types/result";
-    import type { PostDataType } from "../routes/api/works/+server";
+    import type { RelatedSeriesType } from "../types/relatedSeries";
 
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
     import RelatedSeriesEditor from "./RelatedSeriesEditor.svelte";
     import TagEditor from "./TagEditor.svelte";
+    import { confirmDialog } from "../lib/client"
 
     type PropsType = {
         work: WorkType,
@@ -28,8 +27,8 @@
     let relatedLinks = $state(work.relatedLinks != null ? work.relatedLinks : []);
     let tags = $state(work.tags != null ? work.tags : []);
 
-    let seriesOfMedia = $state(series.filter(x => x.seriesType != "叢書" && x.seriesType != "作品"));
-    let seriesOfWorks = $state(series.filter(x => x.seriesType == "作品"));
+    let seriesOfMedia = $state(series.filter(x => x.seriesType != '叢書' && x.seriesType != '作品'));
+    let seriesOfWorks = $state(series.filter(x => x.seriesType == '作品'));
 
     let index = $state(work.index);
     let title = $state(work.title);
@@ -44,13 +43,39 @@
     let seqNo = $state(work.seqNo);
     let finishedReading = $state(work.finishedReading);
     let status = $state(work.status);
-    let buttonCaption = $derived(work.id == null || work.id == 0 ? "ADD" : "UPDATE")
+    let buttonCaption = $derived(work.id == null || work.id == 0 ? '登　録' : '更　新')
 
     // FOMRがサブミットされた
     const onSubmit = async (e: Event)  => {
-        console.log("onSubmit()");
         e.stopImmediatePropagation();
         e.preventDefault();
+
+        const errors: string[] = [];
+        if (seriesTitles != null && seriesTitles.length > 0) {
+            const s = seriesTitles.find(x => x.seriesId == null && x.seriesTitle != '');
+            if (s) {
+                errors.push(`シリーズ：${s.seriesTitle}が未登録です.`);
+            }
+        }
+        if (relatedPersons != null && relatedPersons.length > 0) {
+            const p = relatedPersons.find(x => x.personId == null && x.personName != '');
+            if (p) {
+                errors.push(`${p.role}：${p.personName}が未登録です.`);
+            }
+        }
+        if (publishedMedia != null && publishedMedia.length > 0) {
+            const s = publishedMedia.find(x => x.seriesId == null && x.seriesTitle != '');
+            if (s) {
+                errors.push(`掲載誌：${s.seriesTitle}が未登録です.`);
+            }
+        }
+        if (errors.length > 0) {
+            const errorMessage = errors.join('<br>');
+            const confirmed = await confirmDialog('マスタが存在しない項目があります。', `${errorMessage}<br>マスタが存在しない項目については新たに登録しますか？`);
+            if (!confirmed) {
+                return;
+            }
+        }
 
         const relatedSeris = [...publishedMedia, ...seriesTitles];
         const data: WorkType = {
@@ -69,13 +94,17 @@
             finishedReading,
             status,
             relatedPersons: relatedPersons.map((x, i) => ({
+                relatedType: x.relatedType,
+                relatedId: x.relatedId,
                 orderNo: i + 1,
-                personId: x.personId as number,
+                personId: x.personId,
                 personName: x.personName,
                 role: x.role,
                 description: x.description
             })),
             relatedSeries: relatedSeris.map(x => ({
+                relatedType: x.relatedType,
+                relatedId: x.relatedId,
                 seriesId: x.seriesId,
                 seriesTitle: x.seriesTitle,
                 description: x.description,
@@ -115,6 +144,7 @@
         publishedMedia = rs;
     }
 
+    // シリーズが変更された
     const onChangeSeriesTitles = (rs: RelatedSeriesType[]) => {
         seriesTitles = rs;
     }
@@ -142,7 +172,7 @@
             <label for="variantTitles">別名</label>
             <input name="variantTitles" type="text" bind:value={variantTitles} />
         </div>
-        <RelatedSeriesEditor label="シリーズ" relatedType="WORK" relatedId={work.id} relatedSeries={seriesTitles} series={seriesOfWorks} callback={onChangeSeriesTitles}></RelatedSeriesEditor>
+        <RelatedSeriesEditor label="シリーズ" relatedType="WORK" relatedId={work.id} relatedSeries={seriesTitles} series={seriesOfWorks} isMedia={0} callback={onChangeSeriesTitles}></RelatedSeriesEditor>
         <div class="input-field">
             <label for="contentType">種別</label>
             <select name="contentType" bind:value={contentType}>
@@ -161,7 +191,7 @@
             </select>
         </div>
         <RelatedPersonEditor relatedType="WORK" relatedId={work.id} {relatedPersons} {persons} callback={onChangeRelationPersons} label=""></RelatedPersonEditor>
-        <RelatedSeriesEditor label="掲載誌" relatedType="WORK" relatedId={work.id} relatedSeries={publishedMedia} series={seriesOfMedia} callback={onChangePublishedMedia}></RelatedSeriesEditor>
+        <RelatedSeriesEditor label="掲載誌" relatedType="WORK" relatedId={work.id} relatedSeries={publishedMedia} series={seriesOfMedia} isMedia={1} callback={onChangePublishedMedia}></RelatedSeriesEditor>
         <div class="input-field">
             <label for="publicationYear">発表年</label>
             <input name="publicationYear" type="number" bind:value={publicationYear}  min="1800" max="2100"/><span class="suffix">年 〜</span>

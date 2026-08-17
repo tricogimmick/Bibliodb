@@ -35,25 +35,6 @@ export function getAll(db: pkg.Database) {
     });
 }
 
-// 関連する人物を取得する
-export function getRelatedPrsons(db: pkg.Database, relatedType: string, relatedId: number) {
-    return new Promise<RelatedPersonType[]>((resolve, reject) => {
-        db.all<RelatedPersonType>(
-            'SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description ' +
-            'FROM related_persons as r ' +
-            'JOIN persons as p ON p.id = r.personId ' +
-            'WHERE r.relatedType = ? AND r.relatedId = ?' +
-            'ORDER by r.orderNo',
-            [relatedType, relatedId],
-            (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-    });
-}
 
 
 

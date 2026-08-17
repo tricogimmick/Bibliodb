@@ -56,22 +56,3 @@ export async function update(db: pkg.Database, series: SeriesType) {
         });
     });
 }
-
-// 関連するシリーズの取得
-export function getRelatedSeries(db: pkg.Database, relatedType: string, relatedId: number) {
-    return new Promise<RelatedSeriesType[]>((resolve, reject) => {
-        db.all<RelatedSeriesType>(
-            'SELECT r.seriesId, s.title as seriesTitle, r.description, r.isMedia ' +
-            'FROM related_series as r ' +
-            'JOIN series as s ON s.id = r.seriesId ' +
-            'WHERE r.relatedType = ? AND r.relatedId = ?',
-            [relatedType, relatedId],
-            (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-    });
-}

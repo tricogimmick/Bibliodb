@@ -8,7 +8,7 @@ import * as SeriesModel from './series';
 import * as RelatedPersonsModel from './relatedPersons';
 import * as RelatedSeriesModel from './relatedSeries';
 import * as RelatedLinksModel from './relatedLinks';
-import * as RelatesTagsMpdel from './relatedTags';
+import * as RelatedTagsMpdel from './relatedTags';
 
 import * as TagsModel from './tags'
 
@@ -16,6 +16,24 @@ import * as TagsModel from './tags'
 export function getAll(db: pkg.Database) {
     return new Promise<WorkType[]>((resolve, reject) => {
         db.all<WorkType>('SELECT * FROM works ORDER BY [index], id', (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);
+            }
+        });
+    });
+}
+
+// 人物に紐付く作品を取得する
+export function getAllByPerson(db: pkg.Database, personId: number) {
+    return new Promise<WorkType[]>((resolve, reject) => {
+        db.all<WorkType>(
+            'SELECT wk.* FROM works as wk ' +
+            'JOIN related_persons as rp ON rp.relatedType = ? AND rp.relatedId = wk.id ' +
+            'WHERE rp.personId = ?  ORDER BY wk.index, wk.id"', 
+            ['WORK', personId],
+            (err, rows) => {
             if (err) {
                 reject(err);
             } else {
@@ -33,10 +51,10 @@ export function get(db: pkg.Database, id: number) {
                 reject(err);
             } else {
                 if (row.id) {
-                    row.relatedPersons = await PersonsModel.getRelatedPrsons(db, 'WORK', row.id);
-                    row.relatedSeries = await SeriesModel.getRelatedSeries(db, 'WORK', row.id);
+                    row.relatedPersons = await RelatedPersonsModel.getAll(db, 'WORK', row.id);
+                    row.relatedSeries = await RelatedSeriesModel.getAll(db, 'WORK', row.id);
                     row.relatedLinks = await RelatedLinksModel.getAll(db, 'WORK', row.id);
-                    row.tags = await TagsModel.getRelatedTags(db, 'WORK', row.id);
+                    row.tags = await RelatedTagsMpdel.getAll(db, 'WORK', row.id);
                 }
                 resolve(row);
             }
@@ -64,25 +82,29 @@ export async function update(db: pkg.Database, work: WorkType) {
                 if (work.id === null) {
                     work.id = this.lastID;
                 } else {
-                    if (work.relatedPersons != null && work.relatedPersons.length > 0) {
-                        for (const relatedPerson of work.relatedPersons) {
-                            await RelatedPersonsModel.add(db, 'WORK', work.id, relatedPerson);
-                        }
+                    await RelatedPersonsModel.deleteAll(db, 'WORK', work.id);
+                    await RelatedSeriesModel.deleteAll(db, 'WORK', work.id);
+                    await RelatedLinksModel.deleteAll(db, 'WORK', work.id);
+                    await RelatedTagsMpdel.deleteAll(db, 'WORK', work.id);
+                }
+                if (work.relatedPersons != null && work.relatedPersons.length > 0) {
+                    for (const relatedPerson of work.relatedPersons) {
+                        await RelatedPersonsModel.add(db, 'WORK', work.id, relatedPerson);
                     }
-                    if (work.relatedSeries != null && work.relatedSeries.length > 0) {
-                        for (const relatesSeries of work.relatedSeries) {
-                            await RelatedSeriesModel.add(db, 'WORK', work.id, relatesSeries);
-                        }
+                }
+                if (work.relatedSeries != null && work.relatedSeries.length > 0) {
+                    for (const relatesSeries of work.relatedSeries) {
+                        await RelatedSeriesModel.add(db, 'WORK', work.id, relatesSeries);
                     }
-                    if (work.relatedLinks != null && work.relatedLinks.length > 0) {
-                        for (const relatedLink of work.relatedLinks) {
-                            await RelatedLinksModel.add(db, 'WORK', work.id, relatedLink);
-                        }
+                }
+                if (work.relatedLinks != null && work.relatedLinks.length > 0) {
+                    for (const relatedLink of work.relatedLinks) {
+                        await RelatedLinksModel.add(db, 'WORK', work.id, relatedLink);
                     }
-                    if (work.tags != null && work.tags.length > 0) {
-                        for (const tag of work.tags) {
-                            await RelatesTagsMpdel.add(db, tag);
-                        }
+                }
+                if (work.tags != null && work.tags.length > 0) {
+                    for (const tag of work.tags) {
+                        await RelatedTagsMpdel.add(db, 'WORK', work.id, tag);
                     }
                 }
                 resolve(work);

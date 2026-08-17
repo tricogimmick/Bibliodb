@@ -1,7 +1,6 @@
 <script lang="ts">
-    import type { RelatedPersonType } from "../types/person";
+    import type { RelatedPersonType } from "../types/relatedPerson";
     import type { PersonType } from "../types/person";
-    import type { ResultType } from "../types/result";
 
     type PropsType = {
         relatedType: string;
@@ -14,28 +13,32 @@
     type ItemType = {
         orderNo: number;
         role: string;
+        personId: number | null;
         personName: string;
         description: string;
     }
 
     let { relatedType, relatedId, relatedPersons, persons, label, callback } : PropsType = $props();
 
-    if (relatedPersons.length === 0) {
-        relatedPersons.push({
+    let _items: ItemType[] = relatedPersons.map((x, i) => {
+        const p = persons.find(z => z.id === x.personId);
+        return ({
+            orderNo: i + 1,
+            role: x.role,
+            personId: p?.id ?? null,
+            personName: p?.name ?? '',
+            description: x.description
+        });
+    })
+    if (_items.length == 0) {
+        _items.push({
             orderNo: 1,
+            role: '作者',
             personId: null,
             personName: '',
-            role: "作者",
-            description: ''
-        });
+            description: ''            
+        })
     }
-
-    let _items: ItemType[] = relatedPersons.map((x, i) => ({
-        orderNo: i + 1,
-        role: x.role,
-        personName: persons.find(z => z.id === x.personId)?.name ?? "",
-        description: x.description
-    }))
     let items: ItemType[] = $state(_items);
 
     // 新たな関連人物を生成
@@ -49,28 +52,23 @@
 
     // 親コンポーネントのコールバックを呼び出す
     const callCallback = () => {
-        const t: RelatedPersonType[] = items.filter(x => x.personName != null && x.personName != "").map(x => ({
-            orderNo: x.orderNo,
-            personId: persons.find(z => z.index === x.personName)?.id ?? null,
-            personName: persons.find(z => z.index === x.personName)?.name ?? '',
-            role: x.role,
-            description: x.description            
-        }));
-        callback?.(t);
+        const data: RelatedPersonType[] = items.filter(x => x.personName != null && x.personName != '').map(x => {
+            const p = persons.find(z => z.index === x.personName);
+            return ({
+                relatedType,
+                relatedId,
+                orderNo: x.orderNo,
+                personId: p?.id ?? null,
+                personName: p != null ? p.name : x.personName,
+                role: x.role,
+                description: x.description            
+            });
+        });
+        callback?.(data);
     }
 
    // 関連人物名が変更された
    const onChangeRelatedPersonName = (e: Event) => {
-        const field = e.target as HTMLInputElement;
-        if (field.value != null && field.value != "") {
-            if (persons.find(x => x.index === field.value) == null) {
-                field.setCustomValidity("著作者が存在しません")
-            } else {
-                field.setCustomValidity("")
-            }
-        } else {
-            field.setCustomValidity("")
-        }
         callCallback();
     }
  
@@ -78,15 +76,16 @@
     const onClickAddButton = (e: Event) => {
         e.stopImmediatePropagation();
         e.preventDefault();
-        const personDataElm = (e.target as HTMLButtonElement)?.closest("div") as HTMLDivElement;
+        const personDataElm = (e.target as HTMLButtonElement)?.closest('div') as HTMLDivElement;
         const orderNo = Number(personDataElm.dataset.orderNo);
-        const role = personDataElm.querySelector("select")?.value ?? "";
+        const role = personDataElm.querySelector('select')?.value ?? "";
         if (items.length == orderNo) {
             items.push(newRelatedPerson(orderNo + 1, role));
         } else {
             const t = items.map(x => ({
                 orderNo: x.orderNo > orderNo ? x.orderNo + 1 : x.orderNo,
                 role: x.role,
+                personId: x.personId,
                 personName: x.personName,
                 description: x.description
             }));
@@ -101,11 +100,12 @@
         e.stopImmediatePropagation();
         e.preventDefault();
         if (items.length > 1) {
-            const personDataElm = (e.target as HTMLButtonElement)?.closest("div") as HTMLDivElement;
+            const personDataElm = (e.target as HTMLButtonElement)?.closest('div') as HTMLDivElement;
             const orderNo = Number(personDataElm.dataset.orderNo);
             items = items.filter(x => x.orderNo != orderNo).map(x => ({  
                 orderNo: x.orderNo > orderNo ? x.orderNo -1 : x.orderNo,
                 role: x.role,
+                personId: x.personId,
                 personName: x.personName,
                 description: x.description
             }));
@@ -121,7 +121,7 @@
 {#each items as item, i (item.orderNo)}
 <div class="input-field">
     {#if i == 0}
-    <label for="">{label ?? "著作者"}</label>
+    <label for="">{label ?? '著作者'}</label>
     {:else}
     <label for="">&nbsp</label>
     {/if}
