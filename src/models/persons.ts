@@ -1,4 +1,4 @@
-import type { PersonType, RelatedPersonType } from '../types/person';
+import type { PersonType } from '../types/person';
 import type { WorkListViewItemType } from '../types/work'
 import type { PrintListViewItemType } from '../types/print';
 import type { MovieListViewItemType } from '../types/movie';

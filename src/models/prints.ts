@@ -1,5 +1,12 @@
-import pkg from 'sqlite3';
 import type { PrintType, PrintViewType, PrintListViewItemType } from '../types/print';
+
+import pkg from 'sqlite3';
+import * as PublishersModel from './publishers';
+import * as BrandsModel from './brands';
+import * as SeriesModel from './series';
+import * as RelatedPersonsModel from './relatedPersons';
+import * as RelatedWorksModel from './relatedWorks';
+import * as RelatedLinksModel from './relatedLinks';
 
 // 全ての印刷物を取得する
 export function getAll(db: pkg.Database) {
@@ -16,13 +23,18 @@ export function getAll(db: pkg.Database) {
 
 // 印刷物を取得する
 export function get(db: pkg.Database, printId: number) {
-    return new Promise<PrintType[]>((resolve, reject) => {
-        db.get<PrintType>('SELECT * FROM prints WHERE id = ?', [printId], (err, row) => {
+    return new Promise<PrintType>((resolve, reject) => {
+        db.get<PrintType>('SELECT * FROM prints WHERE id = ?', [printId], async (err, row) => {
             if (err) {
                 reject(err);
             } else {
                 if (row.id) {
-                    
+                    row.publisher = row.publisherId ? await PublishersModel.get(db, row.publisherId) : null;
+                    row.brand = row.brandId ? await BrandsModel.get(db, row.brandId) : null;
+                    row.series = row.seriesId ? await SeriesModel.get(db, row.seriesId) : null;
+                    row.relatedPersons = await RelatedPersonsModel.getAll(db, 'PRINT', row.id);
+                    row.relatedWorks = await RelatedWorksModel.getAll(db, 'PRINT', row.id);
+                    row.relatedLinks = await RelatedLinksModel.getAll(db, 'PRINT', row.id);
                 }
                 resolve(row);
             }

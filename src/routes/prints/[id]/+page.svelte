@@ -7,21 +7,23 @@
 
     const { data }: { data: PageData } = $props();
     const printData = data.print;
+    const contents = data.contents ?? [];
 
     const relatedPersons = new Map<string, string>();
+    if (printData.relatedPersons != null) {
         printData.relatedPersons.forEach(x => {
-        if (relatedPersons.has(x.role)) {
-            relatedPersons.set(x.role, `${relatedPersons.get(x.role)} / <a href="/persons/${x.personId}" >${x.personName}</a>`);
-        } else {
-            relatedPersons.set(x.role, `<a href="/persons/${x.personId}" >${x.personName}</a>`);
-        }
-    }); 
+            if (relatedPersons.has(x.role)) {
+                relatedPersons.set(x.role, `${relatedPersons.get(x.role)} / <a href="/persons/${x.personId}" >${x.personName}</a>`);
+            } else {
+                relatedPersons.set(x.role, `<a href="/persons/${x.personId}" >${x.personName}</a>`);
+            }
+        }); 
+    }
 
-
-    const bookImage = printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks.find(x => x.linkType === "IMG" && x.alt === "カバー");
-    const extelanLink = printData.relatedLinks.filter(x => x.linkType === "LINK");
-    const images = printData.relatedLinks.filter(x => x.linkType === "IMG");
-    const coverWorks = printData.relatedWorks.filter(x => x.subType === "COVER");
+    const bookImage = printData.relatedLinks?.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks?.find(x => x.linkType === "IMG" && x.alt === "カバー") ?? null;
+    const extelanLink = printData.relatedLinks?.filter(x => x.linkType === "LINK") ?? [];
+    const images = printData.relatedLinks?.filter(x => x.linkType === "IMG") ?? [];
+    const coverWorks = printData.relatedWorks?.filter(x => x.subType === "COVER") ?? [];
 
     const onClickAppendPrint = (e: Event) => goto("/prints/append");
     const onclickModifyPrint = (e: Event) => {
@@ -33,7 +35,7 @@
 </script>
 
 
-<h2>{#if printData.seriesName}{printData.seriesName}&nbsp;{/if}{printData.title}</h2>
+<h2>{#if printData.series?.title}{printData.series?.title}&nbsp;{/if}{printData.title}</h2>
 <div class="button-container">
     <button class="modify-button" onclick={onclickModifyPrint}>変更</button>
     <button onclick={onClickAppendPrint}>追　加</button>
@@ -75,7 +77,7 @@
         {/each}
         <div class="display-field">
             <span class="data-label">出版社</span>
-            <span class="data-value">{printData.publisherName}{#if printData.brandName}&nbsp;({printData.brandName}){/if}</span>
+            <span class="data-value">{printData.publisher?.name}{#if printData.brand?.name}&nbsp;({printData.brand.name}){/if}</span>
         </div>      
         <div class="display-field">
             <span class="data-label">発行日</span>
@@ -141,7 +143,7 @@
     {@html marked.parse(printData.toc)}
 </div>
 {/if}
-{#if printData.contents.length > 0}
+{#if contents.length > 0}
 <h4>Contents</h4>
 <table class="table-container">
     <thead>
@@ -150,7 +152,7 @@
         </tr>
     </thead>
     <tbody>
-        {#each printData.contents as content (content.orderNo)}
+        {#each contents as content (content.orderNo)}
             <tr>
                 <td>{content.orderNo}</td>
                 <td>{content.color == 1 ? "C" : ""}</td>
@@ -160,7 +162,7 @@
                 {:else }
                 <td>{content.title}{#if content.subTitle }<br>{content.subTitle}{/if}</td>
                 {/if}
-                <td>{@html content.relatedPersons.filter(p => p.id != null).map(p => `<a href="/persons/${p.id}">${p.name}</a>`).join(" / ")}</td>
+                <td>{@html content.relatedPersons?.filter(p => p.personId != null).map(p => `<a href="/persons/${p.personId}">${p.personName}</a>`).join(" / ")}</td>
                 <td>{content.description}</td>
                 <td>{content.pageNo}</td>
             </tr>

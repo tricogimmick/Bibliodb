@@ -1,6 +1,9 @@
-import type { PublisherType } from "./publisher";
-import type { BrandType } from "./brand";
-import type { SeriesType } from "./series";
+import type { PublisherType } from './publisher';
+import type { BrandType } from './brand';
+import type { SeriesType } from './series';
+import type { RelatedPersonType } from './relatedPerson';
+import type { RelatedWorkType } from './relatedWork';
+import type { RelatedLinkType } from './relatedLink'
 
 export type PrintType = {
     id: number | null;
@@ -23,6 +26,9 @@ export type PrintType = {
     publisher: PublisherType | null;
     brand: BrandType | null;
     series: SeriesType | null;
+    relatedPersons: RelatedPersonType[] | null;
+    relatedWorks: RelatedWorkType[] | null;
+    relatedLinks: RelatedLinkType[] | null;
 }
 
 export type PrintViewType = {
