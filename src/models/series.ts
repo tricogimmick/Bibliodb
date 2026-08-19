@@ -1,5 +1,6 @@
 import pkg from 'sqlite3';
-import type { SeriesType, RelatedSeriesType } from '../types/series';
+import type { SeriesType } from '../types/series';
+import type { RelatedSeriesType } from '../types/relatedSeries';
 import * as PublisherModel from './publishers';
 
 // シリーズを取得する

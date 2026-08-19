@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { MovieType } from "../types/movie";
     import type { SeriesType } from "../types/series";
-    import type { RelatedPeronType } from "../types/relatedPerson";
+    import type { RelatedPersonType } from "../types/relatedPerson";
     import type { RelatedLinksType } from "../types/relatedLinks";
     import type { PostDataType } from "../routes/api/movies/+server";
     import type { ResultType } from "../types/result";
@@ -12,7 +12,7 @@
 
     type PropsType = {
         movie: MovieType;
-        relatedPersons: RelatedPeronType[];
+        relatedPersons: RelatedPerssonType[];
         relatedLinks: RelatedLinksType[];
         persons: PersonType[];
         series: SeriesType[];

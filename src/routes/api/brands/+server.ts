@@ -3,7 +3,7 @@ import type { BrandType } from '../../../types/brand';
 
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import * as BrandModel from '../../../models/brand';
+import * as BrandsModel from '../../../models/brands';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
-        const result = await BrandModel.update(db, brand);
+        const result = await BrandsModel.update(db, brand);
         return json({ ok: true, data: result })
     } catch (e: any) {
         return json({ ok: false, data: (e as Error).message })
@@ -26,7 +26,7 @@ export const PUT: RequestHandler = async ({ request }) => {
     const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
-        const result = await BrandModel.update(db, brand);
+        const result = await BrandsModel.update(db, brand);
         return json({ ok: true, data: result })
     } catch (e: any) {
         return json({ ok: false, data: (e as Error).message })
@@ -39,7 +39,7 @@ export const GET: RequestHandler = async ({ url }) => {
     const dbPath = env["BIBLIODB_PATH"] ?? "";
     const db = new Database(dbPath);
     try {
-        const result = await BrandModel.getAll(db);
+        const result = await BrandsModel.getAll(db);
         return json({ ok: true, data: result })
     } catch (e: any) {
         return json({ ok: false, data: (e as Error).message })

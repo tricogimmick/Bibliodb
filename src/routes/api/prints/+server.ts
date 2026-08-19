@@ -4,10 +4,11 @@ import type { PrintType } from '../../../types/print';
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
-const {Database} = pkg;
+import * as PrintsModel from '../../../models/prints';
 
 import { runSql } from '$lib/common';
 
+/*
 export type PostDataType = {
     id: number | null;
     title: string;
@@ -152,26 +153,31 @@ const updatePrint = (db: pkg.Database, putData: PostDataType) => new Promise<Pri
         ng(error);
     }
 });
+*/
 
 export const POST: RequestHandler = async ({ request }) => {
-	const postData : PostDataType = await request.json();
+	const postData : PrintType = await request.json();
     const dbPath = env["BIBLIODB_PATH"] ?? "";
-    const db = new Database(dbPath);
+    const db = new pkg.Database(dbPath);
     try {
-        const result = await appendPrint(db, postData);
-        return json(result)
+        const result = await PrintsModel.update(db, postData);
+        return json({ ok: true, data: result })
+    } catch (e: unknown) {
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }
 };
 
 export const PUT: RequestHandler = async ({ request }) => {
-	const putData : PostDataType = await request.json();
+	const putData : PrintType = await request.json();
     const dbPath = env["BIBLIODB_PATH"] ?? "";
-    const db = new Database(dbPath);
+    const db = new pkg.Database(dbPath);
     try {
-        const result = await updatePrint(db, putData);
-        return json(result)
+        const result = await PrintsModel.update(db, putData);
+        return json({ ok: true, data: result })
+    } catch (e: unknown) {
+        return json({ ok: false, data: (e as Error).message })
     } finally {
         db.close();
     }

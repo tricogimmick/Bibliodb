@@ -2,8 +2,8 @@
     import type { PageData } from './$types';
 	import type { MovieType } from '../../../types/movie';
     import type { ContentType } from '../../../types/content';
-    import type { RelatedPeronType } from '../../../types/relatedPerson';
-    import type { RelatedLinksType } from '../../../types/relatedLinks';
+    import type { RelatedPersonType } from '../../../types/relatedPerson';
+    import type { RelatedLinkType } from '../../../types/relatedLink';
     import type { ResultType } from '../../../types/result';
 
     import { goto } from "$app/navigation";
@@ -24,8 +24,8 @@
         viewingMethod: ""
     };
 
-    const relatedPersons: RelatedPeronType[] = [];
-    const relatedLinks: RelatedLinksType[] = [];
+    const relatedPersons: RelatedPersonType[] = [];
+    const relatedLinks: RelatedLinkType[] = [];
     
     const onSubmit = (result: ResultType<MovieType>) => {
         if (result.ok) {

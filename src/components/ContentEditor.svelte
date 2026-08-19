@@ -2,17 +2,17 @@
     import type { ContentType } from "../types/content";
 	import type { PersonType } from "../types/person";
 	import type { WorkType } from "../types/work";
-    import type { RelatedPeronType } from "../types/relatedPerson";
+    import type { RelatedPersonType } from "../types/relatedPerson";
     import WorksSelector from "./WorksSelector.svelte";
     import { workSelectorOpen } from "$lib/workSelectorLib";
 
     type PropsType = {
         printId: number | null;
         contents: ContentType[];
-        relatedPersons: RelatedPeronType[];
+        relatedPersons: RelatedPersonType[];
         persons: PersonType[];
         works: WorkType[];
-        worksRelatedPersons: RelatedPeronType[];
+        worksRelatedPersons: RelatedPersonType[];
         filterdWorks: WorkType[];
         callback: (contents: ContentType[]) => void
     }

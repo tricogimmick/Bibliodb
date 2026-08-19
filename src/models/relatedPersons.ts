@@ -8,7 +8,7 @@ import * as PersonsModel from './persons';
 export function getAll(db: pkg.Database, relatedType: string, relatedId: number) {
     return new Promise<RelatedPersonType[]>((resolve, reject) => {
         db.all<RelatedPersonType>(
-            'SELECT r.orderNo, r.personId, p.name as personName, r.role, r.description ' +
+            'SELECT r.relatedType, r.relatedId, r.orderNo, r.personId, p.name as personName, r.role, r.description ' +
             'FROM related_persons as r ' +
             'JOIN persons as p ON p.id = r.personId ' +
             'WHERE r.relatedType = ? AND r.relatedId = ?' +
@@ -24,8 +24,27 @@ export function getAll(db: pkg.Database, relatedType: string, relatedId: number)
     });
 }
 
+// 関連人物を取得する
+export function getAllReatedPersons(db: pkg.Database, relatedType: string) {
+    return new Promise<RelatedPersonType[]>((resolve, reject) => {
+        db.all<RelatedPersonType>(
+            'SELECT r.relatedType, r.relatedId, r.orderNo, r.personId, p.name as personName, r.role, r.description ' +
+            'FROM related_persons as r ' +
+            'JOIN persons as p ON p.id = r.personId ' +
+            'WHERE r.relatedType = ? ',
+            [relatedType],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+    });
+}
+
 // 関連人物の登録
-export async function add(db: pkg.Database, relatedType: string,  relatedId: number, relatedPerson: RelatedPersonType) {
+export async function add(db: pkg.Database, relatedType: string, relatedId: number, relatedPerson: RelatedPersonType) {
     return new Promise<void>(async (resolve, reject) => {
         try {
             if (relatedPerson.personId == null) {

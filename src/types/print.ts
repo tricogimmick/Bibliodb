@@ -4,6 +4,7 @@ import type { SeriesType } from './series';
 import type { RelatedPersonType } from './relatedPerson';
 import type { RelatedWorkType } from './relatedWork';
 import type { RelatedLinkType } from './relatedLink'
+import type { ContentType } from './content';
 
 export type PrintType = {
     id: number | null;
@@ -29,6 +30,34 @@ export type PrintType = {
     relatedPersons: RelatedPersonType[] | null;
     relatedWorks: RelatedWorkType[] | null;
     relatedLinks: RelatedLinkType[] | null;
+    contents: ContentType[] | null;
+}
+
+export function createPrintType() {
+    return ({
+        id: null,
+        title: '',
+        originalTitle: '',
+        printType: '',
+        publisherId: null,
+        brandId: null,
+        publicationDate: '',
+        issueNumber: null,
+        seriesId: null,
+        purchaseDate: '',
+        finishedReadingDate: '',
+        description: '',
+        toc: '',
+        note: '',
+        ownedType: '',
+        publisher: null,
+        brand: null,
+        series: null,
+        relatedPersons: null,
+        relatedWorks: null,
+        relatedLinks: null,
+        contents: null
+    });
 }
 
 export type PrintViewType = {

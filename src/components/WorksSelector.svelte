@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PersonType } from "../types/person";
     import type { WorkType } from "../types/work";
-    import type { RelatedPeronType } from "../types/relatedPerson";
+    import type { RelatedPersonType } from "../types/relatedPerson";
     import type { WorkSelectorParam } from "$lib/workSelectorLib";
     import { onMount } from "svelte";
 

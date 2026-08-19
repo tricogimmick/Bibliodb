@@ -5,10 +5,10 @@ import type { PersonType } from '../types/person';
 import type { WorkType } from '../types/work';
 import type { PrintType } from '../types/print';
 import type { ContentType } from '../types/content';
-import type { RelatedPeronType } from '../types/relatedPerson';
-import type { RelatedLinksType } from '../types/relatedLink';
+import type { RelatedPersonType } from '../types/relatedPerson';
+import type { RelatedLinkType } from '../types/relatedLink';
 import type { RelatedSeriesType } from '../types/relatedSeries';
-import type { RelatedWorksType } from '../types/relatedWork';
+import type { RelatedWorkType } from '../types/relatedWork';
 import type { BookListType } from '../types/bookList';
 import type { MovieType } from '../types/movie';
 

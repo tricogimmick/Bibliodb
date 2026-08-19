@@ -1,4 +1,4 @@
-import { RelatedPersonType } from './relatedPerson'
+import type { RelatedPersonType } from './relatedPerson'
 
 export type ContentType = {
     printId: number | null;

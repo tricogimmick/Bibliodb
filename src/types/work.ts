@@ -1,6 +1,6 @@
 import type { RelatedLinkType } from "./relatedLink";
-import type { RelatedPersonType } from "./person";
-import type { RelatedSeriesType } from "./series";
+import type { RelatedPersonType } from "./relatedPerson";
+import type { RelatedSeriesType } from "./relatedSeries";
 
 export type WorkType = {
     id: number | null;
