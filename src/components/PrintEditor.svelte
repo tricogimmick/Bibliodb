@@ -129,7 +129,6 @@
 			note,
 			ownedType,
 			relatedPersons: relatedPersons
-				.filter((x) => x.personId != null)
 				.map((x) => ({
 					relatedType: x.relatedType,
 					relatedId: x.relatedId,
@@ -140,7 +139,6 @@
 					description: x.description
 				})),
 			relatedWorks: relatedWorks
-				.filter((x) => x.workId != null)
 				.map((x) => ({
 					relatedType: x.relatedType,
 					subType: x.subType,

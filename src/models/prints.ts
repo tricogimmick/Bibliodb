@@ -30,13 +30,17 @@ export function get(db: pkg.Database, printId: number) {
                 reject(err);
             } else {
                 if (row.id) {
-                    row.publisher = row.publisherId ? await PublishersModel.get(db, row.publisherId) : null;
-                    row.brand = row.brandId ? await BrandsModel.get(db, row.brandId) : null;
-                    row.series = row.seriesId ? await SeriesModel.get(db, row.seriesId) : null;
-                    row.contents = await ContentsModel.getByPrint(db, row.id) ?? [];
-                    row.relatedPersons = await RelatedPersonsModel.getAll(db, 'PRINT', row.id);
-                    row.relatedWorks = await RelatedWorksModel.getAll(db, 'PRINT', row.id);
-                    row.relatedLinks = await RelatedLinksModel.getAll(db, 'PRINT', row.id);
+                 try {
+                        row.publisher = row.publisherId ? await PublishersModel.get(db, row.publisherId) : null;
+                        row.brand = row.brandId ? await BrandsModel.get(db, row.brandId) : null;
+                        row.series = row.seriesId ? await SeriesModel.get(db, row.seriesId) : null;
+                        row.contents = await ContentsModel.getByPrint(db, row.id) ?? [];
+                        row.relatedPersons = await RelatedPersonsModel.getAll(db, 'PRINT', row.id);
+                        row.relatedWorks = await RelatedWorksModel.getAll(db, 'PRINT', row.id);
+                        row.relatedLinks = await RelatedLinksModel.getAll(db, 'PRINT', row.id);
+                    } catch (e) {
+                        console.log(e);
+                    }
                 }
                 resolve(row);
             }
@@ -115,7 +119,7 @@ export async function update(db: pkg.Database, print: PrintType) {
                     for (const relatedLink of print.relatedLinks) {
                         await RelatedLinksModel.add(db, 'PRINT', print.id, relatedLink);
                     }
-                }s
+                }
                 if (print.relatedWorks != null && print.relatedWorks.length > 0) {
                     for (const relatedWork of print.relatedWorks) {
                         await RelatedWorksModel.add(db, 'PRINT', print.id, relatedWork);

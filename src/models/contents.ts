@@ -6,7 +6,7 @@ import * as RelatedPersonsModel from './relatedPersons';
 // 関連コンテンツを取得する
 export async function getByPrint(db: pkg.Database, printId: number) {
     return new Promise<ContentType[]>((resolve, reject) => {
-        db.all<ContentType>("SELECT * FROM contents WHERE printId = ? ORDER BY ct.orderNo", [printId], async (err, rows) => {
+        db.all<ContentType>("SELECT * FROM contents WHERE printId = ? ORDER BY orderNo", [printId], async (err, rows) => {
             if (err) {
                 reject(err);
             } else {
@@ -48,8 +48,8 @@ function makeUpdateParams(printId: number, content: ContentType) {
 // 関連コンテンツの更新
 export async function add(db: pkg.Database, printId: number, content: ContentType) {
     return new Promise<ContentType>((resolve, reject) => {
-        const sql = 'INSERT INTO contents (printId, orderNo, workId, titile, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) ' +
-                    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)':
+        const sql = 'INSERT INTO contents (printId, orderNo, workId, title, subTitle, pageNo, publishType, serializationStatus, color, firstPublished, description) ' +
+                    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         const params = [
                 printId, 
                 content.orderNo, 
@@ -76,7 +76,7 @@ export async function add(db: pkg.Database, printId: number, content: ContentTyp
 // 関連コンテンツの削除
 export async function deleteAll(db: pkg.Database, printId: number) {
     return new Promise<void>((resolve, reject) => {
-        db.run('DELETE FROM contents WHERE printId = ?', [rprintId], function (error) {
+        db.run('DELETE FROM contents WHERE printId = ?', [printId], function (error) {
             if (error) {
                 reject(error);
             } else {
