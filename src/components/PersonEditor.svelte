@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { PersonType } from '../types/person';
-    import type { RelatedLinkType } from "../types/relatedLink";
+    import type { RelatedLinkType } from '../types/relatedLink';
 
-    import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
+    import RelatedLinkEditor from './RelatedLinkEditor.svelte';
  
     type PropsType = {
         person: PersonType;
@@ -16,7 +16,7 @@
     let born = $state(person.born);
     let died = $state(person.died);
     let description = $state(person.description);
-    let buttonCaption = $derived(person.id == null || person.id == 0 ? "ADD" : "UPDATE");
+    let buttonCaption = $derived(person.id == null || person.id == 0 ? '追加' : '更新');
 
     let relatedLinks = $state(person.relatedLinks ?? []);
  
@@ -42,7 +42,7 @@
             born, 
             died, 
             description,
-            relatedLinks: relatedLinks?.filter(x => x.url != null && x.url != "").map<RelatedLinkType>(x => ({
+            relatedLinks: relatedLinks?.filter(x => x.url != null && x.url != '').map<RelatedLinkType>(x => ({
                 id: x.id,
                 relatedType: x.relatedType,
                 relatedId: x.relatedId,

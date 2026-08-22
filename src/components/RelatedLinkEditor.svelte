@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { RelatedLinkType } from "../types/relatedLink";
+    import type { RelatedLinkType } from '../types/relatedLink';
 
     type PropsType = {
         relatedType: string;
@@ -9,7 +9,7 @@
     }
     type ItemType = {
         orderNo: number;
-        linkType: "IMG" | "LINK";
+        linkType: 'IMG' | 'LINK';
         url: string;
         alt: string;
         description: string;
@@ -19,10 +19,10 @@
 
     const newRelatedLink: (orderNo: number) => ItemType = (orderNo: number) => ({
         orderNo,
-        linkType: "IMG",
-        url: "",
-        alt: "",
-        description: ""
+        linkType: 'IMG',
+        url: '',
+        alt: '',
+        description: ''
     });
 
     let _items: ItemType[] = relatedLinks.map((x, i) => ({
@@ -54,7 +54,7 @@
     const onClickAddButton = (e: Event) => {
         e.stopImmediatePropagation();
         e.preventDefault();
-        const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
+        const orderNo = Number((e.target as HTMLButtonElement)?.closest('div')?.dataset.orderNo);
         if (items.length == orderNo) {
             items.push(newRelatedLink(orderNo + 1));
         } else {
@@ -76,7 +76,7 @@
         e.stopImmediatePropagation();
         e.preventDefault();
         if (items.length > 1) {
-            const orderNo = Number((e.target as HTMLButtonElement)?.closest("div")?.dataset.orderNo);
+            const orderNo = Number((e.target as HTMLButtonElement)?.closest('div')?.dataset.orderNo);
             items = items.filter(x => x.orderNo != orderNo).map(x => ({  
                 orderNo: x.orderNo > orderNo ? x.orderNo -1 : x.orderNo,
                 linkType: x.linkType,
@@ -123,8 +123,8 @@
         </select>
         <input name="url" type="url" bind:value={item.url} onchange={callCallback}/><br>
         <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} list="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C"/>
-        <button onclick={onClickAddButton}>ADD</button>               
-        <button onclick={onClickDeleteButton}>DEL</button>               
+        <button onclick={onClickAddButton}>追加</button>               
+        <button onclick={onClickDeleteButton}>削除</button>               
     </div>
 </div>
 {/each}

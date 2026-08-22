@@ -3,7 +3,8 @@ import type { PageServerLoad } from '../$types';
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
-import { createPrintType } from '../../../types/print';
+import { createPrintType, type PrintType } from '../../../types/print';
+import * as PrintModel from '../../../models/prints';
 import * as PublishersModel from '../../../models/publishers'
 import * as BrandsModel from '../../../models/brands';
 import * as SeriesModel from '../../../models/series';
@@ -12,12 +13,23 @@ import * as WorksModel from '../../../models/works';
 import * as RelatedPersonsModel from '../../../models/relatedPersons';
 
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, url }) => {
   const dbPath = env["BIBLIODB_PATH"] ?? "";
   const db = new pkg.Database(dbPath);    
   try {
+    let templateMoel: PrintType | null = null;
+    const templateId = Number(url.searchParams.get('id')); 
+    if (!Number.isNaN(templateId) && templateId !== 0 ) {
+      templateMoel = await PrintModel.get(db, templateId);
+      templateMoel.note = '';
+      templateMoel.toc = '';
+      templateMoel.relatedWorks = [];
+      templateMoel.relatedLinks = [];
+      templateMoel.contents = [];
+    }
+
     return {
-      print: createPrintType(),
+      print: templateMoel ?? createPrintType(),
       publishers: await PublishersModel.getAll(db),
       brands: await BrandsModel.getAll(db),
       series: await SeriesModel.getAll(db),

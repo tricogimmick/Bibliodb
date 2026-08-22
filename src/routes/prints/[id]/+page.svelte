@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { PageData } from './$types';
 
-    import { goto } from "$app/navigation";
+    import { goto } from '$app/navigation';
     import ImageViewer from '../../../components/ImageViewer.svelte';
 	import { marked } from 'marked';
 
@@ -20,12 +20,12 @@
         }); 
     }
 
-    const bookImage = printData.relatedLinks?.find(x => x.linkType === "IMG" && x.alt === "表紙") ?? printData.relatedLinks?.find(x => x.linkType === "IMG" && x.alt === "カバー") ?? null;
-    const extelanLink = printData.relatedLinks?.filter(x => x.linkType === "LINK") ?? [];
-    const images = printData.relatedLinks?.filter(x => x.linkType === "IMG") ?? [];
-    const coverWorks = printData.relatedWorks?.filter(x => x.subType === "COVER") ?? [];
+    const bookImage = printData.relatedLinks?.find(x => x.linkType === 'IMG' && x.alt === '表紙') ?? printData.relatedLinks?.find(x => x.linkType === 'IMG' && x.alt === 'カバー') ?? null;
+    const extelanLink = printData.relatedLinks?.filter(x => x.linkType === 'LINK') ?? [];
+    const images = printData.relatedLinks?.filter(x => x.linkType === 'IMG') ?? [];
+    const coverWorks = printData.relatedWorks?.filter(x => x.subType === 'COVER') ?? [];
 
-    const onClickAppendPrint = (e: Event) => goto("/prints/append");
+    const onClickAppendPrint = (e: Event) => goto(`/prints/append?id=${printData.id}`);
     const onclickModifyPrint = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -49,17 +49,17 @@
     </div>
     {/if}    
     <div class="content-block">
-        {#if printData.seriesName}
+        {#if printData.series?.title}
         <div class="display-field">
             <span class="data-label">シリーズ</span>
-            <span class="data-value"><a href="/series/{printData.seriesId}">{printData.seriesName}</a></span>
+            <span class="data-value"><a href="/series/{printData.seriesId}">{printData.series.title}</a></span>
         </div>      
         {/if}
         <div class="display-field">
             <span class="data-label">題名</span>
             <span class="data-value">{printData.title}</span>
         </div>
-        {#if printData.originalTitle != null &&  printData.originalTitle != ""}
+        {#if printData.originalTitle != null &&  printData.originalTitle != ''}
         <div class="display-field">
             <span class="data-label">原題</span>
             <span class="data-value">{printData.originalTitle}</span>
@@ -96,7 +96,7 @@
             {:else}
             <span class="data-label">&nbsp</span>
             {/if}
-            <span class="data-value"><a href="/works/{coverWork.workId}">{coverWork.title}</a></span>
+            <span class="data-value"><a href="/works/{coverWork.workId}">{coverWork.workName}</a></span>
         </div>              
         {/each}
         {#if printData.purchaseDate}
@@ -125,19 +125,19 @@
         </div> 
     </div>
 </div>
-{#if printData.description != null && printData.description != ""}
+{#if printData.description != null && printData.description != ''}
 <h4>解　説</h4>
 <div class="text-container">
     {@html marked.parse(printData.description)}
 </div>
 {/if}
-{#if printData.note != null && printData.note != ""}
+{#if printData.note != null && printData.note != ''}
 <h4>Note</h4>
 <div class="text-container">
     {@html marked.parse(printData.note)}
 </div>
 {/if}
-{#if printData.toc != null && printData.toc != ""}
+{#if printData.toc != null && printData.toc != ''}
 <h4>目　次</h4>
 <div class="text-container">
     {@html marked.parse(printData.toc)}
@@ -155,14 +155,14 @@
         {#each contents as content (content.orderNo)}
             <tr>
                 <td>{content.orderNo}</td>
-                <td>{content.color == 1 ? "C" : ""}</td>
-                <td>{content.publishType != null && content.publishType != "" ? content.publishType.substring(0,1) : ""}</td>
+                <td>{content.color == 1 ? 'C' : ''}</td>
+                <td>{content.publishType != null && content.publishType != '' ? content.publishType.substring(0,1) : ''}</td>
                 {#if content.workId }
                 <td><a href="/works/{content.workId}">{content.title}</a>{#if content.subTitle }<br>{content.subTitle}{/if}</td>
                 {:else }
                 <td>{content.title}{#if content.subTitle }<br>{content.subTitle}{/if}</td>
                 {/if}
-                <td>{@html content.relatedPersons?.filter(p => p.personId != null).map(p => `<a href="/persons/${p.personId}">${p.personName}</a>`).join(" / ")}</td>
+                <td>{@html content.relatedPersons?.filter(p => p.personId != null).map(p => `<a href="/persons/${p.personId}">${p.personName}</a>`).join(' / ')}</td>
                 <td>{content.description}</td>
                 <td>{content.pageNo}</td>
             </tr>

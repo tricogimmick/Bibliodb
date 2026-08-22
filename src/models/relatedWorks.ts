@@ -1,5 +1,5 @@
-import RelatedWorksEditor from '../components/RelatedWorksEditor.svelte';
 import type { RelatedWorkType } from '../types/relatedWork';
+import type { WorkType } from '../types/work';
 
 import pkg from 'sqlite3';
 import * as WorksModel from './works'
@@ -8,7 +8,7 @@ import * as WorksModel from './works'
 export function getAll(db: pkg.Database, relatedType: string, relatedId: number) {
     return new Promise<RelatedWorkType[]>((resolve, reject) => {
         db.all<RelatedWorkType>(
-            'SELECT r.relatedType, r.relatedId, r.workId, w.title as workName, r.description ' +
+            'SELECT r.relatedType, r.relatedId, r.subType, r.workId, w.title as workName, r.description ' +
             'FROM related_works as r ' +
             'JOIN works as w ON w.id = r.workId ' +
             'WHERE r.relatedType = ? AND r.relatedId = ?',
@@ -29,6 +29,7 @@ export async function add(db: pkg.Database, relatedType: string, relatedId: numb
         try {
             if (relatedWork.workId == null) {
                 const work: WorkType = {
+                    id: null,
                     index: relatedWork.workName,
                     title: relatedWork.workName,
                     variantTitles: '',
@@ -41,7 +42,11 @@ export async function add(db: pkg.Database, relatedType: string, relatedId: numb
                     publicationEndYear: null,
                     seqNo: null,
                     finishedReading: '',
-                    status: ''
+                    status: '',
+                    tags: null,
+                    relatedLinks: null,
+                    relatedPersons: null,
+                    relatedSeries: null
                 };
                 const result = await WorksModel.update(db, work);
                 if (result != null && result.id != null) {
