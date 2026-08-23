@@ -1,24 +1,28 @@
 <script lang="ts">
     import type { PageData } from './$types';
-    import type { RelatedPersonDisplayType } from "./+page.server"
+    import type { RelatedPersonType } from '../../../types/relatedPerson';
 
-    import { goto } from "$app/navigation";
+    import { goto } from '$app/navigation';
+    import ImageViewer from '../../../components/ImageViewer.svelte';
 	import { marked } from 'marked';
 
     const { data }: { data: PageData } = $props();
     const movieData = data.movie;
 
-    const persons: { role: string, data: RelatedPersonDisplayType[] }[] = [];
-    movieData.relatedPersons.forEach(rp => {
-        const p = persons.find(x => x.role == rp.role);
-        if (p) {
-            p.data.push(rp);
-        } else {
-            persons.push({ role: rp.role, data: [rp]});
-        }
-    });
+    const persons: { role: string, data: RelatedPersonType[] }[] = [];
+    if (movieData.relatedPersons != null && movieData.relatedPersons.length > 0) {
+        movieData.relatedPersons.forEach(rp => {
+            const p = persons.find(x => x.role == rp.role);
+            if (p) {
+                p.data.push(rp);
+            } else {
+                persons.push({ role: rp.role, data: [rp]});
+            }
+        });
+    }
 
-    const extelanLink = movieData.relatedLinks.filter(x => x.linkType === "LINK");
+    const extelanLink = movieData.relatedLinks != null ? movieData.relatedLinks.filter(x => x.linkType === 'LINK') : [];
+    const images = movieData.relatedLinks?.filter(x => x.linkType === 'IMG') ?? [];
 
     const onclickModifyPrint = (e: Event) => {
         e.preventDefault();
@@ -38,7 +42,7 @@
         {#if movieData.seriesName}
         <div class="display-field">
             <span class="data-label">シリーズ</span>
-            <span class="data-value"><a href="/series/{movieData.seriesId}">{movieData.seriesName}</a></span>
+            <span class="data-value"><a href="/series/{movieData.seriesId}">{movieData.series?.title}</a></span>
         </div>      
         {/if}
         <div class="display-field">
@@ -93,6 +97,14 @@
 <h4>Note</h4>
 <div class="text-container">
     {@html marked.parse(movieData.note)}
+</div>
+{/if}
+{#if images.length > 0}
+<h4>Images</h4>
+<div class="image-container">
+    {#each images as img }
+        <div><ImageViewer src={img.url} alt={img.alt} height="200px" width="400px" /></div>
+    {/each}
 </div>
 {/if}
 <div class="footer">

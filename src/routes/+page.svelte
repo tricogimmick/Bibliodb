@@ -7,5 +7,6 @@
         <li><a href="/series">Series</a></li>
         <li><a href="/works">Works</a></li>
         <li><a href="/prints">Prints</a></li>
+        <li><a href="/collections">Collections</a></li>
     </ul>
 </div>

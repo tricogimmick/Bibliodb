@@ -1,18 +1,18 @@
 <script lang="ts">
     import type { PageData } from './$types';
-	import type { MovieType } from '../../../types/movie';
+	import type { CollectionType } from '../../../types/collection';
 
     import { goto } from '$app/navigation';
-    import MovieEditor from '../../../components/MovieEditor.svelte';
+    import CollectionEditor from '../../../components/CollectionEditor.svelte';
     import { callApi } from '../../../lib/client';
 
     const { data }: { data: PageData } = $props();
 
-    const onSubmit = async (data: MovieType) => {
+    const onSubmit = async (data: CollectionType) => {
         try {
-            const result = await callApi('/api/movies', 'POST', data);
+            const result = await callApi('/api/collections', 'POST', data);
             if (result.ok) {
-                goto(`/movies/${(result.data as MovieType).id}`);
+                goto(`/collections/${(result.data as CollectionType).id}`);
             } else {
                 alert(`Error! (${result.data})`);
             }
@@ -29,9 +29,9 @@
 </script>
 
 <h2>Movie - Append</h2>
-<MovieEditor {...data} callback={onSubmit}></MovieEditor>
+<CollectionEditor {...data} callback={onSubmit}></CollectionEditor>
 <div class="footer">
-    <a href="/movies">Back to Movies</a>
+    <a href="/collections">Back to Movies</a>
 </div>
 
 <style>

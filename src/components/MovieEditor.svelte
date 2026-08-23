@@ -1,108 +1,101 @@
 <script lang="ts">
-    import type { MovieType } from "../types/movie";
-    import type { SeriesType } from "../types/series";
-    import type { RelatedPersonType } from "../types/relatedPerson";
-    import type { RelatedLinksType } from "../types/relatedLinks";
-    import type { PostDataType } from "../routes/api/movies/+server";
-    import type { ResultType } from "../types/result";
-	import type { PersonType } from "../types/person";
+    import type { MovieType } from '../types/movie';
+    import type { SeriesType } from '../types/series';
+    import type { RelatedPersonType } from '../types/relatedPerson';
+	import type { PersonType } from '../types/person';
 
-    import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
-    import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
+    import RelatedPersonEditor from './RelatedPersonEditor.svelte';
+    import RelatedLinkEditor from './RelatedLinkEditor.svelte';
+    import { createSeriesType } from '../types/series';
+    import { confirmDialog } from '../lib/client';
 
     type PropsType = {
         movie: MovieType;
-        relatedPersons: RelatedPerssonType[];
-        relatedLinks: RelatedLinksType[];
         persons: PersonType[];
         series: SeriesType[];
-        callback: ((result: ResultType<MovieType>) => void) | null
+        callback: ((data: MovieType) => void | Promise<void>) | null
     };
 
-    let { movie, relatedPersons, relatedLinks, series, persons, callback } : PropsType = $props();
+    let { movie, series, persons, callback } : PropsType = $props();
 
     let title = $state(movie.title);
     let originalTitle = $state(movie.originalTitle);
-    let seriesName = $state(series.find(x => x.id === movie.seriesId)?.index ?? "");
+    let seriesName = $state(series?.find(x => x.id === movie.seriesId)?.index ?? '');
     let country = $state(movie.country);
     let releaseYear = $state(movie.releaseYear);
     let description = $state(movie.description);
     let note = $state(movie.note);
     let viewingDate = $state(movie.viewingDate);
     let viewingMethod = $state(movie.viewingMethod)
-    let buttonCaption = $derived(movie.id == null || movie.id == 0 ? "登　録" : "更　新")
+    let buttonCaption = $derived(movie.id == null || movie.id == 0 ? '登　録' : '更　新')
 
-     // 更新用APIの呼出
-     const callApi = async (postData: PostDataType, method: "POST" | "PUT") => {
-        const response = await fetch('/api/movies', {
-            method: method,
-            body: JSON.stringify(postData),
-            headers: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.ok) {
-            return await response.json() as MovieType;
-        } else {
-            throw new Error(`Fetch Error:(${response.status})`)
-        }
-    }
+    let relatedPersons = $state(movie.relatedPersons ?? []);
+    let relatedLinks = $state(movie.relatedLinks ?? []);
 
     // サブミットされた
     const onSubmit = async (e: Event) => {
+        const series_ = series.find((x) => x.index === seriesName) ?? createSeriesType(null, seriesName);
+        
+		const errors: string[] = [];
+        if (series_.id == null && series_.index != '') {
+            errors.push(`シリーズ：${series_.index}が未登録です.`);            
+        }
+		if (relatedPersons != null && relatedPersons.length > 0) {
+			const p = relatedPersons.find((x) => x.personId == null && x.personName != '');
+			if (p) {
+				errors.push(`${p.role}：${p.personName}が未登録です.`);
+			}
+		}
+		if (errors.length > 0) {
+			const errorMessage = errors.join('<br>');
+			const confirmed = await confirmDialog(
+				'マスタが存在しない項目があります。',
+				`${errorMessage}<br>マスタが存在しない項目については新たに登録しますか？`
+			);
+			if (!confirmed) {
+				return;
+			}
+		}
+
         e.stopImmediatePropagation();
         e.preventDefault();
-        try {
-            const postData: PostDataType = {
-                id: movie.id,
-                title,
-                originalTitle,
-                seriesId: series.find(x => x.index === seriesName)?.id ?? null,
-                country,
-                releaseYear,
-                description,
-                note,
-                viewingDate,
-                viewingMethod,              
-                relatedPersons: relatedPersons.filter(x => x.personId != null).map(x => ({
-                    orderNo: x.orderNo as number,
-                    personId: x.personId as number,
-                    role: x.role,
-                    description: x.description
-                })),
-                relatedLinks: relatedLinks.filter(x => x.url != null && x.url != "").map(x => ({
-                    linkType: x.linkType,
-                    url: x.url,
-                    alt: x.alt,
-                    description: x.description
-                })),
-            };
-            const result = await callApi(postData,movie.id != null ? "PUT" : "POST");
-            console.log(result);
-            callback?.({ ok: true, data: result });
-        } catch (e: any) {
-            callback?.({ ok: false, data: e });
-        }
+        const data: MovieType = {
+            id: movie.id,
+            title,
+            originalTitle,
+            seriesId: series_.id,
+            country,
+            releaseYear,
+            description,
+            note,
+            viewingDate,
+            viewingMethod,       
+            series: series_,       
+            relatedPersons: relatedPersons.map(x => ({
+                relatedId: movie.id,
+                relatedType: 'MOVIE',
+                orderNo: x.orderNo as number,
+                personId: x.personId,
+                personName: x.personName,
+                role: x.role,
+                description: x.description
+            })),
+            relatedLinks: relatedLinks.filter(x => x.url != null && x.url != '').map(x => ({
+                id: null,
+                relatedType: 'MOVIE',
+                relatedId: movie.id,
+                linkType: x.linkType,
+                url: x.url,
+                alt: x.alt,
+                description: x.description
+            })),
+        };
+        callback?.(data);
     }
 
-    // シリーズ名が変更された
-    const onChangeSeriesName = (e: Event) => {
-        console.log(e.target);    
-        const field = e.target as HTMLInputElement;
-        if (field.value != null && field.value != "") {
-            const s = series.find(x => x.index === field.value);
-            if (s != null) {
-                field.setCustomValidity("")
-            } else {
-                field.setCustomValidity("シリーズが存在しません")
-            }
-        } else {
-            field.setCustomValidity("")
-        }
-    }
 
     // 関連人物リンクが変更された
-    const onChangeRelationPersons = async (rp: RelatedPeronType[]) => {
+    const onChangeRelationPersons = async (rp: RelatedPersonType[]) => {
         relatedPersons = rp;
     }
 
@@ -129,7 +122,7 @@
     <form onsubmit={onSubmit}>
         <div class="input-field">
             <label for="seriesName">シリーズ</label>
-            <input name="seriesName" type="text" bind:value={seriesName} list="435415A5-DA26-452F-94CE-BB538691CEC5" onchange={onChangeSeriesName} />
+            <input name="seriesName" type="text" bind:value={seriesName} list="435415A5-DA26-452F-94CE-BB538691CEC5" />
         </div>              
         <div class="input-field">
             <label for="title">題名</label>

@@ -4,8 +4,7 @@ import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 import * as SeriesModels from '../../../models/series';
-import * as PersonsModel from '../../../models/persons'
-import { createMovieType } from '../../../types/movie';
+import { createCollectionType } from '../../../types/collection';
 
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -13,9 +12,8 @@ export const load: PageServerLoad = async ({ params }) => {
   const db = new pkg.Database(dbPath);    
   try {
     return {
-      movie: createMovieType(),
-      series: await SeriesModels.getAll(db),
-      persons: await PersonsModel.getAll(db),
+      collection: createCollectionType(),
+      series: await SeriesModels.getAll(db)
     };
   } catch (e) {
     error(500, { message: 'Database Error' });

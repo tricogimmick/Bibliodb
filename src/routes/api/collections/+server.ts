@@ -1,18 +1,18 @@
 import type { RequestHandler } from './$types';
-import type { MovieType } from '../../../types/movie';
+import type { CollectionType } from '../../../types/collection';
 
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
-import * as MoviesModel from '../../../models/movies';
+import * as CollectionsModel from '../../../models/collections';
 
 
 export const POST: RequestHandler = async ({ request }) => {
-	const postData : MovieType = await request.json();
+	const postData : CollectionType = await request.json();
     const dbPath = env['BIBLIODB_PATH'] ?? '';
     const db = new pkg.Database(dbPath);
     try {
-        const result = await MoviesModel.update(db, postData);
+        const result = await CollectionsModel.update(db, postData);
         return json({ ok: true, data: result })
     } catch (e: unknown) {
         return json({ ok: false, data: (e as Error).message })
@@ -22,11 +22,11 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 export const PUT: RequestHandler = async ({ request }) => {
-	const putData : MovieType = await request.json();
+	const putData : CollectionType = await request.json();
     const dbPath = env['BIBLIODB_PATH'] ?? '';
     const db = new pkg.Database(dbPath);
     try {
-        const result = await MoviesModel.update(db, putData);
+        const result = await CollectionsModel.update(db, putData);
         return json({ ok: true, data: result })
     } catch (e: unknown) {
         return json({ ok: false, data: (e as Error).message })

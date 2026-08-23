@@ -1,17 +1,17 @@
 <script lang="ts">
     import type { PageData } from './$types';
-    import type { MovieType } from '../../../../types/movie';
+    import type { CollectionType } from '../../../../types/collection';
 
-    import { goto } from "$app/navigation";
-    import MovieEditor from '../../../../components/MovieEditor.svelte';
+    import { goto } from '$app/navigation';
+    import CollectionEditor from '../../../../components/CollectionEditor.svelte';
     import { callApi } from '../../../../lib/client';
 
     const { data }: { data: PageData } = $props();
-    const onSubmit = async (data: MovieType) => {
+    const onSubmit = async (data: CollectionType) => {
         try {
-            const result = await callApi('/api/movies', 'PUT', data);
+            const result = await callApi('/api/collections', 'PUT', data);
             if (result.ok) {
-                goto(`/movies/${(result.data as MovieType).id}`);
+                goto(`/collections/${(result.data as CollectionType).id}`);
             } else {
                 alert(`Error! (${result.data})`);
             }
@@ -26,10 +26,10 @@
     }
 </script>
 
-<h2>Movie - Edit</h2>
-<MovieEditor {...data} callback={onSubmit}></MovieEditor>
+<h2>Collection - Edit</h2>
+<CollectionEditor {...data} callback={onSubmit}></CollectionEditor>
 <div class="footer">
-    <a href="/movies/{data.movie.id}">Back to Movie</a>
+    <a href="/collections/{data.collection.id}">Back to Collection</a>
 </div>
 
 <style>

@@ -12,6 +12,7 @@
         <li><a href="/series">Series</a></li>
         <li><a href="/works">Works</a></li>
         <li><a href="/prints">Prints</a></li>
+        <li><a href="/collections">Collections</a></li>
         <li><a href="/movies">Movies</a></li>
         <li><a href="/booklists">Book Lists</a></li>
     </ul>
