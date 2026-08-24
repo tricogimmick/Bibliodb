@@ -3,7 +3,6 @@
     import type { CollectionType } from "../types/collection";
 
     type PropsType = {
-        label: string;
         relatedType: string;
         relatedId: number | null;
         relatedCollections: RelatedCollectionType[];
@@ -17,7 +16,7 @@
         description: string;
     }
 
-    let { label, relatedType, relatedId, relatedCollections, collections, callback } : PropsType = $props();
+    let { relatedType, relatedId, relatedCollections, collections, callback } : PropsType = $props();
 
     let _items: ItemType[] = relatedCollections.map((x, i) => {
         const c = collections.find(z => z.id == x.collectionId);
@@ -107,7 +106,7 @@
 {#each items as item, i (item.orderNo)}
 <div class="input-field">
     {#if i == 0}
-    <label for="">{label}</label>
+    <label for="">コレクション</label>
     {:else}
     <label for="">&nbsp</label>
     {/if}

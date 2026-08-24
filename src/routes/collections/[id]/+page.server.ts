@@ -4,6 +4,7 @@ import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import pkg from 'sqlite3';
 import * as CollectionsModel from '../../../models/collections';
+import * as PrintsModel from '../../../models/prints';
 
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -12,7 +13,8 @@ export const load: PageServerLoad = async ({ params }) => {
     try {
         const collectionId = Number(params.id);
         return {
-            collection: await CollectionsModel.get(db, collectionId)
+            collection: await CollectionsModel.get(db, collectionId),
+            relatedPrints: await PrintsModel.getRelatedPrintsByCollectionId(db, collectionId)
         };
     } catch (e) {
         console.log(e);

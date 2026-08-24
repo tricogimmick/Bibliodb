@@ -4,7 +4,7 @@
     import { goto } from '$app/navigation';
     import ImageViewer from '../../../components/ImageViewer.svelte';
 	import { marked } from 'marked';
-
+	
     const { data }: { data: PageData } = $props();
     const printData = data.print;
     const contents = data.contents ?? [];
@@ -123,6 +123,16 @@
                 {/each}
             </div>
         </div> 
+        {#each printData.relatedCollections as relatedCollection, i (relatedCollection.collectionId)}
+        <div class="display-field">
+            {#if i == 0}
+            <span class="data-label">コレクション</span>
+            {:else}
+            <span class="data-label">&nbsp</span>
+            {/if}
+            <span class="data-value"><a href="/collections/{relatedCollection.collectionId}">{relatedCollection.collectionTitle}</a></span>
+        </div>              
+        {/each}
     </div>
 </div>
 {#if printData.description != null && printData.description != ''}

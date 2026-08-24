@@ -4,6 +4,7 @@ import type { SeriesType } from './series';
 import type { RelatedPersonType } from './relatedPerson';
 import type { RelatedWorkType } from './relatedWork';
 import type { RelatedLinkType } from './relatedLink'
+import type { RelatedCollectionType } from './relatedCollection';
 import type { ContentType } from './content';
 
 export type PrintType = {
@@ -30,6 +31,7 @@ export type PrintType = {
     relatedPersons: RelatedPersonType[] | null;
     relatedWorks: RelatedWorkType[] | null;
     relatedLinks: RelatedLinkType[] | null;
+    relatedCollections: RelatedCollectionType[] | null;
     contents: ContentType[] | null;
 }
 
@@ -56,6 +58,7 @@ export function createPrintType() {
         relatedPersons: null,
         relatedWorks: null,
         relatedLinks: null,
+        relatedCollections: null,
         contents: null
     });
 }

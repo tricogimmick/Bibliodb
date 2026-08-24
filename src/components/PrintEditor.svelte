@@ -5,6 +5,7 @@
 	import { createBrandType, type BrandType } from '../types/brand';
 	import { createSeriesType, type SeriesType } from '../types/series';
 	import type { WorkType } from '../types/work';
+	import type { CollectionType } from '../types/collection';
 	import type { RelatedPersonType } from '../types/relatedPerson';
 	import type { RelatedLinkType } from '../types/relatedLink';
 	import type { RelatedWorkType } from '../types/relatedWork';
@@ -14,7 +15,9 @@
 	import RelatedLinkEditor from './RelatedLinkEditor.svelte';
 	import ContentEditor from './ContentEditor.svelte';
 	import RelatedWorksEditor from './RelatedWorksEditor.svelte';
+	import RelatedCollectionsEditor from './RelatedCollectionsEditor.svelte';
     import { confirmDialog } from '../lib/client';
+	import type { RelatedCollectionType } from '../types/relatedCollection';
 
 	type PropsType = {
 		print: PrintType;
@@ -23,6 +26,7 @@
 		persons: PersonType[];
 		series: SeriesType[];
 		works: WorkType[];
+		collections: CollectionType[];
 		worksRelatedPersons: RelatedPersonType[];
 		callback: ((data: PrintType) => void | Promise<void>) | null;
 	};
@@ -34,6 +38,7 @@
 		series,
 		persons,
 		works,
+		collections,
 		worksRelatedPersons,
 		callback
 	}: PropsType = $props();
@@ -57,6 +62,7 @@
 	let relatedPersons = $state(print.relatedPersons?.map((x) => x) ?? []);
 	let relatedWorks = $state(print.relatedWorks?.map((x) => x) ?? []);
 	let relatedLinks = $state(print.relatedLinks?.map((x) => x) ?? []);
+	let relatedCollections = $state(print.relatedCollections?.map((x) => x) ?? []);
 	let contents = $state(print.contents?.map((x) => x) ?? []);
 
 	let filterdWorks: WorkType[] = $derived.by(() => {
@@ -99,6 +105,12 @@
 			const w = relatedWorks.find((x) => x.workId == null && x.workName != '');
 			if (w) {
 				errors.push(`表紙：${w.workName}が未登録です.`);
+			}
+		}
+		if (relatedCollections != null && relatedCollections.length > 0) {
+			const c = relatedCollections.find((x) => x.collectionId == null && x.collectionTitle != '');
+			if (c) {
+				errors.push(`コレクション：${c.collectionTitle}が未登録です.`);
 			}
 		}
 		if (errors.length > 0) {
@@ -158,6 +170,14 @@
 					alt: x.alt,
 					description: x.description
 				})),
+			relatedCollections: relatedCollections
+				.map((x) => ({
+					relatedType: x.relatedType,
+					relatedId: x.relatedId,
+					collectionId: x.collectionId,
+					collectionTitle: x.collectionTitle,
+					description: x.description					
+				})),
 			contents: contents
 				.filter((x) => x.title != null && x.title != '')
 				.map((x) => ({
@@ -199,6 +219,11 @@
 	const onChangeRelatedWorks = (rw: RelatedWorkType[]) => {
 		relatedWorks = rw;
 	};
+
+	// コレクションが変更された
+	const onChangeRelatedCollections = (rc: RelatedCollectionType[]) => {
+		relatedCollections = rc;
+	}
 </script>
 
 <div>
@@ -311,6 +336,13 @@
 			<label for="finishedReadingDate">読了日</label>
 			<input name="finishedReadingDate" type="date" bind:value={finishedReadingDate} />
 		</div>
+		<RelatedCollectionsEditor
+			relatedType="PRINT"
+			relatedId={print.id}
+			{relatedCollections}
+			{collections}
+			callback={onChangeRelatedCollections}
+		></RelatedCollectionsEditor>
 		<div class="input-field">
 			<label for="description">解説</label>
 			<textarea name="description" bind:value={description} rows="5" cols="80"></textarea>

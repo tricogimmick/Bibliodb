@@ -10,6 +10,7 @@ import * as BrandsModel from '../../../models/brands';
 import * as SeriesModel from '../../../models/series';
 import * as PersonsModel from '../../../models/persons';
 import * as WorksModel from '../../../models/works';
+import * as CollectionsModel from '../../../models/collections';
 import * as RelatedPersonsModel from '../../../models/relatedPersons';
 
 
@@ -35,6 +36,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
       series: await SeriesModel.getAll(db),
       persons: await PersonsModel.getAll(db),
       works: await WorksModel.getAll(db),
+      collections: await CollectionsModel.getAll(db),
       worksRelatedPersons: await RelatedPersonsModel.getAllReatedPersons(db, 'WORK')
     };
   } catch (e) {

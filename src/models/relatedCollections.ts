@@ -8,7 +8,7 @@ import * as CollectionsModel from './collections';
 export function getAll(db: pkg.Database, relatedType: string, relatedId: number) {
     return new Promise<RelatedCollectionType[]>((resolve, reject) => {
         db.all<RelatedCollectionType>(
-            'SELECT r.collectionId, c.title as collectionName, r.description ' +
+            'SELECT r.collectionId, c.title as collectionTitle, r.description ' +
             'FROM related_collections as r ' +
             'JOIN collections as c ON c.id = r.collectionId ' +
             'WHERE r.relatedType = ? AND r.relatedId = ?',

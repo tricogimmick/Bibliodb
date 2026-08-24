@@ -8,6 +8,7 @@ import * as ContentsModel from './contents';
 import * as RelatedPersonsModel from './relatedPersons';
 import * as RelatedWorksModel from './relatedWorks';
 import * as RelatedLinksModel from './relatedLinks';
+import * as RelatedCollectionsModel from './relatedCollections';
 
 // 全ての印刷物を取得する
 export function getAll(db: pkg.Database) {
@@ -38,6 +39,7 @@ export function get(db: pkg.Database, printId: number) {
                         row.relatedPersons = await RelatedPersonsModel.getAll(db, 'PRINT', row.id);
                         row.relatedWorks = await RelatedWorksModel.getAll(db, 'PRINT', row.id);
                         row.relatedLinks = await RelatedLinksModel.getAll(db, 'PRINT', row.id);
+                        row.relatedCollections = await RelatedCollectionsModel.getAll(db, 'PRINT', row.id);
                     } catch (e) {
                         console.log(e);
                     }
@@ -108,6 +110,7 @@ export async function update(db: pkg.Database, print: PrintType) {
                     await RelatedPersonsModel.deleteAll(db, 'PRINT', print.id);
                     await RelatedLinksModel.deleteAll(db, 'PRINT', print.id);
                     await RelatedWorksModel.deleteAll(db, 'PRINT', print.id);
+                    await RelatedCollectionsModel.deleteAll(db, 'PRINT', print.id);
                     await ContentsModel.deleteAll(db, print.id);
                 }
                 if (print.relatedPersons != null && print.relatedPersons.length > 0) {
@@ -124,7 +127,12 @@ export async function update(db: pkg.Database, print: PrintType) {
                     for (const relatedWork of print.relatedWorks) {
                         await RelatedWorksModel.add(db, 'PRINT', print.id, relatedWork);
                     }
-                }                
+                }    
+                if (print.relatedCollections != null && print.relatedCollections.length > 0) {
+                    for (const relatedCollection of print.relatedCollections) {
+                        await RelatedCollectionsModel.add(db, 'PRINT', print.id, relatedCollection);
+                    }
+                }            
                 if (print.contents != null && print.contents.length > 0) {
                     for (const content of print.contents) {
                         await ContentsModel.add(db, print.id, content);
@@ -207,4 +215,28 @@ export function getRelatedPrintsByWorkId(db: pkg.Database, workId: number) {
     });
 }
 
+// コレクションに関連する印刷物を取得する
+export function getRelatedPrintsByCollectionId(db: pkg.Database, collectionId: number) {
+    return new Promise<PrintViewType[]>((resolve, reject) => {
+        db.all<PrintViewType>(
+            'SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, ' +
+            'bk.publicationDate, bk.printType, bk.ownedType, bk.issueNumber ' +
+            'FROM related_collections as rc ' +
+            'JOIN prints as bk on bk.id = rc.relatedId ' +
+            'LEFT JOIN series as sr on sr.id = bk.seriesId ' +
+            'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
+            'LEFT JOIN brands as br ON br.id = bk.brandId ' +
+            'WHERE rc.collectionId = ? AND rc.relatedType = ? ' +
+            'ORDER BY bk.publicationDate',
+            [collectionId, 'PRINT'],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            }
+        );
+    });
+}
 
