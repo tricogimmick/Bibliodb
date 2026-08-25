@@ -1,4 +1,8 @@
-import type { PrintType, PrintViewType, PrintListViewItemType } from '../types/print';
+import type {
+    PrintType, PrintViewType, PrintListViewItemType, BoookListViewItemType
+
+
+} from '../types/print';
 
 import pkg from 'sqlite3';
 import * as PublishersModel from './publishers';
@@ -31,7 +35,7 @@ export function get(db: pkg.Database, printId: number) {
                 reject(err);
             } else {
                 if (row.id) {
-                 try {
+                    try {
                         row.publisher = row.publisherId ? await PublishersModel.get(db, row.publisherId) : null;
                         row.brand = row.brandId ? await BrandsModel.get(db, row.brandId) : null;
                         row.series = row.seriesId ? await SeriesModel.get(db, row.seriesId) : null;
@@ -127,12 +131,12 @@ export async function update(db: pkg.Database, print: PrintType) {
                     for (const relatedWork of print.relatedWorks) {
                         await RelatedWorksModel.add(db, 'PRINT', print.id, relatedWork);
                     }
-                }    
+                }
                 if (print.relatedCollections != null && print.relatedCollections.length > 0) {
                     for (const relatedCollection of print.relatedCollections) {
                         await RelatedCollectionsModel.add(db, 'PRINT', print.id, relatedCollection);
                     }
-                }            
+                }
                 if (print.contents != null && print.contents.length > 0) {
                     for (const content of print.contents) {
                         await ContentsModel.add(db, print.id, content);
@@ -172,7 +176,7 @@ export function getRelatedPrintsBySeriesId(db: pkg.Database, seriesId: number) {
         db.all<PrintViewType>(
             'SELECT bk.id, sr.title as series, bk.title, pb.name as publisher,  br.name as brand, ' +
             'bk.publicationDate, bk.printType, bk.ownedType, bk.issueNumber, null as orderNo ' +
-            'FROM prints as bk ' + 
+            'FROM prints as bk ' +
             'LEFT JOIN series as sr on sr.id = bk.seriesId ' +
             'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
             'LEFT JOIN brands as br ON br.id = bk.brandId ' +
@@ -240,3 +244,30 @@ export function getRelatedPrintsByCollectionId(db: pkg.Database, collectionId: n
     });
 }
 
+
+// 関連書籍リストの取得
+export function getRelatedBookListByCollectionId(db: pkg.Database, collectionId: number) {
+    return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
+        db.all<BoookListViewItemType>(
+            'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
+            'bk.publicationDate, bk.ownedType ' +
+            'FROM related_collections as rc ' +
+            'JOIN prints as bk on bk.id = rc.relatedId ' +
+            'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
+            'LEFT JOIN brands as br ON br.id = bk.brandId ' +
+            'WHERE rc.collectionId = ? AND rc.relatedType = ? AND bk.printType = ?' +
+            'ORDER BY bk.publicationDate',
+            [collectionId, 'PRINT', '書籍'],
+            async (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    for (const row of rows) {
+                        row.authors = await RelatedPersonsModel.getAll(db, 'PRINT', row.id) ?? [];
+                    }
+                    resolve(rows);
+                }
+            }
+        );
+    });
+}

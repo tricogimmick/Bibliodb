@@ -3,10 +3,10 @@
 
     import { goto } from '$app/navigation';
     import { marked } from 'marked';
-
+    import RelatedBookListView from '../../../components/RelatedBookListView.svelte';
     const { data }: { data: PageData } = $props();
     const collectionData = data.collection;
-    const relatedPrints = data.relatedPrints;
+    const relatedBooks = data.relatedBooks;
 
     const onclickModifyCollection = (e: Event) => {
         e.preventDefault();
@@ -58,27 +58,7 @@
     {@html marked.parse(collectionData.note)}
 </div>
 {/if}
-<div class="featured-prints">
-    <h4>掲載書籍・雑誌</h4>
-    <div class="container">
-        <div class="header">
-            <div class="cell">No</div>
-            <div class="cell">タイトル</div>
-            <div class="cell">出版社</div>
-            <div class="cell">発行日</div>
-        </div>
-        <div class="body">
-            {#each relatedPrints as print, i (print.id) }
-                <div class="row">
-                    <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{print.id}">{#if print.series && print.printType == "雑誌"}{print.series}&nbsp{/if}{print.title}</a></div>
-                    <div class="cell">{print.publisher}{#if print.brand} ({print.brand}){/if}</div>
-                    <div class="cell">{print.publicationDate}</div>
-                </div>
-            {/each}        
-        </div>
-    </div>
-</div>
+<RelatedBookListView label="書籍リスト" books={relatedBooks}></RelatedBookListView>
 <div class="footer">
     <a href="/collections">Back to Collections</a>
 </div>
@@ -87,43 +67,4 @@
     .button-container {
         margin-top: 1rem;
     }
-    .container {
-        margin-bottom: 1rem;
-        .cell {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0.2rem 0.5rem;
-        }
-        .cell:nth-child(1) {
-            width: 3rem;
-            text-align: right;
-        }
-        .cell:nth-child(2) {
-            width: 25rem;
-        }
-        .cell:nth-child(3) {
-            width: 10rem;
-        }
-        .cell:nth-child(4) {
-            width: 6rem;
-            text-align: right;
-        }
-        .cell:nth-child(5) {
-            width: 6rem;
-        }
-        .header {
-            display: flex;
-            .cell {
-                border-bottom: 1px solid gray;
-            }
-        }
-        .body {
-            max-height: 300px;
-            overflow-y: auto;
-            .row {
-                display: flex;
-            }
-        }
-    }
-
 </style>

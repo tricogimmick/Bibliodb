@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ params }) => {
         const collectionId = Number(params.id);
         return {
             collection: await CollectionsModel.get(db, collectionId),
-            relatedPrints: await PrintsModel.getRelatedPrintsByCollectionId(db, collectionId)
+            relatedBooks: await PrintsModel.getRelatedBookListByCollectionId(db, collectionId)
         };
     } catch (e) {
         console.log(e);

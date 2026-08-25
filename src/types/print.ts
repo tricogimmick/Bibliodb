@@ -40,7 +40,7 @@ export function createPrintType() {
         id: null,
         title: '',
         originalTitle: '',
-        printType: '',
+        printType: '書籍',
         publisherId: null,
         brandId: null,
         publicationDate: '',
@@ -86,4 +86,14 @@ export type PrintListViewItemType = {
     printType: string;
     ownedType: string;
     issueNumber: number | null;
+}
+
+export type BoookListViewItemType = {
+    id: number;
+    title: string;
+    publisher: string;
+    brand: string;
+    publicationDate: string;
+    ownedType: string;
+    authors: RelatedPersonType[];
 }
