@@ -2,12 +2,16 @@
     import type { PageData } from './$types';
 
     import { goto } from "$app/navigation";
+    import TabButton from '../../../components/TabButton.svelte';
+    import RelatedBookListView from '../../../components/RelatedBookListView.svelte';
+    import RelatedMagazineListView from '../../../components/RelatedMagazineListView.svelte';
     import ImageViewer from '../../../components/ImageViewer.svelte';
     import { marked } from 'marked';
 
     const { data }: { data: PageData } = $props();
     const workData = data.work;
-    const relatedPrints = data.relatedPrints;
+    const books = data.books;
+    const magazines = data.magazines;
 
     const externalLinks = workData.relatedLinks != null ? workData.relatedLinks.filter(x => x.linkType === "LINK") : [];
     const images = workData.relatedLinks != null ? workData.relatedLinks.filter(x => x.linkType === "IMG") : [];
@@ -27,12 +31,22 @@
     const descHtml = workData.description != null ? marked.parse(workData.description): "";
     const noteHtml = workData.note != null ? marked.parse(workData.note) : "";
     
+    let selectedMediaType = $state((books?.length ?? 0) > 0 ? "book" : "magazine" );
+    let buttons = [];
+    if ((books?.length ?? 0) > 0) { buttons.push({ id: 'book', caption: '掲載書籍' }); }
+    if ((magazines?.length ?? 0) > 0) { buttons.push({ id: 'magazine', caption: '掲載雑誌' }); }
+
+
     const onClickAppendWork = (e: Event) => goto("/works/append");
 
     const onClickModifyWork = (e: Event) => {
         e.preventDefault();
         e.stopImmediatePropagation();
         goto(`/works/${workData.id}/edit`)
+    }
+
+    const tabButtonsCallBack = (id: string) => {
+        selectedMediaType = id;
     }
 
 </script>
@@ -60,7 +74,7 @@
         <span class="data-value">{workData.originalTitle}</span>
     </div>
     {/if}
-    {#each workData.relatedSeries.filter(x => x.isMedia == 0) as relatedSeries, i }
+    {#each workData.relatedSeries?.filter(x => x.isMedia == 0) as relatedSeries, i }
     <div class="input-field">
         {#if i == 0}
         <label for="">シリーズ</label>
@@ -80,7 +94,7 @@
         <span class="data-value">{@html person[1]}</span>
     </div>              
     {/each}
-    {#each workData.relatedSeries.filter(x => x.isMedia == 1) as relatedSeries, i }
+    {#each workData.relatedSeries?.filter(x => x.isMedia == 1) as relatedSeries, i }
     <div class="input-field">
         {#if i == 0}
         <label for="">掲載誌</label>
@@ -153,33 +167,16 @@
     {/each}
 </div>
 {/if}
-<div class="featured-prints">
-    <h4>掲載書籍・雑誌</h4>
-    <div class="container">
-        <div class="header">
-            <div class="cell">No</div>
-            <div class="cell">タイトル</div>
-            <div class="cell">出版社</div>
-            <div class="cell">発行日</div>
-            <div class="cell">種別</div>
-            <div class="cell">所有</div>
-            <div class="cell">掲載順</div>
-        </div>
-        <div class="body">
-            {#each relatedPrints as print, i (print.id) }
-                <div class="row">
-                    <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{print.id}">{#if print.series && print.printType == "雑誌"}{print.series}&nbsp{/if}{print.title}</a></div>
-                    <div class="cell">{print.publisher}{#if print.brand} ({print.brand}){/if}</div>
-                    <div class="cell">{print.publicationDate}</div>
-                    <div class="cell">{print.printType}</div>
-                    <div class="cell">{print.ownedType == null || print.ownedType == "" ? "未所有" : print.ownedType}</div>
-                    <div class="cell">{print.orderNo}</div>
-                </div>
-            {/each}        
-        </div>
-    </div>
+{#if buttons.length > 0}
+<div class="media-list">
+    <TabButton selectedId={selectedMediaType} {buttons} callback={tabButtonsCallBack} ></TabButton>
+    {#if selectedMediaType === 'book'}
+    <RelatedBookListView label="" books={books}></RelatedBookListView>
+    {:else if selectedMediaType === 'magazine' }
+    <RelatedMagazineListView label="" magazines={magazines}></RelatedMagazineListView>
+    {/if}
 </div>
+{/if}
 <div class="footer">
     <a href="/works">Back to Works</a>
 </div>
@@ -191,42 +188,7 @@
         padding: 0.1rem 0.5rem;
         border: 1px solid gray;
     }
-    .container {
-        margin-bottom: 1rem;
-        .cell {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0.2rem 0.5rem;
-        }
-        .cell:nth-child(1) {
-            width: 3rem;
-            text-align: right;
-        }
-        .cell:nth-child(2) {
-            width: 25rem;
-        }
-        .cell:nth-child(3) {
-            width: 10rem;
-        }
-        .cell:nth-child(4) {
-            width: 6rem;
-            text-align: right;
-        }
-        .cell:nth-child(5) {
-            width: 6rem;
-        }
-        .header {
-            display: flex;
-            .cell {
-                border-bottom: 1px solid gray;
-            }
-        }
-        .body {
-            max-height: 300px;
-            overflow-y: auto;
-            .row {
-                display: flex;
-            }
-        }
+    .media-list {
+        margin-top: 1em;
     }
 </style>

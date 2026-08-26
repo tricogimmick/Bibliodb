@@ -1,4 +1,4 @@
-import type { WorkType } from '../types/work';
+import type { WorkType, WorkListViewItemType } from '../types/work';
 
 import pkg from 'sqlite3';
 import * as RelatedPersonsModel from './relatedPersons';
@@ -104,5 +104,25 @@ export async function update(db: pkg.Database, work: WorkType) {
                 resolve(work);
             }
         });
+    });
+}
+
+// 関連作品を取得する(person)
+export async function getRelatedWorksByPersonId(db: pkg.Database, personId: number) {
+    return new Promise<WorkListViewItemType[]>((resolve, reject) => {
+        db.all<WorkListViewItemType>(
+            "SELECT wk.id, wk.title, wk.publicationYear, wk.contentType " +
+            "FROM related_persons as rp " +
+            "JOIN works as wk ON wk.id = rp.relatedId " +
+            "WHERE rp.relatedType = 'WORK' and rp.personId = ? " +
+            "ORDER BY wk.publicationYear, wk.seqNo",
+            [personId],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
     });
 }

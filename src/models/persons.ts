@@ -36,30 +36,6 @@ export function getAll(db: pkg.Database) {
 }
 
 
-
-
-
-
-// 関連作品を取得する
-export async function getRelatedWorks(db: pkg.Database, id: number) {
-    return new Promise<WorkListViewItemType[]>((resolve, reject) => {
-        db.all<WorkListViewItemType>(
-            "SELECT wk.id, wk.title, wk.publicationYear, wk.contentType " +
-            "FROM related_persons as rp " +
-            "JOIN works as wk ON wk.id = rp.relatedId " +
-            "WHERE rp.relatedType = 'WORK' and rp.personId = ? " +
-            "ORDER BY wk.publicationYear, wk.seqNo",
-            [id],
-            (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-    });
-}
-
 // 関連出版物を取得する
 export async function getRelatedPrints(db: pkg.Database, id: number) {
     return new Promise<PrintListViewItemType[]>((resolve, reject) => {

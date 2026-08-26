@@ -1,12 +1,12 @@
 <script lang="ts">
-    import type { BoookListViewItemType } from "../types/print";
+    import type { MagazineListViewItemType } from "../types/print";
 
     type PropsType = {
         label: string,
-        books: BoookListViewItemType[]
+        magazines: MagazineListViewItemType[]
     }
     
-    let { label, books } : PropsType = $props();
+    let { label, magazines } : PropsType = $props();
 </script>
 
 <div class="related-books">
@@ -15,24 +15,20 @@
         <div class="header">
             <div class="cell">No</div>
             <div class="cell">タイトル</div>
-            <div class="cell">著者</div>
             <div class="cell">出版社</div>
             <div class="cell">発行日</div>
+            <div class="cell">掲載順</div>
             <div class="cell">所有</div>
         </div>
         <div class="body">
-            {#each books as book, i (book.id) }
+            {#each magazines as zine, i (zine.id) }
                 <div class="row">
                     <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{book.id}">{book.title}</a></div>
-                    <div class="cell">
-                        {#each book.authors as author, j (author.personId) }
-                            {#if j != 0 }<span>/</span>{/if}<a href="/persons/{author.personId}">{author.personName}</a>
-                        {/each}
-                    </div>
-                    <div class="cell">{book.publisher}{#if book.brand} ({book.brand}){/if}</div>
-                    <div class="cell">{book.publicationDate}</div>
-                    <div class="cell">{book.ownedType}</div>
+                    <div class="cell"><a href="/prints/{zine.id}">{#if zine.series != ''}{zine.series}{/if} {zine.title}</a></div>
+                    <div class="cell">{zine.publisher}</div>
+                    <div class="cell">{zine.publicationDate}</div>
+                    <div class="cell">{zine.orderNo}</div>
+                    <div class="cell">{zine.ownedType}</div>
                 </div>
             {/each}        
         </div>
@@ -55,19 +51,17 @@
             width: 25rem;
         }
         .cell:nth-child(3) {
-            width: 20rem;
-            span {
-                margin: 0 0.5em;
-            }
+            width: 15rem;
         }
         .cell:nth-child(4) {
             width: 15rem;
         }
         .cell:nth-child(5) {
             width: 6rem;
+            text-align: right;
         }
         .cell:nth-child(6) {
-            width: 15rem;
+            width: 6rem;
         }
         .header {
             display: flex;

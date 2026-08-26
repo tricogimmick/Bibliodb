@@ -4,6 +4,9 @@
     import { marked } from 'marked';
 
     import TabButton from '../../../components/TabButton.svelte';
+    import RelatedWorksListView from '../../../components/RelatedWorksListView.svelte';
+    import RelatedBookListView from '../../../components/RelatedBookListView.svelte';
+    import RelatedMovieListView from '../../../components/RelatedMovieListView.svelte';
     import ImageViewer from '../../../components/ImageViewer.svelte';
 
 
@@ -12,17 +15,16 @@
     const externalLinks = person.relatedLinks?.filter(x => x.linkType === "LINK") ?? [];
     const image = person.relatedLinks?.find(x => x.linkType === "IMG" && x.alt === "肖像") ?? null;
     const works = data.works;
-    const books = data.prints.filter(x => x.printType === "書籍");
+    const books = data.books;
     const movies = data.movies;
 
     const descHtml = person.description != null ? marked.parse(person.description): "";
  
-    let selectedPrintType = $state("work");
-    let buttons = [
-        { id: "work", caption: "作品リスト" },
-        { id: "book", caption: "書籍リスト"},
-        { id: "movie", caption: "映画リスト"}
-    ];
+    let selectedPrintType = $state((works?.length ?? 0) > 0 ? "work" : ((books?.length ?? 0) > 0 ? 'book' : 'movie'));
+    let buttons = [];
+    if ((works?.length ?? 0) > 0) { buttons.push({ id: "work", caption: "作品リスト" }); }
+    if ((books?.length ?? 0) > 0) { buttons.push({ id: "book", caption: "書籍リスト"}); }
+    if ((movies?.length ?? 0) > 0) { buttons.push({ id: "movie", caption: "映画リスト"}); }
 
     const onClickModifyPerson = (e: Event) => {
         e.preventDefault();
@@ -100,67 +102,14 @@
 <div class="works-list">
     <TabButton selectedId={selectedPrintType} {buttons} callback={tabButtonsCallBack} ></TabButton>
     {#if selectedPrintType === "work"}
-        <div class="container works">
-            <div class="header">
-                <div class="cell">No</div>
-                <div class="cell">タイトル</div>
-                <div class="cell">発表年</div>
-                <div class="cell">種別</div>
-            </div>
-            <div class="body">
-                {#each works as work, i (work.id) }
-                    <div class="row">
-                        <div class="cell">{i + 1}</div>
-                        <div class="cell"><a href="/works/{work.id}">{work.title}</a></div>
-                        <div class="cell">{work.publicationYear}</div>
-                        <div class="cell">{work.contentType}</div>
-                    </div>
-                {/each}        
-            </div>
-        </div>
+        <RelatedWorksListView label="" {works}></RelatedWorksListView>
         <div class="button-container">
             <button onclick={onClickAppendWork}>追加</button>
         </div>
     {:else if selectedPrintType === "book"}
-    <div class="container books">
-        <div class="header">
-            <div class="cell">No</div>
-            <div class="cell">タイトル</div>
-            <div class="cell">出版社</div>
-            <div class="cell">発行日</div>
-            <div class="cell">所有</div>
-        </div>
-        <div class="body">
-            {#each books as book, i (book.id) }
-                <div class="row">
-                    <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{book.id}">{book.title}</a></div>
-                    <div class="cell">{book.publisher}{#if book.brand} ({book.brand}){/if}</div>
-                    <div class="cell">{book.publicationDate}</div>
-                    <div class="cell">{book.ownedType}</div>
-                </div>
-            {/each}        
-        </div>
-    </div>
+        <RelatedBookListView label="" {books}></RelatedBookListView>
     {:else if selectedPrintType === "movie"}
-    <div class="container books">
-        <div class="header">
-            <div class="cell">No</div>
-            <div class="cell">タイトル</div>
-            <div class="cell">国</div>
-            <div class="cell">公開年</div>
-        </div>
-        <div class="body">
-            {#each movies as movie, i (movie.id) }
-                <div class="row">
-                    <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/movies/{movie.id}">{movie.title}</a></div>
-                    <div class="cell">{movie.country}</div>
-                    <div class="cell">{movie.releaseYear}</div>
-                </div>
-            {/each}        
-        </div>
-    </div>
+        <RelatedMovieListView label="" {movies}></RelatedMovieListView>
     {/if}
 </div>
 <div class="footer">
@@ -175,58 +124,5 @@
     .works-list {
         margin-top: 2rem;
         margin-bottom: 1rem;
-    }
-    .container {
-        margin-bottom: 1rem;
-        .cell {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0.2rem 0.5rem;
-        }
-        .header {
-            display: flex;
-            .cell {
-                border-bottom: 1px solid gray;
-            }
-        }
-        .body {
-            max-height: 300px;
-            overflow-y: auto;
-            .row {
-                display: flex;
-            }
-        }
-    }
-    .container.works {
-        .cell:nth-child(1) {
-            width: 3rem;
-            text-align: right;
-        }
-        .cell:nth-child(2) {
-            width: 25rem;
-        }
-        .cell:nth-child(3) {
-            width: 5rem;
-            text-align: right;
-        }
-        .cell:nth-child(4) {
-            width: 5rem;
-        }
-    }
-    .container.books {
-        .cell:nth-child(1) {
-            width: 3rem;
-            text-align: right;
-        }
-        .cell:nth-child(2) {
-            width: 25rem;
-        }
-        .cell:nth-child(3) {
-            width: 10rem;
-        }
-        .cell:nth-child(4) {
-            width: 6rem;
-            text-align: right;
-        }
     }
 </style>

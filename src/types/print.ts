@@ -97,3 +97,13 @@ export type BoookListViewItemType = {
     ownedType: string;
     authors: RelatedPersonType[];
 }
+
+export type MagazineListViewItemType = {
+    id: number;
+    series: string;
+    title: string;
+    publisher: string;
+    publicationDate: string;
+    ownedType: string;
+    orderNo: number | null;
+}

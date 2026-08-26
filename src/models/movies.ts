@@ -1,4 +1,4 @@
-import type { MovieType } from '../types/movie'
+import type { MovieType, MovieListViewItemType } from '../types/movie'
 
 import pkg from 'sqlite3';
 import * as SeriesModel from './series';
@@ -80,8 +80,8 @@ export async function update(db: pkg.Database, movie: MovieType) {
                 if (movie.id === null) {
                     movie.id = this.lastID;
                 } else {
-                    await RelatedPersonsModel.deleteAll(db, 'MOVIE', print.id);
-                    await RelatedLinksModel.deleteAll(db, 'MOVIE', print.id);
+                    await RelatedPersonsModel.deleteAll(db, 'MOVIE', movie.id);
+                    await RelatedLinksModel.deleteAll(db, 'MOVIE', movie.id);
                 }
                 if (movie.relatedPersons != null && movie.relatedPersons.length > 0) {
                     for (const relatedPerson of movie.relatedPersons) {
@@ -96,5 +96,25 @@ export async function update(db: pkg.Database, movie: MovieType) {
                 resolve(movie);
             }
         });
+    });
+}
+
+// 関連映画を取得する
+export async function getRelatedMoviesByPersonId(db: pkg.Database, personId: number) {
+    return new Promise<MovieListViewItemType[]>((resolve, reject) => {
+        db.all<MovieListViewItemType>(
+            "SELECT DISTINCT m.id, m.title, m.country, m.releaseYear " +
+            "FROM related_persons as rp " +
+            "JOIN movies as m ON m.id = rp.relatedId " +
+            "WHERE rp.relatedType = 'MOVIE' and rp.personId = ?  " +
+            "ORDER BY m.releaseYear desc, m.title",
+            [personId],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
     });
 }

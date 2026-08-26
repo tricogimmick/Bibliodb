@@ -14,7 +14,8 @@ export const load: PageServerLoad = async ({ params }) => {
         const workId = Number(params.id);
 		return {
 			work: await WorkModel.get(db, workId),
-            relatedPrints: await PrintModel.getRelatedPrintsByWorkId(db, workId)
+            books: await PrintModel.getRelatedBookListByWorkId(db, workId),
+            magazines: await PrintModel.getRelatedMagazineListByWorkId(db, workId)
 		};
     } catch (e) {
 		console.log(e);

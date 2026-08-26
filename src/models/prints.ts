@@ -1,5 +1,5 @@
 import type {
-    PrintType, PrintViewType, PrintListViewItemType, BoookListViewItemType
+    PrintType, PrintViewType, PrintListViewItemType, BoookListViewItemType, MagazineListViewItemType
 
 
 } from '../types/print';
@@ -245,7 +245,7 @@ export function getRelatedPrintsByCollectionId(db: pkg.Database, collectionId: n
 }
 
 
-// 関連書籍リストの取得
+// 関連書籍リストの取得(collection)
 export function getRelatedBookListByCollectionId(db: pkg.Database, collectionId: number) {
     return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
         db.all<BoookListViewItemType>(
@@ -271,3 +271,82 @@ export function getRelatedBookListByCollectionId(db: pkg.Database, collectionId:
         );
     });
 }
+
+// 関連書籍リストの取得(person)
+export function getRelatedBookListByPersonId(db: pkg.Database, personId: number) {
+    return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
+        db.all<BoookListViewItemType>(
+            'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
+            'bk.publicationDate, bk.ownedType ' +
+            'FROM related_persons as rc ' +
+            'JOIN prints as bk on bk.id = rc.relatedId ' +
+            'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
+            'LEFT JOIN brands as br ON br.id = bk.brandId ' +
+            'WHERE rc.personId = ? AND rc.relatedType = ? AND bk.printType = ?' +
+            'ORDER BY bk.publicationDate',
+            [personId, 'PRINT', '書籍'],
+            async (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    for (const row of rows) {
+                        row.authors = await RelatedPersonsModel.getAll(db, 'PRINT', row.id) ?? [];
+                    }
+                    resolve(rows);
+                }
+            }
+        );
+    });
+}
+
+// 関連書籍リストの取得(work)
+export function getRelatedBookListByWorkId(db: pkg.Database, workId: number) {
+    return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
+        db.all<BoookListViewItemType>(
+            'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
+            'bk.publicationDate, bk.ownedType ' +
+            'FROM contents as ct ' +
+            'JOIN prints as bk on bk.id = ct.printId ' +
+            'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
+            'LEFT JOIN brands as br ON br.id = bk.brandId ' +
+            'WHERE ct.workId = ? AND bk.printType = ?' +
+            'ORDER BY bk.publicationDate',
+            [workId, '書籍'],
+            async (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    for (const row of rows) {
+                        row.authors = await RelatedPersonsModel.getAll(db, 'PRINT', row.id) ?? [];
+                    }
+                    resolve(rows);
+                }
+            }
+        );
+    });
+}
+
+// 関連雑誌リスト（work
+export function getRelatedMagazineListByWorkId(db: pkg.Database, workId: number) {
+    return new Promise<MagazineListViewItemType[]>((resolve, reject) => {
+        db.all<MagazineListViewItemType>(
+            'SELECT bk.id, sr.title as series, bk.title, pb.name as publisher, ' +
+            'bk.publicationDate, bk.ownedType, ct.orderNo ' +
+            'FROM contents as ct ' +
+            'JOIN prints as bk on bk.id = ct.printId ' +
+            'LEFT JOIN series as sr on sr.id = bk.seriesId ' +
+            'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
+            'WHERE ct.workId = ?  AND bk.printType = ?' +
+            'ORDER BY bk.publicationDate',
+            [workId, '雑誌'],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            }
+        );
+    });
+}
+
