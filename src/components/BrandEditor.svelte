@@ -10,7 +10,7 @@
     let { brand, callback }: PropsType = $props();
     let name = $state(brand.name);
     let description = $state(brand.description);
-    let buttonCaption = $derived(brand.id == null || brand.id == 0 ? "ADD" : "UPDATE");
+    let buttonCaption = $derived(brand.id == null || brand.id == 0 ? "登　録" : "更　新");
  
     // FOMRがサブミットされた
     const onSubmit = async (e: Event)  => {

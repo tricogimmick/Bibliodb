@@ -16,7 +16,7 @@
     let born = $state(person.born);
     let died = $state(person.died);
     let description = $state(person.description);
-    let buttonCaption = $derived(person.id == null || person.id == 0 ? '追加' : '更新');
+    let buttonCaption = $derived(person.id == null || person.id == 0 ? '登　録' : '更　新');
 
     let relatedLinks = $state(person.relatedLinks ?? []);
  

@@ -28,7 +28,7 @@
 
 </script>
 
-<h2>Movie - Append</h2>
+<h2>Collections - Append</h2>
 <CollectionEditor {...data} callback={onSubmit}></CollectionEditor>
 <div class="footer">
     <a href="/collections">Back to Movies</a>

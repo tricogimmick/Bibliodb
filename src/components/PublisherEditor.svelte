@@ -9,7 +9,7 @@
 	let { publisher, callback }: PropsType = $props();
 	let name = $state(publisher.name);
 	let description = $state(publisher.description);
-	let buttonCaption = $derived(publisher.id == null || publisher.id === 0 ? 'ADD' : 'UPDATE');
+	let buttonCaption = $derived(publisher.id == null || publisher.id === 0 ? '登　録' : '更　新');
 
 	// FOMRがサブミットされた
 	const onSubmit = (e: Event) => {
