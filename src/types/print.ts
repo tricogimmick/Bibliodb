@@ -33,6 +33,7 @@ export type PrintType = {
     relatedLinks: RelatedLinkType[] | null;
     relatedCollections: RelatedCollectionType[] | null;
     contents: ContentType[] | null;
+    tags: string[] | null;
 }
 
 export function createPrintType() {
@@ -59,7 +60,8 @@ export function createPrintType() {
         relatedWorks: null,
         relatedLinks: null,
         relatedCollections: null,
-        contents: null
+        contents: null,
+        tags: null
     });
 }
 
@@ -95,6 +97,7 @@ export type BoookListViewItemType = {
     brand: string;
     publicationDate: string;
     ownedType: string;
+    finishedReadingDate: string;
     authors: RelatedPersonType[];
 }
 

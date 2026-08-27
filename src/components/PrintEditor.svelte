@@ -16,6 +16,7 @@
 	import ContentEditor from './ContentEditor.svelte';
 	import RelatedWorksEditor from './RelatedWorksEditor.svelte';
 	import RelatedCollectionsEditor from './RelatedCollectionsEditor.svelte';
+	import TagEditor from "./TagEditor.svelte";
     import { confirmDialog } from '../lib/client';
 	import type { RelatedCollectionType } from '../types/relatedCollection';
 
@@ -64,6 +65,8 @@
 	let relatedLinks = $state(print.relatedLinks?.map((x) => x) ?? []);
 	let relatedCollections = $state(print.relatedCollections?.map((x) => x) ?? []);
 	let contents = $state(print.contents?.map((x) => x) ?? []);
+	let tags = $state(print.tags != null ? print.tags : []);
+
 
 	let filterdWorks: WorkType[] = $derived.by(() => {
 		if (relatedPersons.length > 0) {
@@ -193,6 +196,7 @@
 					firstPublished: x.firstPublished,
 					description: x.description
 				})),
+			tags,
 			publisher,
 			brand,
 			series: series_
@@ -224,6 +228,11 @@
 	const onChangeRelatedCollections = (rc: RelatedCollectionType[]) => {
 		relatedCollections = rc;
 	}
+
+    // タグが変更された
+    const onChangeTags = (newTags: string[]) => {
+        tags = newTags;
+    }
 </script>
 
 <div>
@@ -343,6 +352,7 @@
 			{collections}
 			callback={onChangeRelatedCollections}
 		></RelatedCollectionsEditor>
+        <TagEditor {tags} callback={onChangeTags}></TagEditor>
 		<div class="input-field">
 			<label for="description">解説</label>
 			<textarea name="description" bind:value={description} rows="5" cols="80"></textarea>

@@ -13,6 +13,7 @@ import * as RelatedPersonsModel from './relatedPersons';
 import * as RelatedWorksModel from './relatedWorks';
 import * as RelatedLinksModel from './relatedLinks';
 import * as RelatedCollectionsModel from './relatedCollections';
+import * as RelatedTagsModel from './relatedTags';
 
 // 全ての印刷物を取得する
 export function getAll(db: pkg.Database) {
@@ -44,6 +45,7 @@ export function get(db: pkg.Database, printId: number) {
                         row.relatedWorks = await RelatedWorksModel.getAll(db, 'PRINT', row.id);
                         row.relatedLinks = await RelatedLinksModel.getAll(db, 'PRINT', row.id);
                         row.relatedCollections = await RelatedCollectionsModel.getAll(db, 'PRINT', row.id);
+                        row.tags = await RelatedTagsModel.getAll(db, 'PRINT', row.id);
                     } catch (e) {
                         console.log(e);
                     }
@@ -116,6 +118,7 @@ export async function update(db: pkg.Database, print: PrintType) {
                     await RelatedWorksModel.deleteAll(db, 'PRINT', print.id);
                     await RelatedCollectionsModel.deleteAll(db, 'PRINT', print.id);
                     await ContentsModel.deleteAll(db, print.id);
+                    await RelatedTagsModel.deleteAll(db, 'PRINT', print.id);
                 }
                 if (print.relatedPersons != null && print.relatedPersons.length > 0) {
                     for (const relatedPerson of print.relatedPersons) {
@@ -140,6 +143,11 @@ export async function update(db: pkg.Database, print: PrintType) {
                 if (print.contents != null && print.contents.length > 0) {
                     for (const content of print.contents) {
                         await ContentsModel.add(db, print.id, content);
+                    }
+                }
+                if (print.tags != null && print.tags.length > 0) {
+                    for (const tag of print.tags) {
+                        await RelatedTagsModel.add(db, 'PRINT', print.id, tag);
                     }
                 }
                 resolve(print);
@@ -250,7 +258,7 @@ export function getRelatedBookListByCollectionId(db: pkg.Database, collectionId:
     return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
         db.all<BoookListViewItemType>(
             'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
-            'bk.publicationDate, bk.ownedType ' +
+            'bk.publicationDate, bk.ownedType , bk.finishedReadingDate ' +
             'FROM related_collections as rc ' +
             'JOIN prints as bk on bk.id = rc.relatedId ' +
             'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
@@ -277,7 +285,7 @@ export function getRelatedBookListByPersonId(db: pkg.Database, personId: number)
     return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
         db.all<BoookListViewItemType>(
             'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
-            'bk.publicationDate, bk.ownedType ' +
+            'bk.publicationDate, bk.ownedType, bk.finishedReadingDate ' +
             'FROM related_persons as rc ' +
             'JOIN prints as bk on bk.id = rc.relatedId ' +
             'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
@@ -304,7 +312,7 @@ export function getRelatedBookListByWorkId(db: pkg.Database, workId: number) {
     return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
         db.all<BoookListViewItemType>(
             'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
-            'bk.publicationDate, bk.ownedType ' +
+            'bk.publicationDate, bk.ownedType, bk.finishedReadingDate ' +
             'FROM contents as ct ' +
             'JOIN prints as bk on bk.id = ct.printId ' +
             'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +

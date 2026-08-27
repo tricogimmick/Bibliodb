@@ -19,6 +19,7 @@
             <div class="cell">出版社</div>
             <div class="cell">発行日</div>
             <div class="cell">所有</div>
+            <div class="cell">読了</div>
         </div>
         <div class="body">
             {#each books as book, i (book.id) }
@@ -33,6 +34,7 @@
                     <div class="cell">{book.publisher}{#if book.brand} ({book.brand}){/if}</div>
                     <div class="cell">{book.publicationDate}</div>
                     <div class="cell">{book.ownedType}</div>
+                    <div class="cell">{#if book.finishedReadingDate != ''}✓{/if}</div>
                 </div>
             {/each}        
         </div>
@@ -67,7 +69,11 @@
             width: 6rem;
         }
         .cell:nth-child(6) {
-            width: 15rem;
+            width: 10rem;
+        }
+        .cell:nth-child(7) {
+            width: 4rem;
+            text-align: center;
         }
         .header {
             display: flex;

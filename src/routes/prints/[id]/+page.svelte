@@ -133,6 +133,15 @@
             <span class="data-value"><a href="/collections/{relatedCollection.collectionId}">{relatedCollection.collectionTitle}</a></span>
         </div>              
         {/each}
+        <div class="display-field">
+            <span class="data-label">タグ</span>
+            <span class="data-value">
+                {#each printData.tags as tag (tag)}
+                    <span class="tag-chip">{tag}</span>
+                {/each}
+            </span>
+        </div>      
+
     </div>
 </div>
 {#if printData.description != null && printData.description != ''}

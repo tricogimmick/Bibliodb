@@ -151,7 +151,6 @@
 
     // タグが変更された
     const onChangeTags = (newTags: string[]) => {
-        console.log(newTags);
         tags = newTags;
     }
 
