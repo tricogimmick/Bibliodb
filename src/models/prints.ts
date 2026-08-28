@@ -165,7 +165,7 @@ export async function getListViewAll(db: pkg.Database) {
             "LEFT JOIN series as sr on sr.id = bk.seriesId " +
             "LEFT JOIN publishers as pb ON pb.id = bk.publisherId " +
             "LEFT JOIN brands as br ON br.id = bk.brandId " +
-            "ORDER BY bk.publicationDate",
+            "ORDER BY bk.id desc, bk.publicationDate",
             (err, rows) => {
                 if (err) {
                     reject(err);
