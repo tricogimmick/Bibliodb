@@ -24,11 +24,19 @@ select {
     margin-bottom: 1rem;
     padding: 0;
     width: 60rem;
-    > p {
+    p {
         margin-left: 1rem;
     }
-    > p:first-child {
+    p:first-child {
         margin-top: 0;
+    }
+    blockquote {
+        background-color: #f0f0f0;
+        padding: 0.2rem;
+        border-left: 1px solid gray;
+        > p:last-child {
+            margin-bottom: unset;
+        }
     }
 }
 .table-container {
