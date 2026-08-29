@@ -21,10 +21,9 @@
     let note = $state(collection.note);
     let buttonCaption = $derived(collection.id == null || collection.id == 0 ? '登　録' : '更　新')
 
-    // シリーズとイシューからタイトルを組み立てる
-    $effect(() => {
-        title = [seriesName, issue].filter(x => x != null && x !== '').join(' ');
-    });
+    const onChangeSeriesOrIssue = (e: Event) => {
+        title = `${seriesName} ${issue}`;
+    }
 
     // サブミットされた
     const onSubmit = async (e: Event) => {
@@ -74,11 +73,11 @@
         </div>
         <div class="input-field">
             <label for="seriesName">シリーズ</label>
-            <input name="seriesName" type="text" bind:value={seriesName} list="C9C3E8B4-6C2E-4F5F-9A2E-2C7A6B8B6C7D" />
+            <input name="seriesName" type="text" bind:value={seriesName} list="C9C3E8B4-6C2E-4F5F-9A2E-2C7A6B8B6C7D" onchange={onChangeSeriesOrIssue} />
         </div>
         <div class="input-field">
             <label for="issue">号数</label>
-            <input name="issue" type="text" bind:value={issue} />
+            <input name="issue" type="text" bind:value={issue} onchange={onChangeSeriesOrIssue} />
         </div>
         <div class="input-field">
             <label for="collectionType">種別</label>
