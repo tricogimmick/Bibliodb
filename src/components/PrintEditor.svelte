@@ -1,16 +1,17 @@
 <script lang="ts">
 	import type { PrintType } from '../types/print';
 	import type { PersonType } from '../types/person';
-	import { createPublisherType, type PublisherType } from '../types/publisher';
-	import { createBrandType, type BrandType } from '../types/brand';
-	import { createSeriesType, type SeriesType } from '../types/series';
 	import type { WorkType } from '../types/work';
 	import type { CollectionType } from '../types/collection';
 	import type { RelatedPersonType } from '../types/relatedPerson';
 	import type { RelatedLinkType } from '../types/relatedLink';
 	import type { RelatedWorkType } from '../types/relatedWork';
+	import type { RelatedCollectionType } from '../types/relatedCollection';
 	import type { ContentType } from '../types/content';
 
+	import { createPublisherType, type PublisherType } from '../types/publisher';
+	import { createBrandType, type BrandType } from '../types/brand';
+	import { createSeriesType, type SeriesType } from '../types/series';
 	import RelatedPersonEditor from './RelatedPersonEditor.svelte';
 	import RelatedLinkEditor from './RelatedLinkEditor.svelte';
 	import ContentEditor from './ContentEditor.svelte';
@@ -18,7 +19,6 @@
 	import RelatedCollectionsEditor from './RelatedCollectionsEditor.svelte';
 	import TagEditor from "./TagEditor.svelte";
     import { confirmDialog } from '../lib/client';
-	import type { RelatedCollectionType } from '../types/relatedCollection';
 
 	type PropsType = {
 		print: PrintType;

@@ -2,13 +2,16 @@
     import type { WorkType } from "../types/work";
     import type { PersonType } from "../types/person";
 	import type { SeriesType } from "../types/series";
+	import type { CollectionType } from '../types/collection';
     import type { RelatedPersonType } from "../types/relatedPerson";
     import type { RelatedLinkType } from "../types/relatedLink";
     import type { RelatedSeriesType } from "../types/relatedSeries";
+	import type { RelatedCollectionType } from '../types/relatedCollection';
 
     import RelatedPersonEditor from "./RelatedPersonEditor.svelte";
     import RelatedLinkEditor from "./RelatedLinkEditor.svelte";
     import RelatedSeriesEditor from "./RelatedSeriesEditor.svelte";
+	import RelatedCollectionsEditor from './RelatedCollectionsEditor.svelte';
     import TagEditor from "./TagEditor.svelte";
     import { confirmDialog } from "../lib/client"
 
@@ -16,15 +19,17 @@
         work: WorkType,
         persons: PersonType[],
         series: SeriesType[],
+		collections: CollectionType[];
         callback: ((result: WorkType) => void | Promise<void>) | null
     };
 
-    let { work, persons, series, callback } : PropsType = $props();
+    let { work, persons, series, collections, callback } : PropsType = $props();
 
     let relatedPersons = $state(work.relatedPersons != null ? work.relatedPersons : []);
     let publishedMedia = $state(work.relatedSeries != null ? work.relatedSeries.filter(x => x.isMedia == 1) : []);
     let seriesTitles = $state(work.relatedSeries != null ? work.relatedSeries.filter(x => x.isMedia != 1) : []);
     let relatedLinks = $state(work.relatedLinks != null ? work.relatedLinks : []);
+	let relatedCollections = $state(work.relatedCollections?.map((x) => x) ?? []);
     let tags = $state(work.tags != null ? work.tags : []);
 
     let seriesOfMedia = $state(series.filter(x => x.seriesType != '叢書' && x.seriesType != '作品'));
@@ -69,6 +74,12 @@
                 errors.push(`掲載誌：${s.seriesTitle}が未登録です.`);
             }
         }
+		if (relatedCollections != null && relatedCollections.length > 0) {
+			const c = relatedCollections.find((x) => x.collectionId == null && x.collectionTitle != '');
+			if (c) {
+				errors.push(`コレクション：${c.collectionTitle}が未登録です.`);
+			}
+		}
         if (errors.length > 0) {
             const errorMessage = errors.join('<br>');
             const confirmed = await confirmDialog('マスタが存在しない項目があります。', `${errorMessage}<br>マスタが存在しない項目については新たに登録しますか？`);
@@ -119,6 +130,14 @@
                 alt: x.alt,
                 description: x.description                    
             })),
+			relatedCollections: relatedCollections
+				.map((x) => ({
+					relatedType: x.relatedType,
+					relatedId: x.relatedId,
+					collectionId: x.collectionId,
+					collectionTitle: x.collectionTitle,
+					description: x.description					
+				})),
             tags
         };
         callback?.(data);
@@ -148,6 +167,11 @@
     const onChangeSeriesTitles = (rs: RelatedSeriesType[]) => {
         seriesTitles = rs;
     }
+
+	// コレクションが変更された
+	const onChangeRelatedCollections = (rc: RelatedCollectionType[]) => {
+		relatedCollections = rc;
+	}
 
     // タグが変更された
     const onChangeTags = (newTags: string[]) => {
@@ -223,6 +247,13 @@
             <label for="note">Note</label>
             <textarea name="note" bind:value={note} rows="5" cols="80" ></textarea>
         </div>      
+		<RelatedCollectionsEditor
+			relatedType="WORK"
+			relatedId={work.id}
+			{relatedCollections}
+			{collections}
+			callback={onChangeRelatedCollections}
+		></RelatedCollectionsEditor>
         <TagEditor {tags} callback={onChangeTags}></TagEditor>
         <div class="button-container">
             <input type="submit" value="{buttonCaption}" />

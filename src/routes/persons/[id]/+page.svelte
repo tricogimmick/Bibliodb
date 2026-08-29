@@ -4,7 +4,7 @@
     import { marked } from 'marked';
 
     import TabButton from '../../../components/TabButton.svelte';
-    import RelatedWorksListView from '../../../components/RelatedWorksListView.svelte';
+    import RelatedWorkListView from '../../../components/RelatedWorkListView.svelte';
     import RelatedBookListView from '../../../components/RelatedBookListView.svelte';
     import RelatedMovieListView from '../../../components/RelatedMovieListView.svelte';
     import ImageViewer from '../../../components/ImageViewer.svelte';
@@ -102,7 +102,7 @@
 <div class="works-list">
     <TabButton selectedId={selectedPrintType} {buttons} callback={tabButtonsCallBack} ></TabButton>
     {#if selectedPrintType === "work"}
-        <RelatedWorksListView label="" {works}></RelatedWorksListView>
+        <RelatedWorkListView label="" {works}></RelatedWorkListView>
         <div class="button-container">
             <button onclick={onClickAppendWork}>追加</button>
         </div>

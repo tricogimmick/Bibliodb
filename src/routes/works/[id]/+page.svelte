@@ -27,10 +27,6 @@
         }); 
     }
 
-    const synopsisHtml = workData.synopsis != null ? marked.parse(workData.synopsis): "";
-    const descHtml = workData.description != null ? marked.parse(workData.description): "";
-    const noteHtml = workData.note != null ? marked.parse(workData.note) : "";
-    
     let selectedMediaType = $state((books?.length ?? 0) > 0 ? "book" : "magazine" );
     let buttons = [];
     if ((books?.length ?? 0) > 0) { buttons.push({ id: 'book', caption: '掲載書籍' }); }
@@ -58,81 +54,69 @@
     <button onclick={onClickAppendWork}>追　加</button>
 </div>
 <div>
-    <div class="input-field">
-        <label for="title">題名</label>
+    <div class="display-field">
+        <span class="data-label">題名</span>
         <span class="data-value">{workData.title} {#if workData.index != workData.title}({workData.index}){/if}</span>
     </div>
     {#if workData.variantTitles}
-    <div class="input-field">
-        <label for="variantTitles">別名</label>
+    <div class="display-field">
+        <span class="data-label">別名</span>
         <span class="data-value">{workData.variantTitles}</span>
     </div>
     {/if}
     {#if workData.originalTitle}
-    <div class="input-field">
-        <label for="originalTitle">原題</label>
+    <div class="display-field">
+        <span class="data-label">原題</span>
         <span class="data-value">{workData.originalTitle}</span>
     </div>
     {/if}
     {#each workData.relatedSeries?.filter(x => x.isMedia == 0) as relatedSeries, i }
-    <div class="input-field">
+    <div class="display-field">
         {#if i == 0}
-        <label for="">シリーズ</label>
+        <span class="data-label">シリーズ</span>
         {:else}
-        <label for="">&nbsp</label>
+        <span class="data-label">&nbsp</span>
         {/if}
         <span class="data-value">{relatedSeries.seriesTitle} {relatedSeries.description}</span>
     </div>              
     {/each}
-    <div class="input-field">
-        <label for="contentType">種別</label>
+    <div class="display-field">
+        <span class="data-label">種別</span>
         <span class="data-value">{workData.contentType}</span>
     </div>
     {#each relatedPersons as person}
-    <div class="input-field">
-        <label for="">{person[0]}</label>
+    <div class="display-field">
+        <span class="data-label">{person[0]}</span>
         <span class="data-value">{@html person[1]}</span>
     </div>              
     {/each}
     {#each workData.relatedSeries?.filter(x => x.isMedia == 1) as relatedSeries, i }
-    <div class="input-field">
+    <div class="display-field">
         {#if i == 0}
-        <label for="">掲載誌</label>
+        <span class="data-label">掲載誌</span>
         {:else}
-        <label for="">&nbsp</label>
+        <span class="data-label">&nbsp</span>
         {/if}
         <span class="data-value">{relatedSeries.seriesTitle} {relatedSeries.description}</span>
     </div>              
     {/each}
-    <div class="input-field">
-        <label for="publicationYear">発表年</label>
+    <div class="display-field">
+        <span class="data-label">発表年</span>
         {#if workData.publicationEndYear != null}
         <span class="data-value">{workData.publicationYear} 〜 {workData.publicationEndYear} {workData.status}</span>
         {:else}
         <span class="data-value">{workData.publicationYear} {workData.status}</span>
         {/if}
     </div>      
-    {#if synopsisHtml != ""}
-    <div class="input-field">
-        <label for="description">あらすじ</label>
-        <div class="data-content">{@html synopsisHtml}</div>
-    </div>      
-    {/if}
-    {#if descHtml != ""}
-    <div class="input-field">
-        <label for="description">解説</label>
-        <div class="data-content">{@html descHtml}</div>
-    </div>      
-    {/if}
     {#if workData.seqNo != null}
-    <div class="input-field">
-        <label for="seqNo">連番</label>
+    <div class="display-field">
+        <span class="data-label">連番</span>
         <span class="data-value">{workData.seqNo}</span>
     </div>  
     {/if}    
     {#if externalLinks.length > 0 }
-    <div class="input-field">
-        <label for="ownedType">関連リンク</label>
+    <div class="display-field">
+        <span class="data-label">関連リンク</span>
         <div>
             {#each externalLinks as relatedLink, i}
             <span><a href={relatedLink.url} target="_blank">{relatedLink.alt}</a></span><br>
@@ -140,18 +124,22 @@
         </div>
     </div>      
     {/if}
-    <div class="input-field">
-        <label for="finishedReading">読了日</label>
+    <div class="display-field">
+        <span class="data-label">読了日</span>
         <span class="data-value">{workData.finishedReading}</span>
     </div>      
-    {#if noteHtml != ""}
-    <div class="input-field">
-        <label for="note">補記</label>
-        <div class="data-content">{@html noteHtml}</div>
-    </div>      
-    {/if}
-    <div class="input-field">
-        <label for="note">タグ</label>
+    {#each workData.relatedCollections as relatedCollection, i (relatedCollection.collectionId)}
+    <div class="display-field">
+        {#if i == 0}
+        <span class="data-label">コレクション</span>
+        {:else}
+        <span class="data-label">&nbsp</span>
+        {/if}
+        <span class="data-value"><a href="/collections/{relatedCollection.collectionId}">{relatedCollection.collectionTitle}</a></span>
+    </div>              
+    {/each}
+    <div class="display-field">
+        <span class="data-label">タグ</span>
         <div class="data-content">
             {#each workData.tags as tag (tag)}
                 <span class="tag-chip">{tag}</span>
@@ -159,6 +147,24 @@
         </div>
     </div>      
 </div>
+{#if workData.synopsis != null && workData.synopsis != ''}
+<h4>あらすじ</h4>
+<div class="text-container">
+    {@html marked.parse(workData.synopsis)}
+</div>
+{/if}
+{#if workData.description != null && workData.description != ''}
+<h4>解　説</h4>
+<div class="text-container">
+    {@html marked.parse(workData.description)}
+</div>
+{/if}
+{#if workData.note != null && workData.note != ''}
+<h4>解　説</h4>
+<div class="text-container">
+    {@html marked.parse(workData.note)}
+</div>
+{/if}
 {#if images.length > 0}
 <h4>Images</h4>
 <div class="image-container">
@@ -182,12 +188,6 @@
 </div>
 
 <style>
-    .tag-chip {
-        display: inline-block;
-        margin-right: 0.2rem;
-        padding: 0.1rem 0.5rem;
-        border: 1px solid gray;
-    }
     .media-list {
         margin-top: 1em;
     }

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { WorksListViewItemType } from "../types/works";
+    import type { WorkListViewItemType } from '../types/work';
 
     type PropsType = {
         label: string,
-        works: WorksListViewItemType[]
+        works: WorkListViewItemType[]
     }
     
     let { label, works } : PropsType = $props();

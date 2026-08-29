@@ -6,6 +6,7 @@ import pkg from 'sqlite3';
 import { createWork } from '../../../types/work';
 import * as PersonsModel from '../../../models/persons';
 import * as SeriesModel from '../../../models/series';
+import * as CollectionsModel from '../../../models/collections';
 
 export const load: PageServerLoad = async ({ params }) => {
   const dbPath = env["BIBLIODB_PATH"] ?? "";
@@ -14,7 +15,8 @@ export const load: PageServerLoad = async ({ params }) => {
     return {
       work: createWork(),
       persons: await PersonsModel.getAll(db),
-      series: await SeriesModel.getAll(db)
+      series: await SeriesModel.getAll(db),
+      collections: await CollectionsModel.getAll(db)
     };
   } catch (e) {
     console.log(e);

@@ -4,9 +4,12 @@
     import { goto } from '$app/navigation';
     import { marked } from 'marked';
     import RelatedBookListView from '../../../components/RelatedBookListView.svelte';
+    import RelatedWorkListView from '../../../components/RelatedWorkListView.svelte';
+
     const { data }: { data: PageData } = $props();
     const collectionData = data.collection;
     const relatedBooks = data.relatedBooks;
+    const relatedWorks = data.relatedWorks;
 
     const onclickModifyCollection = (e: Event) => {
         e.preventDefault();
@@ -58,7 +61,12 @@
     {@html marked.parse(collectionData.note)}
 </div>
 {/if}
+{#if relatedBooks != null && relatedBooks.length > 0}
 <RelatedBookListView label="書籍リスト" books={relatedBooks}></RelatedBookListView>
+{/if}
+{#if relatedWorks != null && relatedWorks.length > 0}
+<RelatedWorkListView label="作品リスト" works={relatedWorks}></RelatedWorkListView>
+{/if}
 <div class="footer">
     <a href="/collections">Back to Collections</a>
 </div>

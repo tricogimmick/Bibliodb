@@ -1,6 +1,7 @@
 import type { RelatedLinkType } from "./relatedLink";
 import type { RelatedPersonType } from "./relatedPerson";
 import type { RelatedSeriesType } from "./relatedSeries";
+import type { RelatedCollectionType } from "./relatedCollection";
 
 export type WorkType = {
     id: number | null;
@@ -21,6 +22,7 @@ export type WorkType = {
     relatedPersons: RelatedPersonType[] | null;
     relatedSeries: RelatedSeriesType[] | null;
     relatedLinks: RelatedLinkType[] | null;
+    relatedCollections: RelatedCollectionType[] | null;
     tags: string[] | null;
 };
 
@@ -51,6 +53,7 @@ export function createWork() {
         relatedPersons: null,
         relatedSeries: null,
         relatedLinks: null,
+        relatedCollections: null,
         tags: null
     });
 }

@@ -4,6 +4,7 @@ import pkg from 'sqlite3';
 import * as RelatedPersonsModel from './relatedPersons';
 import * as RelatedSeriesModel from './relatedSeries';
 import * as RelatedLinksModel from './relatedLinks';
+import * as RelatedCollectionsModel from './relatedCollections';
 import * as RelatedTagsMpdel from './relatedTags';
 
 // 全ての作品を取得する
@@ -48,6 +49,7 @@ export function get(db: pkg.Database, id: number) {
                     row.relatedPersons = await RelatedPersonsModel.getAll(db, 'WORK', row.id);
                     row.relatedSeries = await RelatedSeriesModel.getAll(db, 'WORK', row.id);
                     row.relatedLinks = await RelatedLinksModel.getAll(db, 'WORK', row.id);
+                    row.relatedCollections = await RelatedCollectionsModel.getAll(db, 'WORK', row.id);
                     row.tags = await RelatedTagsMpdel.getAll(db, 'WORK', row.id);
                 }
                 resolve(row);
@@ -79,6 +81,7 @@ export async function update(db: pkg.Database, work: WorkType) {
                     await RelatedPersonsModel.deleteAll(db, 'WORK', work.id);
                     await RelatedSeriesModel.deleteAll(db, 'WORK', work.id);
                     await RelatedLinksModel.deleteAll(db, 'WORK', work.id);
+                    await RelatedCollectionsModel.deleteAll(db, 'WORK', work.id);
                     await RelatedTagsMpdel.deleteAll(db, 'WORK', work.id);
                 }
                 if (work.relatedPersons != null && work.relatedPersons.length > 0) {
@@ -94,6 +97,11 @@ export async function update(db: pkg.Database, work: WorkType) {
                 if (work.relatedLinks != null && work.relatedLinks.length > 0) {
                     for (const relatedLink of work.relatedLinks) {
                         await RelatedLinksModel.add(db, 'WORK', work.id, relatedLink);
+                    }
+                }
+                if (work.relatedCollections != null && work.relatedCollections.length > 0) {
+                    for (const relatedCollection of work.relatedCollections) {
+                        await RelatedCollectionsModel.add(db, 'WORK', work.id, relatedCollection);
                     }
                 }
                 if (work.tags != null && work.tags.length > 0) {
@@ -117,6 +125,26 @@ export async function getRelatedWorksByPersonId(db: pkg.Database, personId: numb
             "WHERE rp.relatedType = 'WORK' and rp.personId = ? " +
             "ORDER BY wk.publicationYear, wk.seqNo",
             [personId],
+            (err, rows) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            });
+    });
+}
+
+// 関連作品を取得する(person)
+export async function getRelatedWorksByCollectionId(db: pkg.Database, collectionId: number) {
+    return new Promise<WorkListViewItemType[]>((resolve, reject) => {
+        db.all<WorkListViewItemType>(
+            "SELECT wk.id, wk.title, wk.publicationYear, wk.contentType " +
+            "FROM related_collections as rp " +
+            "JOIN works as wk ON wk.id = rp.relatedId " +
+            "WHERE rp.relatedType = 'WORK' and rp.collectionId = ? " +
+            "ORDER BY wk.publicationYear, wk.seqNo",
+            [collectionId],
             (err, rows) => {
                 if (err) {
                     reject(err);
