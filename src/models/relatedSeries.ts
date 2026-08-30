@@ -33,6 +33,7 @@ export async function add(db: pkg.Database, relatedType: string,  relatedId: num
                     index: relatedSeries.seriesTitle,
                     title: relatedSeries.seriesTitle,
                     originalTitle: '',
+                    subTitle: '',
                     seriesType: relatedSeries.isMedia == 0 ? '作品' : '雑誌',
                     publisherId: null,
                     description: '',

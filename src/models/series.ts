@@ -40,10 +40,10 @@ export async function update(db: pkg.Database, series: SeriesType) {
         series.publisherId = publisher.id;
     }
     const [sql, params] = series.id === null
-        ? ['INSERT INTO series ([index], title, originalTitle, seriesType, publisherId, description, bookReviewTarget) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-            [series.index, series.title, series.originalTitle, series.seriesType, series.publisherId, series.description, series.bookReviewTarget]]
-        : ['UPDATE series SET [index] = ?, title = ?, originalTitle = ?, seriesType = ?, publisherId = ?, description = ?, bookReviewTarget = ? WHERE id = ?', 
-            [series.index, series.title, series.originalTitle, series.seriesType, series.publisherId, series.description, series.bookReviewTarget, series.id]];
+        ? ['INSERT INTO series ([index], title, originalTitle, subTitle, seriesType, publisherId, description, bookReviewTarget) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [series.index, series.title, series.originalTitle, series.subTitle, series.seriesType, series.publisherId, series.description, series.bookReviewTarget]]
+        : ['UPDATE series SET [index] = ?, title = ?, originalTitle = ?, subTitle = ?, seriesType = ?, publisherId = ?, description = ?, bookReviewTarget = ? WHERE id = ?',
+            [series.index, series.title, series.originalTitle, series.subTitle, series.seriesType, series.publisherId, series.description, series.bookReviewTarget, series.id]];
     return new Promise<SeriesType>((resolve, reject) => {
         db.run(sql, params, function (err) {
             if (err) {

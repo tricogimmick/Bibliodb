@@ -4,6 +4,7 @@ export type CollectionType = {
     id: number | null;
     title: string;
     seriesId: number | null;
+    term: number | null;
     issue: string;
     collectionType: string;
     description: string;
@@ -18,6 +19,7 @@ export function createCollectionType() {
         id: null,
         title: '',
         seriesId: null,
+        term: null,
         issue: '',
         collectionType: '',
         description: '',

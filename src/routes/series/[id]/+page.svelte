@@ -32,6 +32,12 @@
         <span class="data-value">{series.originalTitle} </span>
     </div>
     {/if}
+    {#if series.subTitle }
+    <div class="input-field">
+        <label for="subTitle">副題</label>
+        <span class="data-value">{series.subTitle} </span>
+    </div>
+    {/if}
     <div class="input-field">
         <label for="seriesType">種別</label>
         <span class="data-value">{series.seriesType} </span>

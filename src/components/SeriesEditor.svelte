@@ -17,6 +17,7 @@
     let title = $state(series.title);
     let index = $state(series.index);
     let originalTitle = $state(series.originalTitle);
+    let subTitle = $state(series.subTitle);
     let seriesType = $state(series.seriesType);
     let publisherName = $state(publishers.find(x => x.id == series.publisherId)?.name ?? '');
     let description = $state(series.description);
@@ -48,6 +49,7 @@
             index: index,
             title,
             originalTitle,
+            subTitle,
             seriesType,
             publisherId: publisher?.id ?? null,
             description,
@@ -75,6 +77,10 @@
         <div class="input-field">
             <label for="originalTitle">原題</label>
             <input name="originalTitle" type="text" bind:value={originalTitle} />
+        </div>
+        <div class="input-field">
+            <label for="subTitle">副題</label>
+            <input name="subTitle" type="text" bind:value={subTitle} />
         </div>
         <div class="input-field">
             <label for="seriesType">種別</label>

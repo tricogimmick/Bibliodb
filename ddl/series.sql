@@ -8,6 +8,8 @@ CREATE TABLE series (
     , title TEXT NOT NULL
     -- 原題
     , originalTitle TEXT
+    -- 副題
+    , subTitle TEXT
     -- 種別
     , seriesType TEXT NOT NULL
     -- 出版社

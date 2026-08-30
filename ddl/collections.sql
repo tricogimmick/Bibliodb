@@ -6,6 +6,8 @@ CREATE TABLE collections (
     , title TEXT NOT NULL
     -- シリーズ
     , seriesId INTEGER
+    -- 年度
+    , term INTEGER
     -- イシュー
     , issue TEXT
     -- 種別

@@ -6,6 +6,7 @@ export type SeriesType = {
     index: string;
     title: string;
     originalTitle: string;
+    subTitle: string;
     seriesType: string;
     publisherId: number | null;
     description: string;
@@ -21,6 +22,7 @@ export function createSeriesType(id: number | null = null, index: string = '', s
         index: index,
         title: index,
         originalTitle: '',
+        subTitle: '',
         seriesType,
         publisherId,
         description: '',

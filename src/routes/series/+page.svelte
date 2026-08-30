@@ -25,7 +25,7 @@
 
 <h2>Series</h2>
 <div class="button-container">
-    <button onclick={onClickAppendSeries}>ADD</button>
+    <button onclick={onClickAppendSeries}>追加</button>
 </div>
 <div class="condition-container">
     <div class="input-field">
