@@ -204,6 +204,32 @@
 		callback?.(postData);
 	};
 
+	//  シリーズ名が変更された
+	const onChangeSeriesName = (e: Event) => {
+		const s = series.find((x) => x.index === (e.target as HTMLInputElement).value);
+		if (s) {
+			if (s.seriesType === '雑誌') {
+				printType = '雑誌';
+			}
+			if (publisherName == '' && s.publisherId != null) {
+				const p = publishers.find((x) => x.id === s.publisherId);
+				if (p) {
+					publisherName = p.name;
+				}
+			}
+		}
+	};
+
+	// 出版種別が変更された
+	const onChangePrintType = (e: Event) => {
+		printType = (e.target as HTMLSelectElement).value;
+		if (printType === '雑誌') {
+			relatedPersons = [];
+		} else {
+			issueNumber = null;
+		}
+	};
+
 	// 関連人物リンクが変更された
 	const onChangeRelationPersons = async (rp: RelatedPersonType[]) => {
 		relatedPersons = rp;
@@ -259,6 +285,7 @@
 				type="text"
 				bind:value={seriesName}
 				list="0A72E1A9-DC21-4B88-9A4E-C6506E917B6B"
+				onchange={onChangeSeriesName}
 			/>
 		</div>
 		<div class="input-field">
@@ -274,11 +301,18 @@
 		</div>
 		<div class="input-field">
 			<label for="printType">出版種別</label>
-			<select name="printType" bind:value={printType}>
+			<select name="printType" bind:value={printType} required onchange={onChangePrintType}>
 				<option value="書籍">書籍</option>
 				<option value="雑誌">雑誌</option>
 			</select>
 		</div>
+		{#if printType === '雑誌'}
+			<div class="input-field">
+				<label for="issueNumber">号数</label>
+				<input name="issueNumber" type="number" bind:value={issueNumber} />
+			</div>
+		{/if}
+		{#if printType !== '雑誌'}
 		<RelatedPersonEditor
 			relatedType="PRINT"
 			relatedId={print.id}
@@ -287,6 +321,7 @@
 			label=""
 			callback={onChangeRelationPersons}
 		></RelatedPersonEditor>
+		{/if}
 		<div class="input-field">
 			<label for="publisherName">出版社</label>
 			<input
@@ -306,10 +341,6 @@
 		<div class="input-field">
 			<label for="publicationDate">発行日</label>
 			<input name="publicationDate" type="date" bind:value={publicationDate} />
-		</div>
-		<div class="input-field">
-			<label for="issueNumber">号数</label>
-			<input name="issueNumber" type="number" bind:value={issueNumber} />
 		</div>
 		<RelatedWorksEditor
 			label="表紙"
