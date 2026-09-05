@@ -50,6 +50,23 @@
         callback?.(t);
     }
 
+    // URLが変更された
+    const onChangeUrl = (e: Event) => {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        const orderNo = Number((e.target as HTMLButtonElement)?.closest('div')?.dataset.orderNo);
+        const item = items.find(x => x.orderNo == orderNo);
+        if (item) {
+            const url = (e.target as HTMLInputElement).value;
+            if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif')) {
+                item.linkType = 'IMG';
+            } else {
+                item.linkType = 'LINK';
+            }
+        }
+        callCallback();
+    };
+
     // 追加ボタンがクリックされた
     const onClickAddButton = (e: Event) => {
         e.stopImmediatePropagation();
@@ -121,7 +138,7 @@
             <option value="IMG">画像</option>
             <option value="LINK">リンク</option>
         </select>
-        <input name="url" type="url" bind:value={item.url} onchange={callCallback}/><br>
+        <input name="url" type="url" bind:value={item.url} onchange={onChangeUrl}/><br>
         <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} list="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C"/>
         <button onclick={onClickAddButton}>追加</button>               
         <button onclick={onClickDeleteButton}>削除</button>               
