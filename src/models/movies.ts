@@ -64,7 +64,7 @@ export async function update(db: pkg.Database, movie: MovieType) {
         }
         const [sql, params] = movie.id === null
             ? [
-                'NSERT INTO movies (title , originalTitle, seriesId, country, releaseYear, description, note, viewingDate, viewingMethod) ' +
+                'INSERT INTO movies (title , originalTitle, seriesId, country, releaseYear, description, note, viewingDate, viewingMethod) ' +
                 'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 makeUpdateParams(movie)
             ]

@@ -22,6 +22,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
     const templateId = Number(url.searchParams.get('id')); 
     if (!Number.isNaN(templateId) && templateId !== 0 ) {
       templateMoel = await PrintModel.get(db, templateId);
+      templateMoel.id = null;
       templateMoel.note = '';
       templateMoel.toc = '';
       templateMoel.relatedWorks = [];
