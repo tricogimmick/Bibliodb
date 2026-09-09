@@ -144,6 +144,7 @@
             <option value="作画">作画</option>
             <option value="漫画">漫画</option>
             <option value="協力">協力</option>
+            <option value="構成">構成</option>
             <option value="撮影">撮影</option>
             <option value="監修">監修</option>
             <option value="監督">監督</option>
