@@ -59,9 +59,16 @@
         if (item) {
             const url = (e.target as HTMLInputElement).value;
             if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif')) {
-                item.linkType = 'IMG';
+                if (item.linkType === 'LINK') {
+                    item.linkType = 'IMG';
+                    if (item.alt === '') {
+                        item.alt = '表紙';
+                    }
+                }
             } else {
-                item.linkType = 'LINK';
+                if (item.linkType === 'IMG') {
+                    item.linkType = 'LINK';
+                }
             }
         }
         callCallback();
@@ -116,6 +123,7 @@
         <option>ヤンマガWeb</option>
         <option>コミックDAYS</option>
         <option>サンデーうぇぶり</option>
+        <option>ポスター</option>
         <option>表紙</option>
         <option>裏表紙</option>
         <option>カバー</option>
