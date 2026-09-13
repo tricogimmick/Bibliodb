@@ -115,14 +115,6 @@
 
 <div>
     <datalist id="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C">
-        <option>Wikipedia</option>
-        <option>青空文庫</option>
-        <option>国立国会図書館デジタルコレクション</option>
-        <option>Amazon</option>
-        <option>マガポケ</option>
-        <option>ヤンマガWeb</option>
-        <option>コミックDAYS</option>
-        <option>サンデーうぇぶり</option>
         <option>ポスター</option>
         <option>表紙</option>
         <option>裏表紙</option>
@@ -132,6 +124,16 @@
         <option>目次</option>
         <option>奥付</option>
         <option>エンディング</option>
+    </datalist>
+    <datalist id="6C1F8F1A-9C3B-4E2D-8B0A-2F5A7D1E4C6B">
+        <option>Wikipedia</option>
+        <option>青空文庫</option>
+        <option>国立国会図書館デジタルコレクション</option>
+        <option>Amazon</option>
+        <option>マガポケ</option>
+        <option>ヤンマガWeb</option>
+        <option>コミックDAYS</option>
+        <option>サンデーうぇぶり</option>
     </datalist>
 </div>
 {#each items as item, i (item.orderNo)}
@@ -147,7 +149,7 @@
             <option value="LINK">リンク</option>
         </select>
         <input name="url" type="url" bind:value={item.url} onchange={onChangeUrl}/><br>
-        <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} list="407C0ABD-8ECF-43B4-9B75-9F9FEF62623C"/>
+        <input name="alt" type="text" bind:value={item.alt} onchange={callCallback} list={item.linkType === 'IMG' ? '407C0ABD-8ECF-43B4-9B75-9F9FEF62623C' : '6C1F8F1A-9C3B-4E2D-8B0A-2F5A7D1E4C6B'}/>
         <button onclick={onClickAddButton}>追加</button>               
         <button onclick={onClickDeleteButton}>削除</button>               
     </div>
