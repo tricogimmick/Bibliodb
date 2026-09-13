@@ -140,7 +140,7 @@
     {/each}
     <div class="display-field">
         <span class="data-label">タグ</span>
-        <div class="data-content">
+        <div class="data-content tags">
             {#each workData.tags as tag (tag)}
                 <span class="tag-chip">{tag}</span>
             {/each}
@@ -190,5 +190,11 @@
 <style>
     .media-list {
         margin-top: 1em;
+    }
+    .tags span:nth-child(n+2)::before {
+        content: "/";
+        display: inline;
+        margin-left: 0.2em;
+        margin-right: 0.2em;
     }
 </style>

@@ -135,7 +135,7 @@
         {/each}
         <div class="display-field">
             <span class="data-label">タグ</span>
-            <span class="data-value">
+            <span class="data-value tags">
                 {#each printData.tags as tag (tag)}
                     <span class="tag-chip">{tag}</span>
                 {/each}
@@ -234,5 +234,11 @@
     }
     .button-container {
         margin-top: 1rem;
+    }
+    .tags span:nth-child(n+2)::before {
+        content: "/";
+        display: inline;
+        margin-left: 0.2em;
+        margin-right: 0.2em;
     }
 </style>
