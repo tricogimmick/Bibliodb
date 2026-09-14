@@ -54,6 +54,7 @@
 	let seriesName = $state(series.find((x) => x.id === print.seriesId)?.index ?? '');
 	let purchaseDate = $state(print.purchaseDate);
 	let finishedReadingDate = $state(print.finishedReadingDate);
+	let summary = $state(print.summary);
 	let description = $state(print.description);
 	let toc = $state(print.toc);
 	let note = $state(print.note);
@@ -139,6 +140,7 @@
 			seriesId: series_.id,
 			purchaseDate,
 			finishedReadingDate,
+			summary,
 			description,
 			toc,
 			note,
@@ -384,6 +386,10 @@
 			callback={onChangeRelatedCollections}
 		></RelatedCollectionsEditor>
         <TagEditor {tags} callback={onChangeTags}></TagEditor>
+		<div class="input-field">
+			<label for="summary">概要</label>
+			<textarea name="summary" bind:value={summary} rows="5" cols="80"></textarea>
+		</div>
 		<div class="input-field">
 			<label for="description">解説</label>
 			<textarea name="description" bind:value={description} rows="5" cols="80"></textarea>

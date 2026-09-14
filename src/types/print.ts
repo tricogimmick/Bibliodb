@@ -19,6 +19,7 @@ export type PrintType = {
     seriesId: number | null;
     purchaseDate: string;
     finishedReadingDate: string;
+    summary: string;
     description: string;
     toc: string;
     note: string;
@@ -49,6 +50,7 @@ export function createPrintType() {
         seriesId: null,
         purchaseDate: '',
         finishedReadingDate: '',
+        summary: '',
         description: '',
         toc: '',
         note: '',

@@ -144,6 +144,12 @@
 
     </div>
 </div>
+{#if printData.summary != null && printData.summary != ''}
+<h4>概　要</h4>
+<div class="text-container">
+    {@html marked.parse(printData.summary)}
+</div>
+{/if}
 {#if printData.description != null && printData.description != ''}
 <h4>解　説</h4>
 <div class="text-container">

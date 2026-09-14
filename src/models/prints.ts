@@ -69,6 +69,7 @@ function makeUpdateParams(print: PrintType) {
         print.seriesId,
         print.purchaseDate,
         print.finishedReadingDate,
+        print.summary,
         print.description,
         print.toc,
         print.note,
@@ -97,13 +98,13 @@ export async function update(db: pkg.Database, print: PrintType) {
         const [sql, params] = print.id === null
             ? [
                 'INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, issueNumber, seriesId, ' +
-                'purchaseDate, finishedReadingDate, description, toc, note, ownedType) ' +
-                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                'purchaseDate, finishedReadingDate, summary, description, toc, note, ownedType) ' +
+                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 makeUpdateParams(print)
             ]
             : [
                 'UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, ' +
-                'issueNumber = ?, seriesId = ?, purchaseDate = ?, finishedReadingDate = ?, description = ?, toc = ?, note = ?, ownedType = ? WHERE id = ?',
+                'issueNumber = ?, seriesId = ?, purchaseDate = ?, finishedReadingDate = ?, summary = ?, description = ?, toc = ?, note = ?, ownedType = ? WHERE id = ?',
                 makeUpdateParams(print)
             ];
         db.run(sql, params, async function (err) {
@@ -338,7 +339,7 @@ export function getRelatedBookListByWorkId(db: pkg.Database, workId: number) {
 export function getRelatedMagazineListByWorkId(db: pkg.Database, workId: number) {
     return new Promise<MagazineListViewItemType[]>((resolve, reject) => {
         db.all<MagazineListViewItemType>(
-            'SELECT bk.id, sr.title as series, bk.title, pb.name as publisher, ' +
+            'SELECT ct.printId * 1000 + ct.orderNo as id, sr.title as series, bk.title, pb.name as publisher, ' +
             'bk.publicationDate, bk.ownedType, ct.orderNo ' +
             'FROM contents as ct ' +
             'JOIN prints as bk on bk.id = ct.printId ' +
