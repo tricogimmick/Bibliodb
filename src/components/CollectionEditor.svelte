@@ -24,6 +24,10 @@
 
 	const onChangeSeriesOrIssue = (e: Event) => {
 		title = `${seriesName} ${issue}`;
+		const m = /(2\d{3})年/.exec(issue);
+		if (m) {
+			term = Number(m[1]);
+		}
 	};
 
 	// サブミットされた
@@ -71,10 +75,6 @@
 	</datalist>
 	<form onsubmit={onSubmit}>
 		<div class="input-field">
-			<label for="title">タイトル</label>
-			<input name="title" type="text" bind:value={title} required />
-		</div>
-		<div class="input-field">
 			<label for="seriesName">シリーズ</label>
 			<input
 				name="seriesName"
@@ -85,12 +85,16 @@
 			/>
 		</div>
 		<div class="input-field">
+			<label for="issue">号数</label>
+			<input name="issue" type="text" bind:value={issue} onchange={onChangeSeriesOrIssue} />
+		</div>
+		<div class="input-field">
 			<label for="term">年度</label>
 			<input name="term" type="number" bind:value={term} min="1800" max="2100" />
 		</div>
 		<div class="input-field">
-			<label for="issue">号数</label>
-			<input name="issue" type="text" bind:value={issue} onchange={onChangeSeriesOrIssue} />
+			<label for="title">タイトル</label>
+			<input name="title" type="text" bind:value={title} required />
 		</div>
 		<div class="input-field">
 			<label for="collectionType">種別</label>
