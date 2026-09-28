@@ -70,6 +70,9 @@
                     item.linkType = 'LINK';
                 }
             }
+            if (/https:\/\/.+\.wikipedia\.org/.test(url)) {
+                item.alt = "Wikipedia";
+            }
         }
         callCallback();
     };
