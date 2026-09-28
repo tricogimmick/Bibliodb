@@ -200,8 +200,11 @@
         <div class="input-field">
             <label for="contentType">種別</label>
             <select name="contentType" bind:value={contentType}>
+                <option value="漫画">漫画</option>
                 <option value="小説">小説</option>
                 <option value="詩歌">詩歌</option>
+                <option value="ノンフィクション">ノンフィクション</option>
+                <option value="評伝">評伝</option>
                 <option value="エッセイ">エッセイ</option>
                 <option value="日記">日記</option>
                 <option value="評論">評論</option>
@@ -210,7 +213,6 @@
                 <option value="画集">画集</option>
                 <option value="IT">IT</option>
                 <option value="読み物">読み物</option>
-                <option value="漫画">漫画</option>
                 <option value="その他">その他</option>
             </select>
         </div>
