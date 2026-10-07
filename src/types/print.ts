@@ -111,4 +111,5 @@ export type MagazineListViewItemType = {
     publicationDate: string;
     ownedType: string;
     orderNo: number | null;
+    printId: number | null;
 }

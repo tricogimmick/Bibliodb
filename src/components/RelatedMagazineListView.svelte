@@ -24,7 +24,7 @@
             {#each magazines as zine, i (zine.id) }
                 <div class="row">
                     <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{zine.id}">{#if zine.series != ''}{zine.series}{/if} {zine.title}</a></div>
+                    <div class="cell"><a href="/prints/{zine.printId}">{#if zine.series != ''}{zine.series}{/if} {zine.title}</a></div>
                     <div class="cell">{zine.publisher}</div>
                     <div class="cell">{zine.publicationDate}</div>
                     <div class="cell">{zine.orderNo}</div>

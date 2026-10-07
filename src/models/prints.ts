@@ -340,7 +340,7 @@ export function getRelatedMagazineListByWorkId(db: pkg.Database, workId: number)
     return new Promise<MagazineListViewItemType[]>((resolve, reject) => {
         db.all<MagazineListViewItemType>(
             'SELECT ct.printId * 1000 + ct.orderNo as id, sr.title as series, bk.title, pb.name as publisher, ' +
-            'bk.publicationDate, bk.ownedType, ct.orderNo ' +
+            'bk.publicationDate, bk.ownedType, ct.orderNo, ct.printId  ' +
             'FROM contents as ct ' +
             'JOIN prints as bk on bk.id = ct.printId ' +
             'LEFT JOIN series as sr on sr.id = bk.seriesId ' +
