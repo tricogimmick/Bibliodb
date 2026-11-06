@@ -32,6 +32,22 @@
 		callback: ((data: PrintType) => void | Promise<void>) | null;
 	};
 
+	// 文字列の改行コードに "  " を付与する
+	const addMarkdownLineBreak = (text: string): string => {
+		if (text == null || text == '') {
+			return '';
+		}
+		const lines = text.split(/\r\n|\r|\n/);
+		const newLines = lines.map((line) => {
+			if (line.trim() === '') {
+				return line;
+			} else {
+				return line.trimEnd() + '  ';
+			}
+		});
+		return newLines.join('\n');
+	};
+
 	let {
 		print,
 		publishers,
@@ -141,10 +157,10 @@
 			seriesId: series_.id,
 			purchaseDate,
 			finishedReadingDate,
-			summary,
-			description,
-			toc,
-			note,
+			summary: addMarkdownLineBreak(summary),
+			description: addMarkdownLineBreak(description),
+			toc: addMarkdownLineBreak(toc),
+			note: addMarkdownLineBreak(note),
 			ownedType,
 			isbn,
 			relatedPersons: relatedPersons
@@ -397,12 +413,12 @@
 			<textarea name="summary" bind:value={summary} rows="5" cols="80"></textarea>
 		</div>
 		<div class="input-field">
-			<label for="description">解説</label>
-			<textarea name="description" bind:value={description} rows="5" cols="80"></textarea>
-		</div>
-		<div class="input-field">
 			<label for="toc">目次</label>
 			<textarea name="toc" bind:value={toc} rows="5" cols="80"></textarea>
+		</div>
+		<div class="input-field">
+			<label for="description">解説</label>
+			<textarea name="description" bind:value={description} rows="5" cols="80"></textarea>
 		</div>
 		<div class="input-field">
 			<label for="note">Note</label>
@@ -438,6 +454,9 @@
 		}
 	}
 	.input-field input + input {
+		margin-left: 0.5rem;
+	}
+	.input-field textarea + button {
 		margin-left: 0.5rem;
 	}
 	.contents-container {
