@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 
 import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
-import * as BrandModel from '../../../models/brand';
+import * as BrandModel from '../../../models/brands';
 import pkg from 'sqlite3';
 const {Database} = pkg;
 
