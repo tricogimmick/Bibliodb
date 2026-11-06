@@ -19,6 +19,7 @@
 	import RelatedCollectionsEditor from './RelatedCollectionsEditor.svelte';
 	import TagEditor from "./TagEditor.svelte";
     import { confirmDialog } from '../lib/client';
+	import { fetchOpenBD } from '../lib/openbd';
 
 	type PropsType = {
 		print: PrintType;
@@ -84,6 +85,8 @@
 	let relatedCollections = $state(print.relatedCollections?.map((x) => x) ?? []);
 	let contents = $state(print.contents?.map((x) => x) ?? []);
 	let tags = $state(print.tags != null ? print.tags : []);
+	// 書誌情報取得時に関連エディタを再生成するためのキー（エディタは初期化時にのみ props を読むため）
+	let relatedEditorKey = $state(0);
 
 
 	let filterdWorks: WorkType[] = $derived.by(() => {
@@ -292,6 +295,56 @@
     const onChangeTags = (newTags: string[]) => {
         tags = newTags;
     }
+
+	// 書誌情報取得（入力済みの項目は上書きせず、未入力の項目にのみ値をセットする）
+	const fetchBibliographicInfo = async () => {
+		const normalizedIsbn = (isbn ?? '').replace(/[-\s]/g, '');
+		if (normalizedIsbn === '') {
+			alert('ISBNを入力してください');
+			return;
+		}
+		try {
+			const info = await fetchOpenBD(normalizedIsbn);
+			if (info == null) {
+				alert(`ISBN：${normalizedIsbn}の書誌情報が見つかりませんでした`);
+				return;
+			}
+			title = title || info.title;
+			publisherName = publisherName || info.publisher;
+			brandName = brandName || info.brand;
+			publicationDate = publicationDate || info.publicationDate;
+			summary = summary || info.summary;
+			toc = toc || info.toc;
+			if (relatedPersons.length == 0 && printType !== '雑誌') {
+				relatedPersons = info.persons.map((x, i) => ({
+					relatedType: 'PRINT',
+					relatedId: print.id,
+					orderNo: i + 1,
+					personId: persons.find((p) => p.index === x.name)?.id ?? null,
+					personName: x.name,
+					role: x.role,
+					description: ''
+				}));
+			}
+			if (info.cover !== '' && !relatedLinks.some((x) => x.linkType === 'IMG' && x.alt === '表紙')) {
+				relatedLinks = [
+					...relatedLinks.filter((x) => x.url != null && x.url != ''),
+					{
+						id: null,
+						relatedType: 'PRINT',
+						relatedId: print.id,
+						linkType: 'IMG',
+						url: info.cover,
+						alt: '表紙',
+						description: ''
+					}
+				];
+			}
+			relatedEditorKey++;
+		} catch (e: unknown) {
+			alert(`書誌情報の取得に失敗しました (${(e as Error).message})`);
+		}
+	};
 </script>
 
 <div>
@@ -346,6 +399,7 @@
 			</div>
 		{/if}
 		{#if printType !== '雑誌'}
+		{#key relatedEditorKey}
 		<RelatedPersonEditor
 			relatedType="PRINT"
 			relatedId={print.id}
@@ -354,6 +408,7 @@
 			label=""
 			callback={onChangeRelationPersons}
 		></RelatedPersonEditor>
+		{/key}
 		{/if}
 		<div class="input-field">
 			<label for="publisherName">出版社</label>
@@ -378,6 +433,9 @@
 		<div class="input-field">
 			<label for="isbn">ISBN</label>
 			<input name="isbn" type="text" bind:value={isbn} />
+			<button type="button" onclick={fetchBibliographicInfo}>
+				書誌情報取得
+			</button>
 		</div>
 		<RelatedWorksEditor
 			label="表紙"
@@ -388,12 +446,14 @@
 			{works}
 			callback={onChangeRelatedWorks}
 		></RelatedWorksEditor>
+		{#key relatedEditorKey}
 		<RelatedLinkEditor
 			relatedType="PRINT"
 			relatedId={print.id}
 			{relatedLinks}
 			callback={onChangeRelationLinks}
 		></RelatedLinkEditor>
+		{/key}
 		<div class="input-field">
 			<label for="ownedType">所有種別</label>
 			<select name="ownedType" bind:value={ownedType}>
@@ -469,7 +529,7 @@
 	.input-field input + input {
 		margin-left: 0.5rem;
 	}
-	.input-field textarea + button {
+	.input-field input + button {
 		margin-left: 0.5rem;
 	}
 	.contents-container {

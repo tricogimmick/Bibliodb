@@ -26,7 +26,7 @@
             orderNo: i + 1,
             role: x.role,
             personId: p?.id ?? null,
-            personName: p?.name ?? '',
+            personName: p?.name ?? x.personName,
             description: x.description
         });
     })
