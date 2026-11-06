@@ -20,4 +20,4 @@ CREATE TABLE movies (
     , viewingDate TEXT
     -- 視聴方法
     , viewingMethod TEXT
-)
+);

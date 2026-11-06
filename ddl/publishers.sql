@@ -6,5 +6,5 @@ CREATE TABLE publishers (
     , name TEXT NOT NULL
     -- 説明
     , description TEXT
-)
+);
 CREATE UNIQUE INDEX publishers_name ON publishers(name);

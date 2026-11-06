@@ -16,6 +16,6 @@ CREATE TABLE collections (
     , description TEXT
     -- メモ
     , note TEXT
-)
-CREATE UNIQUE INDEX collections_index ON works(title);
+);
+CREATE UNIQUE INDEX collections_index ON collections(title);
 

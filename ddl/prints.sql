@@ -18,4 +18,4 @@ CREATE TABLE "prints" (
 	"ownedType"	TEXT,
 	"isbn"	TEXT,
 	PRIMARY KEY("id")
-)
+);
