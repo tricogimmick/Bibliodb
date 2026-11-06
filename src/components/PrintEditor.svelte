@@ -240,6 +240,19 @@
 		}
 	};
 
+	// タイトルが変更された
+	const onChangeTitle = (e: Event) => {
+		title = (e.target as HTMLInputElement).value;
+		if (printType === '雑誌') {
+			const m = /^(\d{4})年(\d+)/.exec(title);
+			if (m) {
+				const year = parseInt(m[1]);
+				const month = parseInt(m[2]);
+				issueNumber = year * 100 + month;
+			}
+		}
+	};
+
 	// 出版種別が変更された
 	const onChangePrintType = (e: Event) => {
 		printType = (e.target as HTMLSelectElement).value;
@@ -310,7 +323,7 @@
 		</div>
 		<div class="input-field">
 			<label for="title">題名</label>
-			<input name="title" type="text" bind:value={title} required />
+			<input name="title" type="text" bind:value={title} required onchange={onChangeTitle} />
 			<span
 				><label for="originalTitle">原題</label><input
 					name="originalTitle"
