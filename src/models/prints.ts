@@ -73,7 +73,8 @@ function makeUpdateParams(print: PrintType) {
         print.description,
         print.toc,
         print.note,
-        print.ownedType
+        print.ownedType,
+        print.isbn
     ];
     if (print.id) {
         ar.push(print.id)
@@ -98,13 +99,13 @@ export async function update(db: pkg.Database, print: PrintType) {
         const [sql, params] = print.id === null
             ? [
                 'INSERT INTO prints (title , originalTitle, printType, publisherId, brandId, publicationDate, issueNumber, seriesId, ' +
-                'purchaseDate, finishedReadingDate, summary, description, toc, note, ownedType) ' +
-                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                'purchaseDate, finishedReadingDate, summary, description, toc, note, ownedType, isbn) ' +
+                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 makeUpdateParams(print)
             ]
             : [
                 'UPDATE prints SET title = ? , originalTitle = ?, printType = ?, publisherId = ?, brandId = ?, publicationDate = ?, ' +
-                'issueNumber = ?, seriesId = ?, purchaseDate = ?, finishedReadingDate = ?, summary = ?, description = ?, toc = ?, note = ?, ownedType = ? WHERE id = ?',
+                'issueNumber = ?, seriesId = ?, purchaseDate = ?, finishedReadingDate = ?, summary = ?, description = ?, toc = ?, note = ?, ownedType = ?, isbn = ? WHERE id = ?',
                 makeUpdateParams(print)
             ];
         db.run(sql, params, async function (err) {

@@ -16,5 +16,6 @@ CREATE TABLE "prints" (
 	"toc"	TEXT,
 	"note"	TEXT,
 	"ownedType"	TEXT,
+	"isbn"	TEXT,
 	PRIMARY KEY("id")
 )

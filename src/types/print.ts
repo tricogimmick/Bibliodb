@@ -24,6 +24,7 @@ export type PrintType = {
     toc: string;
     note: string;
     ownedType: string;
+    isbn: string;
 
     // ここから下は関連情報
     publisher: PublisherType | null;
@@ -55,6 +56,7 @@ export function createPrintType() {
         toc: '',
         note: '',
         ownedType: '',
+        isbn: '',
         publisher: null,
         brand: null,
         series: null,

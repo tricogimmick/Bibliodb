@@ -59,6 +59,7 @@
 	let toc = $state(print.toc);
 	let note = $state(print.note);
 	let ownedType = $state(print.ownedType);
+	let isbn = $state(print.isbn);
 	let buttonCaption = $derived(print.id == null || print.id == 0 ? '登　録' : '更　新');
 
 	let relatedPersons = $state(print.relatedPersons?.map((x) => x) ?? []);
@@ -145,6 +146,7 @@
 			toc,
 			note,
 			ownedType,
+			isbn,
 			relatedPersons: relatedPersons
 				.map((x) => ({
 					relatedType: x.relatedType,
@@ -343,6 +345,10 @@
 		<div class="input-field">
 			<label for="publicationDate">発行日</label>
 			<input name="publicationDate" type="date" bind:value={publicationDate} />
+		</div>
+		<div class="input-field">
+			<label for="isbn">ISBN</label>
+			<input name="isbn" type="text" bind:value={isbn} />
 		</div>
 		<RelatedWorksEditor
 			label="表紙"

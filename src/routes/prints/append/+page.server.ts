@@ -25,6 +25,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
       templateMoel.id = null;
       templateMoel.note = '';
       templateMoel.toc = '';
+      templateMoel.isbn = '';
       templateMoel.relatedWorks = [];
       templateMoel.relatedLinks = [];
       templateMoel.contents = [];

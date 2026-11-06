@@ -89,6 +89,12 @@
             <span class="data-value">{printData.issueNumber}</span>
         </div>      
         {/if}
+        {#if printData.isbn}
+        <div class="display-field">
+            <span class="data-label">ISBN</span>
+            <span class="data-value">{printData.isbn}</span>
+        </div>      
+        {/if}
         {#each coverWorks as coverWork, i (coverWork.workId)}
         <div class="display-field">
             {#if i == 0}
