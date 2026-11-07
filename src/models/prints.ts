@@ -287,11 +287,12 @@ export function getRelatedBookListByPersonId(db: pkg.Database, personId: number)
     return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
         db.all<BoookListViewItemType>(
             'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
-            'bk.publicationDate, bk.ownedType, bk.finishedReadingDate ' +
+            'bk.publicationDate, bk.ownedType, bk.finishedReadingDate, sr.title as seriesTitle ' +
             'FROM related_persons as rc ' +
             'JOIN prints as bk on bk.id = rc.relatedId ' +
             'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
             'LEFT JOIN brands as br ON br.id = bk.brandId ' +
+            'LEFT JOIN series as sr ON sr.id = bk.seriesId ' +
             'WHERE rc.personId = ? AND rc.relatedType = ? AND bk.printType = ?' +
             'ORDER BY bk.publicationDate',
             [personId, 'PRINT', '書籍'],

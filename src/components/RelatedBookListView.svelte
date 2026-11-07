@@ -25,7 +25,7 @@
             {#each books as book, i (book.id) }
                 <div class="row">
                     <div class="cell">{i + 1}</div>
-                    <div class="cell"><a href="/prints/{book.id}">{book.title}</a></div>
+                    <div class="cell"><a href="/prints/{book.id}">{book.seriesTitle ? book.seriesTitle + ' - ' : ''}{book.title}</a></div>
                     <div class="cell">
                         {#each book.authors as author, j (author.personId) }
                             {#if j != 0 }<span>/</span>{/if}<a href="/persons/{author.personId}">{author.personName}</a>

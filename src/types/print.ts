@@ -102,6 +102,7 @@ export type BoookListViewItemType = {
     publicationDate: string;
     ownedType: string;
     finishedReadingDate: string;
+    seriesTitle: string | null;
     authors: RelatedPersonType[];
 }
 
