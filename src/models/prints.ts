@@ -315,11 +315,12 @@ export function getRelatedBookListByWorkId(db: pkg.Database, workId: number) {
     return new Promise<BoookListViewItemType[]>(async (resolve, reject) => {
         db.all<BoookListViewItemType>(
             'SELECT bk.id, bk.title, pb.name as publisher,  br.name as brand, ' +
-            'bk.publicationDate, bk.ownedType, bk.finishedReadingDate ' +
+            'bk.publicationDate, bk.ownedType, bk.finishedReadingDate, sr.title as seriesTitle  ' +
             'FROM contents as ct ' +
             'JOIN prints as bk on bk.id = ct.printId ' +
             'LEFT JOIN publishers as pb ON pb.id = bk.publisherId ' +
             'LEFT JOIN brands as br ON br.id = bk.brandId ' +
+            'LEFT JOIN series as sr ON sr.id = bk.seriesId ' +
             'WHERE ct.workId = ? AND bk.printType = ?' +
             'ORDER BY bk.publicationDate',
             [workId, '書籍'],
