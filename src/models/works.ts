@@ -10,7 +10,7 @@ import * as RelatedTagsMpdel from './relatedTags';
 // 全ての作品を取得する
 export function getAll(db: pkg.Database) {
     return new Promise<WorkType[]>((resolve, reject) => {
-        db.all<WorkType>('SELECT * FROM works ORDER BY [index], id', (err, rows) => {
+        db.all<WorkType>('SELECT * FROM works ORDER BY id desc', (err, rows) => {
             if (err) {
                 reject(err);
             } else {
